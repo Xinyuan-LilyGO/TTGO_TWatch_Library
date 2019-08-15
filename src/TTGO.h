@@ -16,6 +16,8 @@
 #include <FS.h>
 #include <SPI.h>
 
+
+
 class TTGOClass
 {
 public:
@@ -53,6 +55,12 @@ public:
             return false;
         }
         return true;
+    }
+
+    void enableLDO3(bool en = true)
+    {
+        power->setLDO3Mode(1);
+        power->setPowerOutPut(AXP202_LDO3, en);
     }
 
     void lvgl_begin()
@@ -99,6 +107,55 @@ public:
     Buzzer *buzzer = nullptr;
     BMA *bma = nullptr;
     Button2 *button = nullptr;
+    Button2 *gameControl = nullptr;
+
+    void gameControlBegin()
+    {
+        eTFT->setRotation(3);
+        buzzer = new Buzzer(GAMECONTROL_BUZZER);
+        buzzer->begin();
+        uint8_t pins[GAMECONTROL_CONTS] = GAMECONTROL_PINS;
+        gameControl = new  Button2[GAMECONTROL_CONTS];
+        for (int i = 0; i < GAMECONTROL_CONTS; i++) {
+            gameControl[i] = Button2(pins[i]);
+        }
+    }
+    void gameControlBuzzer()
+    {
+        if (buzzer == nullptr)return;
+        buzzer->onec();
+    }
+
+    void gameControlHandler()
+    {
+        for (int i = 0; i < GAMECONTROL_CONTS; i++) {
+            gameControl[i].loop();
+        }
+    }
+    bool gameAisPressed()
+    {
+        return gameControl[0].isPressed();
+    }
+    bool gameBisPressed()
+    {
+        return gameControl[2].isPressed();
+    }
+    bool gameXisPressed()
+    {
+        return gameControl[1].isPressed();
+    }
+    bool gameYisPressed()
+    {
+        return gameControl[3].isPressed();
+    }
+    bool gameCisPressed()
+    {
+        return gameControl[4].isPressed();
+    }
+
+
+
+
 private:
     TTGOClass()
     {

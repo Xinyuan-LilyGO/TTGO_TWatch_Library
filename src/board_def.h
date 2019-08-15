@@ -4,15 +4,15 @@
 
 #define TFT_WIDTH           240
 #define TFT_HEIGHT          240
-#define TFT_MISO            (gpio_num_t)-1  
-#define TFT_MOSI            (gpio_num_t)19  
-#define TFT_SCLK            (gpio_num_t)18  
-#define TFT_CS              (gpio_num_t)5   
-#define TFT_DC              (gpio_num_t)27  
-#define TFT_RST             (gpio_num_t)-1  
-#define TFT_BL              (gpio_num_t)12   
+#define TFT_MISO            (gpio_num_t)-1
+#define TFT_MOSI            (gpio_num_t)19
+#define TFT_SCLK            (gpio_num_t)18
+#define TFT_CS              (gpio_num_t)5
+#define TFT_DC              (gpio_num_t)27
+#define TFT_RST             (gpio_num_t)-1
+#define TFT_BL              (gpio_num_t)12
 
-#define SD_CS               13  
+#define SD_CS               13
 #define SD_MISO             2
 #define SD_MOSI             15
 #define SD_SCLK             14
@@ -42,8 +42,9 @@
 #define MIC_CLOCK           26
 
 
-
-
+#define GAMECONTROL_CONTS   5
+#define GAMECONTROL_PINS    {13,14,25,26,15}
+#define GAMECONTROL_BUZZER  4
 
 
 #endif
