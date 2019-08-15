@@ -99,6 +99,12 @@ public:
         return _ttgo;
     }
 
+    void motor_begin()
+    {
+        motor = new Motor(MOTOR_PIN);
+        motor->begin();
+    }
+
     BackLight *bl = nullptr;
     PCF8563_Class *rtc = nullptr;
     AXP20X_Class *power = nullptr;
@@ -108,7 +114,7 @@ public:
     BMA *bma = nullptr;
     Button2 *button = nullptr;
     Button2 *gameControl = nullptr;
-
+    Motor *motor = nullptr;
     void gameControlBegin()
     {
         eTFT->setRotation(3);

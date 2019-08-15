@@ -38,13 +38,24 @@
 
 #define MOTOR_PIN           33
 
+//!  PDM MIC BOARD
 #define MIC_DATA            34
 #define MIC_CLOCK           26
 
-
+//! GAMECONTROL BOARD
 #define GAMECONTROL_CONTS   5
 #define GAMECONTROL_PINS    {13,14,25,26,15}
 #define GAMECONTROL_BUZZER  4
+
+//! MAX98357A + INMP441 DOUBLE I2S BOARD
+#define TWATCH_DAC_IIS_BCK       26
+#define TWATCH_DAC_IIS_WS        25
+#define TWATCH_DAC_IIS_DOUT      33
+
+#define TWATCH_INMP441_IIS_BCK  15
+#define TWATCH_INMP441_IIS_WS   13
+#define TWATCH_INMP441_IIS_DIN  14
+
 
 
 #endif

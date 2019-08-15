@@ -3,10 +3,6 @@
 
 TTGOClass *ttgo;
 
-bool irq = false;
-
-
-
 void pressed()
 {
     uint16_t color = random(0xFFFF);
