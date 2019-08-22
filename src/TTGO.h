@@ -160,6 +160,39 @@ public:
     }
 
 
+    void writeByte(uint8_t devAddress, uint8_t regAddress, uint8_t data)
+    {
+        if (!i2c)return;
+        i2c->writeBytes(devAddress, regAddress, &data, 1);;
+    }
+
+    void writeBytes(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint16_t len)
+    {
+        if (!i2c)return;
+        i2c->writeBytes(devAddress, regAddress, data, len);;
+    }
+
+    uint8_t readByte(uint8_t devAddress, uint8_t regAddress)
+    {
+        if (!i2c)return 0;
+        uint8_t data;
+        i2c->readBytes(devAddress, regAddress, &data, 1);
+        return data;
+    }
+
+    void readBytes(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint16_t len)
+    {
+        if (!i2c)return;
+        i2c->readBytes(devAddress, regAddress, data, len);
+    }
+
+    void readBytes(uint8_t devAddress, uint8_t *data, uint16_t len, uint16_t delay_ms = 0)
+    {
+        if (!i2c)return;
+        i2c->readBytes(devAddress, data, len, delay_ms);
+    }
+
+
 
 
 private:

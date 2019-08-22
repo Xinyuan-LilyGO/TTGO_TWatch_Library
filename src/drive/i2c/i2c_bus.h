@@ -14,6 +14,7 @@ public:
         _i2c_mux = xSemaphoreCreateRecursiveMutex();
     };
     void scan();
+    uint16_t readBytes(uint8_t addr, uint8_t *data, uint16_t len, uint16_t delay_ms = 0);
     uint16_t readBytes(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t len);
     uint16_t writeBytes(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t len);
 private:

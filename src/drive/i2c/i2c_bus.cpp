@@ -29,6 +29,26 @@ void I2CBus::scan(void)
         Serial.println("done\n");
 }
 
+
+uint16_t I2CBus::readBytes(uint8_t addr, uint8_t *data, uint16_t len, uint16_t delay_ms)
+{
+    uint16_t ret = 0;
+    xSemaphoreTakeRecursive(_i2c_mux, portMAX_DELAY);
+    uint8_t cnt = _port->requestFrom(addr, (uint8_t)len, (uint8_t)1);
+    if (!cnt) {
+        ret =  1 << 13;
+    }
+    uint16_t index = 0;
+    while (_port->available()) {
+        if (index > len)return 1 << 14;
+        if (delay_ms)delay(delay_ms);
+        data[index++] = _port->read();
+    }
+    xSemaphoreGiveRecursive(_i2c_mux);
+    return ret;
+}
+
+
 uint16_t I2CBus::readBytes(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t len)
 {
     uint16_t ret = 0;
@@ -42,6 +62,7 @@ uint16_t I2CBus::readBytes(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t le
     }
     uint16_t index = 0;
     while (_port->available()) {
+        if (index > len)return 1 << 14;
         data[index++] = _port->read();
     }
     xSemaphoreGiveRecursive(_i2c_mux);

@@ -28,7 +28,6 @@ TTGOClass *ttgo;
 unsigned long runTime = 0;
 void setup()
 {
-    randomSeed(analogRead(A0));
     // Setup the LCD
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
