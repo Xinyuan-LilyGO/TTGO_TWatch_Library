@@ -56,6 +56,10 @@
 #define TWATCH_INMP441_IIS_WS   13
 #define TWATCH_INMP441_IIS_DIN  14
 
+//! PN532 BOARD
+#define TWATCH_PN532_IRQ        34
+#define TWATCH_PN532_RESET      33
+
 
 
 #endif

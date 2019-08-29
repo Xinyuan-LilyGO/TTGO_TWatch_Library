@@ -15,7 +15,7 @@
 #include <SD.h>
 #include <FS.h>
 #include <SPI.h>
-
+#include "./PN532/Adafruit_PN532.h"
 
 
 class TTGOClass
@@ -101,9 +101,22 @@ public:
 
     void motor_begin()
     {
-        motor = new Motor(MOTOR_PIN);
+        if (motor == nullptr) {
+            motor = new Motor(MOTOR_PIN);
+        }
         motor->begin();
     }
+
+    void nfc_begin()
+    {
+        if (nfc == nullptr) {
+            nfc = new Adafruit_PN532(TWATCH_PN532_IRQ, TWATCH_PN532_RESET);
+        }
+        nfc->begin();
+        nfc->setI2CWrite(nfcWriteBytes);
+        nfc->setI2CRead(nfcReadBytes);
+    }
+
 
     BackLight *bl = nullptr;
     PCF8563_Class *rtc = nullptr;
@@ -115,6 +128,9 @@ public:
     Button2 *button = nullptr;
     Button2 *gameControl = nullptr;
     Motor *motor = nullptr;
+    Adafruit_PN532 *nfc = nullptr;
+
+
     void gameControlBegin()
     {
         eTFT->setRotation(3);
@@ -192,9 +208,6 @@ public:
         i2c->readBytes(devAddress, data, len, delay_ms);
     }
 
-
-
-
 private:
     TTGOClass()
     {
@@ -214,6 +227,16 @@ private:
 
     };
 
+    static void nfcWriteBytes(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint16_t len)
+    {
+       _ttgo->writeBytes(devAddress, regAddress, data, len);
+    }
+
+    static void nfcReadBytes(uint8_t devAddress, uint8_t *data, uint16_t len)
+    {
+        _ttgo->readBytes(devAddress, data, len, 1);
+    }
+
     static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p);
     static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
     SPIClass *sdhander = nullptr;
@@ -221,4 +244,3 @@ private:
     static TTGOClass *_ttgo;
     Ticker *tickTicker = nullptr;
 };
-

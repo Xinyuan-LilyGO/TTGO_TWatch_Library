@@ -112,3 +112,10 @@ For more info, see https://www.arduino.cc/en/Guide/Libraries
 
 
 
+
+
+# More interesting projects:
+
+- [Flight Recorder](https://github.com/lyusupov/SoftRF/wiki/Flight-Recorder)
+- [TTGO_T_Watch_Baidu_Rec](https://github.com/lixy123/TTGO_T_Watch_Baidu_Rec)
+- [TTGO_T_Watch_Alarm_Clock](https://github.com/lixy123/TTGO_T_Watch_Alarm_Clock)
