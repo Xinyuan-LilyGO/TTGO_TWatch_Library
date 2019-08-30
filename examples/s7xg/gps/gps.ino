@@ -4,7 +4,6 @@ TTGOClass *ttgo;
 TFT_eSPI *tft ;
 S7XG_Class *s7xg;
 char buff[256];
-int i = 0;
 
 void setup(void)
 {
@@ -50,6 +49,9 @@ void setup(void)
     s7xg->gpsSetPortUplink(20);
     s7xg->gpsSetFormatUplink(1);
     s7xg->gpsSetMode(1);
+    tft->setCursor(0, 0);
+    tft->fillScreen(TFT_BLACK);
+    tft->println("Positioning");
 
 }
 
@@ -57,17 +59,14 @@ void setup(void)
 void loop(void)
 {
     GPS_Class gps =  s7xg->gpsGetData();
-    tft->setCursor(0, 0);
-    tft->fillRect(0, 0, 240, 40, TFT_BLACK);
     if (gps.isVaild()) {
+        tft->setCursor(0, 0);
+        tft->fillRect(0, 0, 240, 50, TFT_BLACK);
         sprintf(buff, "Location: lat:%.02f lng:%.02f", gps.lat(), gps.lng());
         tft->println(buff);
         sprintf(buff, "Date: %d/%d/%d",  gps.year(), gps.month(), gps.day());
         tft->println(buff);
         sprintf(buff, "Time: %d:%d:%d",  gps.hour(), gps.minute(), gps.second());
-        tft->println(buff);
-    } else {
-        sprintf(buff, "Positioning: %u",  i++);
         tft->println(buff);
     }
     delay(1000);
