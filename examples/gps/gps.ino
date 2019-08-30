@@ -48,7 +48,7 @@ void loop(void)
 void displayInfo()
 {
     tft->setCursor(0, 0);
-    ttgo->eTFT->fillRect(0, 0, 240, 30, TFT_BLACK);
+    tft->fillRect(0, 0, 240, 30, TFT_BLACK);
     tft->print(F("Location: "));
     if (gps->location.isValid()) {
         tft->print(gps->location.lat(), 6);

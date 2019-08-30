@@ -17,7 +17,7 @@
 #include <SPI.h>
 #include "./PN532/Adafruit_PN532.h"
 #include "./TinyGPSPlus/TinyGPS++.h"
-
+#include "./S7xG_Library/src/s7xg.h"
 
 class TTGOClass
 {
@@ -140,8 +140,25 @@ public:
         return false;
     }
 
+    void enbaleLDO4()
+    {
+        power->setLDO4Voltage(AXP202_LDO4_1800MV);
+        power->setPowerOutPut(AXP202_LDO4, AXP202_ON);
+    }
 
+    void s7xg_begin()
+    {
+        if (hwSerial == nullptr) {
+            hwSerial = new HardwareSerial(1);
+        }
+        if (s7xg == nullptr) {
+            s7xg = new S7XG_Class();
+        }
+        hwSerial->begin(115200, SERIAL_8N1, GPS_RX, GPS_TX);
+        s7xg->begin(*hwSerial);
+    }
 
+    S7XG_Class *s7xg = nullptr;
     HardwareSerial *hwSerial = nullptr;
     BackLight *bl = nullptr;
     PCF8563_Class *rtc = nullptr;
