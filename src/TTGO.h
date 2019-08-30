@@ -16,6 +16,7 @@
 #include <FS.h>
 #include <SPI.h>
 #include "./PN532/Adafruit_PN532.h"
+#include "./TinyGPSPlus/TinyGPS++.h"
 
 
 class TTGOClass
@@ -117,7 +118,31 @@ public:
         nfc->setI2CRead(nfcReadBytes);
     }
 
+    void gps_begin()
+    {
+        if (gps == nullptr) {
+            gps = new TinyGPSPlus();
+        }
+        if (hwSerial == nullptr) {
+            hwSerial = new HardwareSerial(1);
+        }
+        hwSerial->begin(GPS_BANUD_RATE, SERIAL_8N1, GPS_RX, GPS_TX);
+    }
 
+    bool gpsHandler()
+    {
+        if (gps == nullptr) return false;
+        while (hwSerial->available()) {
+            if (gps->encode(hwSerial->read())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    HardwareSerial *hwSerial = nullptr;
     BackLight *bl = nullptr;
     PCF8563_Class *rtc = nullptr;
     AXP20X_Class *power = nullptr;
@@ -129,7 +154,7 @@ public:
     Button2 *gameControl = nullptr;
     Motor *motor = nullptr;
     Adafruit_PN532 *nfc = nullptr;
-
+    TinyGPSPlus *gps = nullptr;
 
     void gameControlBegin()
     {
@@ -229,7 +254,7 @@ private:
 
     static void nfcWriteBytes(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint16_t len)
     {
-       _ttgo->writeBytes(devAddress, regAddress, data, len);
+        _ttgo->writeBytes(devAddress, regAddress, data, len);
     }
 
     static void nfcReadBytes(uint8_t devAddress, uint8_t *data, uint16_t len)

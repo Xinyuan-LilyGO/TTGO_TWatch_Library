@@ -60,6 +60,12 @@
 #define TWATCH_PN532_IRQ        34
 #define TWATCH_PN532_RESET      33
 
+//! M8M BOARD
+#define GPS_RX                  34
+#define GPS_TX                  33
+#define GPS_BANUD_RATE          9600
+
+
 
 
 #endif
