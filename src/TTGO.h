@@ -140,7 +140,7 @@ public:
         return false;
     }
 
-    void enbaleLDO4()
+    void enableLDO4()
     {
         power->setLDO4Voltage(AXP202_LDO4_1800MV);
         power->setPowerOutPut(AXP202_LDO4, AXP202_ON);
