@@ -20,11 +20,11 @@ void setup(void)
     tft->println("Begin ublox M8M/GPS Module...");
 
     //! Open s7xg power
-    ttgo->enbaleLDO4();
+    ttgo->enableLDO4();
+    ttgo->enableLDO3();
 
     ttgo->s7xg_begin();
     s7xg = ttgo->s7xg;
-
 
     int len = 0;
     int retry = 0;
@@ -49,9 +49,10 @@ void setup(void)
     s7xg->gpsSetPortUplink(20);
     s7xg->gpsSetFormatUplink(1);
     s7xg->gpsSetMode(1);
+    
     tft->setCursor(0, 0);
     tft->fillScreen(TFT_BLACK);
-    tft->println("Positioning");
+    tft->println("Positioning...");
 
 }
 
