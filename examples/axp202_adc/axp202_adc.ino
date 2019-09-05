@@ -14,7 +14,7 @@ void setup()
     ttgo->eTFT->drawString("T-Watch AXP202",  25, 50, 4);
     ttgo->eTFT->setTextFont(4);
     ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);
-    ttgo->power->adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
+    ttgo->power->adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
 }
 
 void loop()
@@ -22,6 +22,8 @@ void loop()
     float vbus_v = ttgo->power->getVbusVoltage();
     float vbus_c = ttgo->power->getVbusCurrent();
     float batt_v = ttgo->power->getBattVoltage();
+    int per = ttgo->power->getBattPercentage();
+
     ttgo->eTFT->fillRect(85, 100, 145, 85, TFT_BLACK);
     ttgo->eTFT->setCursor(20, 100);
     ttgo->eTFT->print("Vbus: "); ttgo->eTFT->print(vbus_v); ttgo->eTFT->println(" mV");
@@ -29,5 +31,8 @@ void loop()
     ttgo->eTFT->print("Vbus: "); ttgo->eTFT->print(vbus_c); ttgo->eTFT->println(" mA");
     ttgo->eTFT->setCursor(20, 160);
     ttgo->eTFT->print("BATT: "); ttgo->eTFT->print(batt_v); ttgo->eTFT->println(" mV");
+    ttgo->eTFT->setCursor(20, 190);
+    ttgo->eTFT->print("Per: "); ttgo->eTFT->print(per); ttgo->eTFT->println(" %");
+
     delay(1000);
 }
