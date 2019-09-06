@@ -36,7 +36,7 @@ void setup(void)
 
     ttgo->eTFT->setCursor(0, 0);
     ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->println("Sample alarm lock begins");
+    ttgo->eTFT->println("Sample alarm clock begins");
 
     file = new AudioFileSourcePROGMEM(pika, sizeof(pika));
     id3 = new AudioFileSourceID3(file);
@@ -63,7 +63,7 @@ void loop(void)
     } else {
 
         ttgo->eTFT->fillScreen(TFT_BLACK);
-        ttgo->eTFT->println("alarm lock begins done , sleep now ..");
+        ttgo->eTFT->println("alarm clock play done , sleep now ..");
 
         delay(1000);
 
