@@ -33,6 +33,28 @@ public:
         eTFT->init();
     }
 
+    void powerOff()
+    {
+        power->setPowerOutPut(0xff, false);
+    }
+
+    void displayOff()
+    {
+        eTFT->writecommand(0x10);
+        touch->enterSleepMode();
+    }
+
+    void displaySleep()
+    {
+        eTFT->writecommand(0x10);
+        touch->enterMonitorMode();
+    }
+
+    void displayWakeup()
+    {
+        eTFT->writecommand(0x11);
+    }
+
     void openBL()
     {
         power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
@@ -91,6 +113,11 @@ public:
         });
     }
 
+    void rtcAttachInterrupt(void (*rtc_cb)(void))
+    {
+        pinMode(RTC_INT, INPUT_PULLUP); //need change to rtc_pin
+        attachInterrupt(RTC_INT, rtc_cb, FALLING);
+    }
 
     static TTGOClass *getWatch()
     {
