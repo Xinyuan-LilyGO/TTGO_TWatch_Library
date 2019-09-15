@@ -1,8 +1,8 @@
 #include <TTGO.h>
 #include <Esp.h>
 
-//! Relay port to be controlled
-#define RELAY_PIN   25
+//! buzzer port to be controlled
+#define BUZZER_PIN   13
 
 
 TTGOClass *ttgo;
@@ -27,7 +27,9 @@ void setup(void)
     //! Open nfc chip power
     ttgo->enableLDO3();
 
-    pinMode(RELAY_PIN, OUTPUT);
+    pinMode(BUZZER_PIN, OUTPUT);
+    ledcAttachPin(BUZZER_PIN, 7);
+    ledcSetup(7, 1000, 16);
 
     //! Initialize the nfc module
     ttgo->nfc_begin();
@@ -165,9 +167,9 @@ void loop(void)
                 }, sizeof data);
 
                 if (ret == 0) {
-                    digitalWrite(RELAY_PIN, HIGH);
-                    delay(500);
-                    digitalWrite(RELAY_PIN, LOW);
+                    ledcWriteTone(7, 1000);
+                    delay(200);
+                    ledcWriteTone(7, 0);
                 } else {
                     Serial.println("vrefiy failed");
                 }
