@@ -194,7 +194,7 @@ void setup(void)
 
     lv_obj_t *label = lv_label_create(gContainer, NULL);
     lv_label_set_text(label, "Begin S7xG");
-    lv_obj_align(label, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+    lv_obj_align(label, NULL, LV_ALIGN_CENTER, 0, 0);
 
     int len = 0;
     int retry = 0;
@@ -205,6 +205,7 @@ void setup(void)
             retry = 0;
             Serial.println("Reset s7xg chip");
         }
+        lv_task_handler();
         if (len == 0)
             delay(1000);
     } while (len == 0);
