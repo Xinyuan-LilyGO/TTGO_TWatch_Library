@@ -173,6 +173,7 @@ void setup(void)
 
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
+    ttgo->eTFT->fillScreen(TFT_BLACK);
     ttgo->openBL();
 
     ttgo->lvgl_begin();
@@ -199,13 +200,13 @@ void setup(void)
     int len = 0;
     int retry = 0;
     do {
+        lv_task_handler();
         len = s7xg->getHardWareModel().length();
         if (len == 0 && retry++ == 5) {
             s7xg->reset();
             retry = 0;
             Serial.println("Reset s7xg chip");
         }
-        lv_task_handler();
         if (len == 0)
             delay(1000);
     } while (len == 0);
