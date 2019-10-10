@@ -2,7 +2,7 @@
 Copyright (c) 2019 lewis he
 This is just a demonstration. Most of the functions are not implemented.
 The main implementation is low-power standby. 
-The off-screen standby (not deep sleep) current is about 3mA.
+The off-screen standby (not deep sleep) current is about 4mA.
 Select standard motherboard and standard backplane for testing.
 Created by Lewis he on October 10, 2019.
 */
@@ -79,6 +79,7 @@ void low_energy()
         ttgo->displaySleep();
         if (!WiFi.isConnected()) {
             lenergy = true;
+            WiFi.mode(WIFI_OFF);
             rtc_clk_cpu_freq_set(RTC_CPU_FREQ_2M);
         }
     } else {
