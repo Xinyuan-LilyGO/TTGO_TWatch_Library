@@ -32,6 +32,8 @@ For more info, see https://www.arduino.cc/en/Guide/Libraries
     + [Instructions for Fedora](docs/arduino-ide/fedora.md)
     + [Instructions for openSUSE](docs/arduino-ide/opensuse.md)
 
+ # Precautions:
+- Since Twatch uses a special IO as the SD interface, please remove the SD card when downloading the program.
 
 # Architecture diagram
 ![](images/pins.png)

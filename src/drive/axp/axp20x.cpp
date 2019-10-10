@@ -735,6 +735,7 @@ int AXP20X_Class::getBattPercentage()
 {
     if (!_init)return AXP_NOT_INIT;
     uint8_t val;
+    if (!isBatteryConnect())return 0;
     _readByte(AXP202_BATT_PERCENTAGE, 1, &val);
     if (!(val & BIT_MASK(7))) {
         return val & (~BIT_MASK(7));
