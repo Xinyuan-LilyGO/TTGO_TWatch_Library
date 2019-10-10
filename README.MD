@@ -35,6 +35,16 @@ For more info, see https://www.arduino.cc/en/Guide/Libraries
  # Precautions:
 - Since Twatch uses a special IO as the SD interface, please remove the SD card when downloading the program.
 
+
+# About power consumption:
+- At present, the power consumption of the screen (Non-deep sleep) is about 4mA, and the power consumption of the screen (WiFi and Bluetooth are not turned on) is about 65mA. For the specific code, please refer to `example -> SimpleWatch`.
+
+  ## Off screen power consumption
+  ![](images/off.png)
+
+  ## Open screen power consumption
+  ![](images/on.png)
+
 # Architecture diagram
 ![](images/pins.png)
 
