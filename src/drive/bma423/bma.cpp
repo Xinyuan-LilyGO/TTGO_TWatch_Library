@@ -42,7 +42,6 @@ bool BMA::begin()
         Serial.println("bma4 init fail");
         return false;
     }
-    Serial.println("Init Done");
 
     config();
 
@@ -169,7 +168,7 @@ void BMA::attachInterrupt()
     config.input_en = BMA4_INPUT_DISABLE;
     rslt |= bma4_set_int_pin_config(&config, BMA4_INTR1_MAP, &_dev);
 
-    Serial.printf("[bma4] attachInterrupt %s\n", rslt != 0 ? "fail" : "pass");
+    // Serial.printf("[bma4] attachInterrupt %s\n", rslt != 0 ? "fail" : "pass");
 
 
     struct bma423_axes_remap remap_data;
