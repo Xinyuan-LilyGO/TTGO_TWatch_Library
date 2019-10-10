@@ -33,7 +33,8 @@
 - 由于Twatch使用了特殊IO作为SD接口，下载程序时候请移除SD卡
 
 # 关于功耗:
-- 目前息屏功耗(非深度睡眠)在4mA左右，开屏功耗在65mA(未开启WiFi和蓝牙)左右，具体代码请参考`example -> SimpleWatch`
+- 目前关闭屏幕，关闭WiFi,蓝牙和其他外围设备功耗在4mA左右（非深度睡眠），打开屏功耗,不开启WiFi,蓝牙和其他外围设备在65mA左右，具体代码请参考`example -> SimpleWatch`
+
   ## Off screen power consumption
   ![](../images/off.png)
 

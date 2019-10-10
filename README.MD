@@ -37,7 +37,7 @@ For more info, see https://www.arduino.cc/en/Guide/Libraries
 
 
 # About power consumption:
-- At present, the power consumption of the screen (Non-deep sleep) is about 4mA, and the power consumption of the screen (WiFi and Bluetooth are not turned on) is about 65mA. For the specific code, please refer to `example -> SimpleWatch`.
+- Currently off the screen, turn off WiFi, Bluetooth and other peripherals consume about 4mA (non-deep sleep), turn on the screen power, do not turn on WiFi, Bluetooth and other peripherals around 65mA, please refer to `example -> SimpleWatch` for the specific code.
 
   ## Off screen power consumption
   ![](images/off.png)
