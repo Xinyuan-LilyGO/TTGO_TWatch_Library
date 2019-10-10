@@ -35,7 +35,19 @@ public:
     bool isStepCounter();
     bool isDoubleClick();
     bool readInterrupt();
+    bool isTilt();
+    bool isActivity();
+    bool isAnyNoMotion();
     bool getAccel(Accel &acc);
+    uint8_t getIrqStatus();
+    const char * getActivity();
+
+    bool enableStepCountInterrupt(bool en = true);
+    bool enableTiltInterrupt(bool en = true);
+    bool enableWakeupInterrupt(bool en = true);
+    bool enableAnyNoMotionInterrupt(bool en = true);
+    bool enableActivityInterrupt(bool en = true);
+
 private:
     static uint16_t read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *read_data, uint16_t len);
     static uint16_t write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *read_data, uint16_t len);

@@ -153,8 +153,15 @@ void BMA::attachInterrupt()
     rslt |= bma423_feature_enable(BMA423_WAKEUP, BMA4_ENABLE, &_dev);
     rslt |= bma423_step_counter_set_watermark(100, &_dev);
 
-    rslt |= bma423_map_interrupt(BMA4_INTR1_MAP, BMA423_STEP_CNTR_INT | BMA423_WAKEUP_INT, BMA4_ENABLE, &_dev);
+    // rslt |= bma423_map_interrupt(BMA4_INTR1_MAP, BMA423_STEP_CNTR_INT | BMA423_WAKEUP_INT, BMA4_ENABLE, &_dev);
+
+    rslt |= bma423_map_interrupt(BMA4_INTR1_MAP,  BMA423_STEP_CNTR_INT, BMA4_ENABLE, &_dev);
+    rslt |= bma423_map_interrupt(BMA4_INTR1_MAP, BMA423_TILT_INT, BMA4_ENABLE, &_dev);
+
+    bma423_anymotion_enable_axis(BMA423_ALL_AXIS_DIS, &_dev);
+
     struct bma4_int_pin_config config ;
+    
     config.edge_ctrl = BMA4_LEVEL_TRIGGER;
     config.lvl = BMA4_ACTIVE_HIGH;
     config.od = BMA4_PUSH_PULL;
@@ -163,11 +170,28 @@ void BMA::attachInterrupt()
     rslt |= bma4_set_int_pin_config(&config, BMA4_INTR1_MAP, &_dev);
 
     Serial.printf("[bma4] attachInterrupt %s\n", rslt != 0 ? "fail" : "pass");
+
+
+    struct bma423_axes_remap remap_data;
+    remap_data.x_axis = 0;
+    remap_data.x_axis_sign = 1;
+    remap_data.y_axis = 1;
+    remap_data.y_axis_sign = 1;
+    remap_data.z_axis  = 2;
+    remap_data.z_axis_sign  = 0;
+
+    bma423_set_remap_axes(&remap_data, &_dev);
+
 }
 
 bool BMA::readInterrupt()
 {
     return bma423_read_int_status(&_irqStatus, &_dev) == BMA4_OK;
+}
+
+uint8_t BMA::getIrqStatus()
+{
+    return _irqStatus;
 }
 
 uint32_t BMA::getCounter()
@@ -187,4 +211,63 @@ bool BMA::isStepCounter()
 bool BMA::isDoubleClick()
 {
     return (bool)(BMA423_WAKEUP_INT & _irqStatus);
+}
+
+
+bool BMA::isTilt()
+{
+    return (bool)(BMA423_TILT_INT & _irqStatus);
+}
+
+
+bool BMA::isActivity()
+{
+    return (bool)(BMA423_ACTIVITY_INT & _irqStatus);
+}
+
+bool BMA::isAnyNoMotion()
+{
+    return (bool)(BMA423_ANY_NO_MOTION_INT & _irqStatus);
+}
+
+
+const char *BMA::getActivity()
+{
+    uint8_t activity;
+    bma423_activity_output(&activity, &_dev);
+    if (activity & BMA423_USER_STATIONARY) {
+        return "BMA423_USER_STATIONARY";
+    } else if (activity & BMA423_USER_WALKING) {
+        return "BMA423_USER_WALKING";
+    } else if (activity & BMA423_USER_RUNNING) {
+        return "BMA423_USER_RUNNING";
+    } else if (activity & BMA423_STATE_INVALID) {
+        return "BMA423_STATE_INVALID";
+    }
+    return "None";
+}
+
+bool BMA::enableStepCountInterrupt(bool en)
+{
+    return  (BMA4_OK == bma423_map_interrupt(BMA4_INTR1_MAP,  BMA423_STEP_CNTR_INT, en, &_dev));
+}
+
+bool BMA::enableTiltInterrupt(bool en)
+{
+    return  (BMA4_OK == bma423_map_interrupt(BMA4_INTR1_MAP, BMA423_TILT_INT, en, &_dev));
+}
+
+bool BMA::enableWakeupInterrupt(bool en)
+{
+    return  (BMA4_OK == bma423_map_interrupt(BMA4_INTR1_MAP, BMA423_WAKEUP_INT, en, &_dev));
+}
+
+bool BMA::enableAnyNoMotionInterrupt(bool en)
+{
+    return  (BMA4_OK == bma423_map_interrupt(BMA4_INTR1_MAP, BMA423_ANY_NO_MOTION_INT, en, &_dev));
+}
+
+bool BMA::enableActivityInterrupt(bool en)
+{
+    return  (BMA4_OK == bma423_map_interrupt(BMA4_INTR1_MAP, BMA423_ACTIVITY_INT, en, &_dev));
 }

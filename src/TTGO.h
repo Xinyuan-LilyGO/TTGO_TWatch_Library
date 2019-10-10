@@ -108,9 +108,18 @@ public:
         indev_drv.read_cb = touchpad_read;
         lv_indev_drv_register(&indev_drv);
         tickTicker = new Ticker();
+        startLvglTick();
+    }
+
+    void startLvglTick()
+    {
         tickTicker->attach_ms(5, []() {
             lv_tick_inc(5);
         });
+    }
+    void stopLvglTick()
+    {
+        tickTicker->detach();
     }
 
     void rtcAttachInterrupt(void (*rtc_cb)(void))
