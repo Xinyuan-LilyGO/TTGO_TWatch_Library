@@ -29,6 +29,8 @@
     + [Fedora](docs/arduino-ide/fedora.md)
     + [openSUSE](docs/arduino-ide/opensuse.md)
   
+# 注意事项:
+- 由于Twatch使用了特殊IO作为SD接口，下载程序时候请移除SD卡
 
 # 架构图
 ![](../images/pins.png)
