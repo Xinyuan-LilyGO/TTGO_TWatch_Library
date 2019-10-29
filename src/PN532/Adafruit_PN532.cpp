@@ -229,10 +229,11 @@ void Adafruit_PN532::begin()
     } else {
         // Reset the PN532
         digitalWrite(_reset, HIGH);
+        delay(400);
         digitalWrite(_reset, LOW);
         delay(400);
         digitalWrite(_reset, HIGH);
-        delay(10);  // Small delay required before taking other actions after reset.
+        delay(400);  // Small delay required before taking other actions after reset.
         // See timing diagram on page 209 of the datasheet, section 12.23.
     }
 }
