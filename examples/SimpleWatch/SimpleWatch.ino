@@ -1,7 +1,7 @@
 /*
 Copyright (c) 2019 lewis he
 This is just a demonstration. Most of the functions are not implemented.
-The main implementation is low-power standby. 
+The main implementation is low-power standby.
 The off-screen standby (not deep sleep) current is about 4mA.
 Select standard motherboard and standard backplane for testing.
 Created by Lewis he on October 10, 2019.
@@ -67,8 +67,6 @@ void setupNetwork()
     }, WiFiEvent_t::SYSTEM_EVENT_STA_GOT_IP);
 }
 
-
-
 void low_energy()
 {
     if (ttgo->bl->isOn()) {
@@ -103,7 +101,6 @@ void setup()
     g_event_queue_handle = xQueueCreate(20, sizeof(uint8_t));
     g_event_group = xEventGroupCreate();
     isr_group = xEventGroupCreate();
-
 
     ttgo = TTGOClass::getWatch();
 
@@ -293,4 +290,3 @@ void loop()
         low_energy();
     }
 }
-
