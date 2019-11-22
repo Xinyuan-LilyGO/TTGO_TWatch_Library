@@ -65,6 +65,13 @@
 #define GPS_TX                  33
 #define GPS_BANUD_RATE          9600
 
+//! T-Quick BOARD
+#define TWATCH_TQUICK_EN         2
+#define TWATCH_TQUICK_MA1        26
+#define TWATCH_TQUICK_MA2        25
+#define TWATCH_TQUICK_MB1        13
+#define TWATCH_TQUICK_MB2        15
+
 
 
 
