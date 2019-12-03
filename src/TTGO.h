@@ -292,7 +292,7 @@ private:
         Wire1.begin(I2C_SDA, I2C_SCL);
         i2c = new I2CBus();
         rtc = new PCF8563_Class(*i2c);
-        bl = new BackLight(TFT_BL);
+        bl = new BackLight(TWATCH_TFT_BL);
         power = new AXP20X_Class(*i2c);
         touch = new FT5206_Class(Wire1);
         bma = new BMA(*i2c);

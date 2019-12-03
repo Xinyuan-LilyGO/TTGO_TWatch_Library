@@ -27,7 +27,7 @@ Created by Lewis he on April 1, 2019.
 github:https://github.com/lewisxhe/PCF8563_Library
 */
 /////////////////////////////////////////////////////////////////
-#pragma onec
+#pragma once
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -121,9 +121,9 @@ public:
         uint8_t day,
         uint8_t weekday
     );
-    uint8_t day;
-    uint8_t hour;
     uint8_t minute;
+    uint8_t hour;
+    uint8_t day;
     uint8_t weekday;
 };
 

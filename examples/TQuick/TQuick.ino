@@ -1,6 +1,12 @@
+#pragma mark - Depend DabbleESP32 library
+/*
+cd ~/Arduino/libraries
+git clone https://github.com/STEMpedia/DabbleESP32.git
+*/
+
 #include <TTGO.h>
-#include <DabbleESP32/src/DabbleESP32.h>
-#include <DabbleESP32/src/esp32PWMUtilities.h>
+#include <DabbleESP32.h>
+#include <esp32PWMUtilities.h>
 
 TTGOClass *ttgo;
 TMotor Motor1;

@@ -4,13 +4,13 @@
 
 #define TFT_WIDTH           240
 #define TFT_HEIGHT          240
-#define TFT_MISO            (gpio_num_t)-1
-#define TFT_MOSI            (gpio_num_t)19
-#define TFT_SCLK            (gpio_num_t)18
-#define TFT_CS              (gpio_num_t)5
-#define TFT_DC              (gpio_num_t)27
-#define TFT_RST             (gpio_num_t)-1
-#define TFT_BL              (gpio_num_t)12
+#define TWATCH_TFT_MISO            (gpio_num_t)-1
+#define TWATCH_TFT_MOSI            (gpio_num_t)19
+#define TWATCH_TFT_SCLK            (gpio_num_t)18
+#define TWATCH_TFT_CS              (gpio_num_t)5
+#define TWATCH_TFT_DC              (gpio_num_t)27
+#define TWATCH_TFT_RST             (gpio_num_t)-1
+#define TWATCH_TFT_BL              (gpio_num_t)12
 
 #define SD_CS               13
 #define SD_MISO             2
@@ -72,7 +72,13 @@
 #define TWATCH_TQUICK_MB1        13
 #define TWATCH_TQUICK_MB2        15
 
-
+//! SX1276 LORA BOARD
+#define TWATCH_LORA_SCK     14
+#define TWATCH_LORA_MISO    2
+#define TWATCH_LORA_MOSI    15
+#define TWATCH_LORA_SS      13
+#define TWATCH_LORA_DI0     26
+#define TWATCH_LORA_RST     25
 
 
 #endif

@@ -77,7 +77,7 @@ public:
 class FT5206_Class
 {
 public:
-    FT5206_Class(TwoWire &port, uint8_t addr=FT5206_SLAVE_ADDRESS) ;
+    FT5206_Class(TwoWire &port, uint8_t addr = FT5206_SLAVE_ADDRESS) ;
     int begin();
     // valid touching detect threshold.
     void adjustTheshold(uint8_t thresh);
@@ -96,6 +96,7 @@ private:
         uint8_t index = 0;
         while (_i2cPort->available())
             data[index++] = _i2cPort->read();
+        return 0;
     }
 
     int _writeByte(uint8_t reg, uint8_t nbytes, uint8_t *data)
@@ -106,6 +107,7 @@ private:
             _i2cPort->write(data[i]);
         }
         _i2cPort->endTransmission();
+        return 0;
     }
 
     uint8_t _address;
