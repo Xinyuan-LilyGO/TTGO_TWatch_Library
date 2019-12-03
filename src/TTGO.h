@@ -26,7 +26,10 @@ public:
     void begin()
     {
         bl->begin();
-        power->begin();
+        int ret = power->begin(axpReadBytes, axpWriteBytes);
+        if (ret == AXP_FAIL) {
+            Serial.println("AXP Power begin failed");
+        }
         if (!touch->begin()) {
             Serial.println("Begin touch fail");
         }
@@ -293,7 +296,7 @@ private:
         i2c = new I2CBus();
         rtc = new PCF8563_Class(*i2c);
         bl = new BackLight(TWATCH_TFT_BL);
-        power = new AXP20X_Class(*i2c);
+        power = new AXP20X_Class();
         touch = new FT5206_Class(Wire1);
         bma = new BMA(*i2c);
         button = new Button2(USER_BUTTON);
@@ -304,6 +307,18 @@ private:
     {
 
     };
+
+    static uint8_t axpWriteBytes(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint8_t len)
+    {
+        _ttgo->writeBytes(devAddress, regAddress, data, len);
+        return 0;
+    }
+
+    static uint8_t axpReadBytes(uint8_t devAddress, uint8_t regAddress,  uint8_t *data, uint8_t len)
+    {
+        _ttgo->readBytes(devAddress, regAddress, data, len);
+        return 0;
+    }
 
     static void nfcWriteBytes(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint16_t len)
     {

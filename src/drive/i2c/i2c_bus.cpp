@@ -72,7 +72,6 @@ uint16_t I2CBus::readBytes(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t le
 uint16_t I2CBus::writeBytes(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t len)
 {
     uint16_t ret = 0;
-    char *err = NULL;
     xSemaphoreTakeRecursive(_i2c_mux, portMAX_DELAY);
     _port->beginTransmission(addr);
     _port->write(reg);

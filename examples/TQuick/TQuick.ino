@@ -1,7 +1,7 @@
 #pragma mark - Depend DabbleESP32 library
 /*
 cd ~/Arduino/libraries
-git clone https://github.com/STEMpedia/DabbleESP32.git
+git clone https://github.com/Xinyuan-LilyGO/DabbleESP32.git
 */
 
 #include <TTGO.h>

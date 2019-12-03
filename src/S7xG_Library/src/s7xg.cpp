@@ -118,7 +118,7 @@ bool S7XG_Class::gpsSetPositioningCycle(uint32_t ms)
     if (ms > 600000) {
         ms = 600000;
     }
-    snprintf(_buffer, sizeof(_buffer), "gps set_positioning_cycle %lu", ms);
+    snprintf(_buffer, sizeof(_buffer), "gps set_positioning_cycle %u", ms);
     return _sendAndWaitForAck(_buffer, DEFALUT_ACK, DEFALUT_TIMEOUT);
 }
 
@@ -156,10 +156,8 @@ GPS_Class S7XG_Class::gpsGetData(uint8_t type)
     int year, month, day, hour, minute, second;
     float lat, lng;
     char latC, lngC;
-    int ret = 0;
     float timeStamp;
 
-    float a, b, c, a1, b1, c1;
 
     if (type > ARR_SIZE(_gpsTypeArr)) {
         return GPS_Class(0, 0, 0, 0, 0, 0, 0, 0);
@@ -176,7 +174,7 @@ GPS_Class S7XG_Class::gpsGetData(uint8_t type)
         switch (type) {
         case GPS_DATA_TYPE_RAW:
             if (0 == strncmp(data, RAW_POSITIONING_DONE, strlen(RAW_POSITIONING_DONE))) {
-                ret = sscanf(data, GPS_RAW_FORMAT,
+                 sscanf(data, GPS_RAW_FORMAT,
                              &year, &month, &day, &hour, &minute, &second,
                              &lat, &latC, &lng, &lngC, &timeStamp);
                 return GPS_Class(year, month, day, hour, minute, second, lat, lng);
@@ -195,7 +193,7 @@ GPS_Class S7XG_Class::gpsGetData(uint8_t type)
             break;
         case GPS_DATA_TYPE_DD:
             if (0 == strncmp(data, DD_POSITIONING_DONE, strlen(DD_POSITIONING_DONE))) {
-                ret = sscanf(data, GPS_DD_FORMAT,
+                sscanf(data, GPS_DD_FORMAT,
                              &year, &month, &day, &hour, &minute, &second,
                              &lat, &latC, &lng, &lngC, &timeStamp
                             );
@@ -258,7 +256,7 @@ String S7XG_Class::loraGetPingPongMessage()
 
 bool S7XG_Class::loraSetFrequency(uint32_t freq)
 {
-    snprintf(_buffer, sizeof(_buffer), "rf set_freq %lu", freq);
+    snprintf(_buffer, sizeof(_buffer), "rf set_freq %u", freq);
     return _sendAndWaitForAck(_buffer, DEFALUT_ACK, DEFALUT_TIMEOUT);
 }
 
