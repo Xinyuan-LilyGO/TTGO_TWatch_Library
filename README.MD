@@ -11,6 +11,8 @@ The code bin will demonstrate the basic functionality of T-Watch, including all 
 1. Using lvgl 6.0 as the display graphics framework, the driver method has been implemented, you only need to call lvgl api according to your own needs.
 1. For the use of lvgl please refer to **[lvgl docs](https://docs.littlevgl.com/en/html/index.html)**
 
+# 3D Shell
+![](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/images/shell.png)
 
 # Installing
 - Download a zipfile from github using the "Download ZIP" button and install it using the IDE ("Sketch" -> "Include Library" -> "Add .ZIP Library..."
