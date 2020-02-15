@@ -83,3 +83,12 @@ uint16_t I2CBus::writeBytes(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t l
     return ret ? 1 << 12 : ret;
 }
 
+bool I2CBus::deviceProbe(uint8_t addr)
+{
+    uint16_t ret = 0;
+    xSemaphoreTakeRecursive(_i2c_mux, portMAX_DELAY);
+    _port->beginTransmission(addr);
+    ret = _port->endTransmission();
+    xSemaphoreGiveRecursive(_i2c_mux);
+    return (ret == 0);
+}

@@ -288,7 +288,12 @@ public:
         if (!i2c)return;
         i2c->readBytes(devAddress, data, len, delay_ms);
     }
-
+    
+    bool deviceProbe(uint8_t addr)
+    {
+        if (!i2c)return false;
+        return i2c->deviceProbe(addr);
+    }
 private:
     TTGOClass()
     {
