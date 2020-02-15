@@ -6,6 +6,13 @@ The off-screen standby (not deep sleep) current is about 4mA.
 Select standard motherboard and standard backplane for testing.
 Created by Lewis he on October 10, 2019.
 */
+
+#pragma mark - Depend ArduinoJson ibraries
+/*
+cd ~/Arduino/libraries
+git clone https://github.com/bblanchon/ArduinoJson.git
+*/
+
 #include <TTGO.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
