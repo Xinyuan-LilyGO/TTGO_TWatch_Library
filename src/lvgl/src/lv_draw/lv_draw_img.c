@@ -9,6 +9,7 @@
 #include "lv_draw_img.h"
 #include "lv_img_cache.h"
 #include "../lv_misc/lv_log.h"
+#include "../lv_misc/lv_mem.h"
 
 /*********************
  *      DEFINES
@@ -50,7 +51,7 @@ void lv_draw_img(const lv_area_t * coords, const lv_area_t * mask, const void * 
     if(src == NULL) {
         LV_LOG_WARN("Image draw: src is NULL");
         lv_draw_rect(coords, mask, &lv_style_plain, LV_OPA_COVER);
-        lv_draw_label(coords, mask, &lv_style_plain, LV_OPA_COVER, "No\ndata", LV_TXT_FLAG_NONE, NULL, -1, -1, NULL);
+        lv_draw_label(coords, mask, &lv_style_plain, LV_OPA_COVER, "No\ndata", LV_TXT_FLAG_NONE, NULL, NULL, NULL, LV_BIDI_DIR_LTR);
         return;
     }
 
@@ -60,7 +61,7 @@ void lv_draw_img(const lv_area_t * coords, const lv_area_t * mask, const void * 
     if(res == LV_RES_INV) {
         LV_LOG_WARN("Image draw error");
         lv_draw_rect(coords, mask, &lv_style_plain, LV_OPA_COVER);
-        lv_draw_label(coords, mask, &lv_style_plain, LV_OPA_COVER, "No\ndata", LV_TXT_FLAG_NONE, NULL, -1, -1, NULL);
+        lv_draw_label(coords, mask, &lv_style_plain, LV_OPA_COVER, "No\ndata", LV_TXT_FLAG_NONE, NULL,  NULL, NULL, LV_BIDI_DIR_LTR);
         return;
     }
 }
@@ -78,7 +79,7 @@ void lv_draw_img(const lv_area_t * coords, const lv_area_t * mask, const void * 
 lv_color_t lv_img_buf_get_px_color(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t y, const lv_style_t * style)
 {
     lv_color_t p_color = LV_COLOR_BLACK;
-    if(x >= dsc->header.w) {
+    if(x >= (lv_coord_t)dsc->header.w) {
         x = dsc->header.w - 1;
         LV_LOG_WARN("lv_canvas_get_px: x is too large (out of canvas)");
     } else if(x < 0) {
@@ -86,7 +87,7 @@ lv_color_t lv_img_buf_get_px_color(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t 
         LV_LOG_WARN("lv_canvas_get_px: x is < 0 (out of canvas)");
     }
 
-    if(y >= dsc->header.h) {
+    if(y >= (lv_coord_t)dsc->header.h) {
         y = dsc->header.h - 1;
         LV_LOG_WARN("lv_canvas_get_px: y is too large (out of canvas)");
     } else if(y < 0) {
@@ -109,21 +110,30 @@ lv_color_t lv_img_buf_get_px_color(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t 
         uint8_t bit = x & 0x7;
         x           = x >> 3;
 
-        uint32_t px  = (dsc->header.w >> 3) * y + x;
+        /* Get the current pixel.
+         * dsc->header.w + 7 means rounding up to 8 because the lines are byte aligned
+         * so the possible real width are 8, 16, 24 ...*/
+        uint32_t px  = ((dsc->header.w + 7) >> 3) * y + x;
         p_color.full = (buf_u8[px] & (1 << (7 - bit))) >> (7 - bit);
     } else if(dsc->header.cf == LV_IMG_CF_INDEXED_2BIT) {
         buf_u8 += 4 * 4;
         uint8_t bit = (x & 0x3) * 2;
         x           = x >> 2;
 
-        uint32_t px  = (dsc->header.w >> 2) * y + x;
+        /* Get the current pixel.
+         * dsc->header.w + 3 means rounding up to 4 because the lines are byte aligned
+         * so the possible real width are 4, 8, 12 ...*/
+        uint32_t px  = ((dsc->header.w + 3) >> 2) * y + x;
         p_color.full = (buf_u8[px] & (3 << (6 - bit))) >> (6 - bit);
     } else if(dsc->header.cf == LV_IMG_CF_INDEXED_4BIT) {
         buf_u8 += 4 * 16;
         uint8_t bit = (x & 0x1) * 4;
         x           = x >> 1;
 
-        uint32_t px  = (dsc->header.w >> 1) * y + x;
+        /* Get the current pixel.
+         * dsc->header.w + 1 means rounding up to 2 because the lines are byte aligned
+         * so the possible real width are 2, 4, 6 ...*/
+        uint32_t px  = ((dsc->header.w + 1) >> 1) * y + x;
         p_color.full = (buf_u8[px] & (0xF << (4 - bit))) >> (4 - bit);
     } else if(dsc->header.cf == LV_IMG_CF_INDEXED_8BIT) {
         buf_u8 += 4 * 256;
@@ -148,7 +158,7 @@ lv_color_t lv_img_buf_get_px_color(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t 
  */
 lv_opa_t lv_img_buf_get_px_alpha(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t y)
 {
-    if(x >= dsc->header.w) {
+    if(x >= (lv_coord_t)dsc->header.w) {
         x = dsc->header.w - 1;
         LV_LOG_WARN("lv_canvas_get_px: x is too large (out of canvas)");
     } else if(x < 0) {
@@ -156,7 +166,7 @@ lv_opa_t lv_img_buf_get_px_alpha(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t y)
         LV_LOG_WARN("lv_canvas_get_px: x is < 0 (out of canvas)");
     }
 
-    if(y >= dsc->header.h) {
+    if(y >= (lv_coord_t)dsc->header.h) {
         y = dsc->header.h - 1;
         LV_LOG_WARN("lv_canvas_get_px: y is too large (out of canvas)");
     } else if(y < 0) {
@@ -173,7 +183,10 @@ lv_opa_t lv_img_buf_get_px_alpha(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t y)
         uint8_t bit = x & 0x7;
         x           = x >> 3;
 
-        uint32_t px    = (dsc->header.w >> 3) * y + x;
+        /* Get the current pixel.
+         * dsc->header.w + 7 means rounding up to 8 because the lines are byte aligned
+         * so the possible real width are 8 ,16, 24 ...*/
+        uint32_t px    = ((dsc->header.w + 7) >> 3) * y + x;
         uint8_t px_opa = (buf_u8[px] & (1 << (7 - bit))) >> (7 - bit);
         return px_opa ? LV_OPA_TRANSP : LV_OPA_COVER;
     } else if(dsc->header.cf == LV_IMG_CF_ALPHA_2BIT) {
@@ -182,7 +195,10 @@ lv_opa_t lv_img_buf_get_px_alpha(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t y)
         uint8_t bit = (x & 0x3) * 2;
         x           = x >> 2;
 
-        uint32_t px    = (dsc->header.w >> 2) * y + x;
+        /* Get the current pixel.
+         * dsc->header.w + 4 means rounding up to 8 because the lines are byte aligned
+         * so the possible real width are 4 ,8, 12 ...*/
+        uint32_t px    = ((dsc->header.w + 3) >> 2) * y + x;
         uint8_t px_opa = (buf_u8[px] & (3 << (6 - bit))) >> (6 - bit);
         return opa_table[px_opa];
     } else if(dsc->header.cf == LV_IMG_CF_ALPHA_4BIT) {
@@ -192,7 +208,10 @@ lv_opa_t lv_img_buf_get_px_alpha(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t y)
         uint8_t bit = (x & 0x1) * 4;
         x           = x >> 1;
 
-        uint32_t px    = (dsc->header.w >> 1) * y + x;
+        /* Get the current pixel.
+         * dsc->header.w + 1 means rounding up to 8 because the lines are byte aligned
+         * so the possible real width are 2 ,4, 6 ...*/
+        uint32_t px    = ((dsc->header.w + 1) >> 1) * y + x;
         uint8_t px_opa = (buf_u8[px] & (0xF << (4 - bit))) >> (4 - bit);
         return opa_table[px_opa];
     } else if(dsc->header.cf == LV_IMG_CF_ALPHA_8BIT) {
@@ -227,7 +246,11 @@ void lv_img_buf_set_px_color(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t y, lv_
 
         uint8_t bit = x & 0x7;
         x           = x >> 3;
-        uint32_t px = (dsc->header.w >> 3) * y + x;
+
+        /* Get the current pixel.
+         * dsc->header.w + 7 means rounding up to 8 because the lines are byte aligned
+         * so the possible real width are 8 ,16, 24 ...*/
+        uint32_t px = ((dsc->header.w + 7) >> 3) * y + x;
         buf_u8[px]  = buf_u8[px] & ~(1 << (7 - bit));
         buf_u8[px]  = buf_u8[px] | ((c.full & 0x1) << (7 - bit));
     } else if(dsc->header.cf == LV_IMG_CF_INDEXED_2BIT) {
@@ -235,7 +258,10 @@ void lv_img_buf_set_px_color(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t y, lv_
         uint8_t bit = (x & 0x3) * 2;
         x           = x >> 2;
 
-        uint32_t px = (dsc->header.w >> 2) * y + x;
+        /* Get the current pixel.
+         * dsc->header.w + 3 means rounding up to 4 because the lines are byte aligned
+         * so the possible real width are 4, 8 ,12 ...*/
+        uint32_t px = ((dsc->header.w + 3) >> 2) * y + x;
 
         buf_u8[px] = buf_u8[px] & ~(3 << (6 - bit));
         buf_u8[px] = buf_u8[px] | ((c.full & 0x3) << (6 - bit));
@@ -244,7 +270,10 @@ void lv_img_buf_set_px_color(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t y, lv_
         uint8_t bit = (x & 0x1) * 4;
         x           = x >> 1;
 
-        uint32_t px = (dsc->header.w >> 1) * y + x;
+        /* Get the current pixel.
+         * dsc->header.w + 1 means rounding up to 2 because the lines are byte aligned
+         * so the possible real width are 2 ,4, 6 ...*/
+        uint32_t px = ((dsc->header.w + 1) >> 1) * y + x;
         buf_u8[px]  = buf_u8[px] & ~(0xF << (4 - bit));
         buf_u8[px]  = buf_u8[px] | ((c.full & 0xF) << (4 - bit));
     } else if(dsc->header.cf == LV_IMG_CF_INDEXED_8BIT) {
@@ -273,14 +302,22 @@ void lv_img_buf_set_px_alpha(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t y, lv_
         opa         = opa >> 7; /*opa -> [0,1]*/
         uint8_t bit = x & 0x7;
         x           = x >> 3;
-        uint32_t px = (dsc->header.w >> 3) * y + x;
+
+        /* Get the current pixel.
+         * dsc->header.w + 7 means rounding up to 8 because the lines are byte aligned
+         * so the possible real width are 8 ,16, 24 ...*/
+        uint32_t px = ((dsc->header.w + 7) >> 3) * y + x;
         buf_u8[px]  = buf_u8[px] & ~(1 << (7 - bit));
         buf_u8[px]  = buf_u8[px] | ((opa & 0x1) << (7 - bit));
     } else if(dsc->header.cf == LV_IMG_CF_ALPHA_2BIT) {
         opa         = opa >> 6; /*opa -> [0,3]*/
         uint8_t bit = (x & 0x3) * 2;
         x           = x >> 2;
-        uint32_t px = (dsc->header.w >> 2) * y + x;
+
+        /* Get the current pixel.
+         * dsc->header.w + 4 means rounding up to 8 because the lines are byte aligned
+         * so the possible real width are 4 ,8, 12 ...*/
+        uint32_t px = ((dsc->header.w + 3) >> 2) * y + x;
         buf_u8[px]  = buf_u8[px] & ~(3 << (6 - bit));
         buf_u8[px]  = buf_u8[px] | ((opa & 0x3) << (6 - bit));
     } else if(dsc->header.cf == LV_IMG_CF_ALPHA_4BIT) {
@@ -288,7 +325,10 @@ void lv_img_buf_set_px_alpha(lv_img_dsc_t * dsc, lv_coord_t x, lv_coord_t y, lv_
         uint8_t bit = (x & 0x1) * 4;
         x           = x >> 1;
 
-        uint32_t px = (dsc->header.w >> 1) * y + x;
+        /* Get the current pixel.
+         * dsc->header.w + 1 means rounding up to 8 because the lines are byte aligned
+         * so the possible real width are 2 ,4, 6 ...*/
+        uint32_t px = ((dsc->header.w + 1) >> 1) * y + x;
         buf_u8[px]  = buf_u8[px] & ~(0xF << (4 - bit));
         buf_u8[px]  = buf_u8[px] | ((opa & 0xF) << (4 - bit));
     } else if(dsc->header.cf == LV_IMG_CF_ALPHA_8BIT) {
@@ -362,10 +402,14 @@ bool lv_img_color_format_is_chroma_keyed(lv_img_cf_t cf)
     switch(cf) {
         case LV_IMG_CF_TRUE_COLOR_CHROMA_KEYED:
         case LV_IMG_CF_RAW_CHROMA_KEYED:
+#if LV_INDEXED_CHROMA
         case LV_IMG_CF_INDEXED_1BIT:
         case LV_IMG_CF_INDEXED_2BIT:
         case LV_IMG_CF_INDEXED_4BIT:
-        case LV_IMG_CF_INDEXED_8BIT: is_chroma_keyed = true; break;
+        case LV_IMG_CF_INDEXED_8BIT:
+#endif
+            is_chroma_keyed = true; break;
+
         default: is_chroma_keyed = false; break;
     }
 
@@ -384,6 +428,10 @@ bool lv_img_color_format_has_alpha(lv_img_cf_t cf)
     switch(cf) {
         case LV_IMG_CF_TRUE_COLOR_ALPHA:
         case LV_IMG_CF_RAW_ALPHA:
+        case LV_IMG_CF_INDEXED_1BIT:
+        case LV_IMG_CF_INDEXED_2BIT:
+        case LV_IMG_CF_INDEXED_4BIT:
+        case LV_IMG_CF_INDEXED_8BIT:
         case LV_IMG_CF_ALPHA_1BIT:
         case LV_IMG_CF_ALPHA_2BIT:
         case LV_IMG_CF_ALPHA_4BIT:
@@ -425,6 +473,66 @@ lv_img_src_t lv_img_src_get_type(const void * src)
     return img_src_type;
 }
 
+lv_img_dsc_t *lv_img_buf_alloc(lv_coord_t w, lv_coord_t h, lv_img_cf_t cf)
+{
+    /* Allocate image descriptor */
+    lv_img_dsc_t *dsc = lv_mem_alloc(sizeof(lv_img_dsc_t));
+    if(dsc == NULL)
+        return NULL;
+    
+    memset(dsc, 0, sizeof(lv_img_dsc_t));
+    
+    /* Get image data size */
+    dsc->data_size = lv_img_buf_get_img_size(w, h, cf);
+    if(dsc->data_size == 0) {
+        lv_mem_free(dsc);
+        return NULL;
+    }
+    
+    /* Allocate raw buffer */
+    dsc->data = lv_mem_alloc(dsc->data_size);
+    if(dsc->data == NULL) {
+        lv_mem_free(dsc);
+        return NULL;
+    }
+    memset((uint8_t *)dsc->data, 0, dsc->data_size);
+    
+    /* Fill in header */
+    dsc->header.always_zero = 0;
+    dsc->header.w = w;
+    dsc->header.h = h;
+    dsc->header.cf = cf;
+    return dsc;
+}
+
+void lv_img_buf_free(lv_img_dsc_t *dsc)
+{
+    if(dsc != NULL) {
+        if(dsc->data != NULL)
+            lv_mem_free(dsc->data);
+        
+        lv_mem_free(dsc);
+    }
+}
+
+uint32_t lv_img_buf_get_img_size(lv_coord_t w, lv_coord_t h, lv_img_cf_t cf)
+{
+    switch(cf) {
+        case LV_IMG_CF_TRUE_COLOR: return LV_IMG_BUF_SIZE_TRUE_COLOR(w, h);
+        case LV_IMG_CF_TRUE_COLOR_ALPHA: return LV_IMG_BUF_SIZE_TRUE_COLOR_ALPHA(w, h);
+        case LV_IMG_CF_TRUE_COLOR_CHROMA_KEYED: return LV_IMG_BUF_SIZE_TRUE_COLOR_CHROMA_KEYED(w, h);
+        case LV_IMG_CF_ALPHA_1BIT: return LV_IMG_BUF_SIZE_ALPHA_1BIT(w, h);
+        case LV_IMG_CF_ALPHA_2BIT: return LV_IMG_BUF_SIZE_ALPHA_2BIT(w, h);
+        case LV_IMG_CF_ALPHA_4BIT: return LV_IMG_BUF_SIZE_ALPHA_4BIT(w, h);
+        case LV_IMG_CF_ALPHA_8BIT: return LV_IMG_BUF_SIZE_ALPHA_8BIT(w, h);
+        case LV_IMG_CF_INDEXED_1BIT: return LV_IMG_BUF_SIZE_INDEXED_1BIT(w, h);
+        case LV_IMG_CF_INDEXED_2BIT: return LV_IMG_BUF_SIZE_INDEXED_2BIT(w, h);
+        case LV_IMG_CF_INDEXED_4BIT: return LV_IMG_BUF_SIZE_INDEXED_4BIT(w, h);
+        case LV_IMG_CF_INDEXED_8BIT: return LV_IMG_BUF_SIZE_INDEXED_8BIT(w, h);
+        default: return 0;
+    }
+}
+
 /**********************
  *   STATIC FUNCTIONS
  **********************/
@@ -454,8 +562,7 @@ static lv_res_t lv_img_draw_core(const lv_area_t * coords, const lv_area_t * mas
     if(cdsc->dec_dsc.error_msg != NULL) {
         LV_LOG_WARN("Image draw error");
         lv_draw_rect(coords, mask, &lv_style_plain, LV_OPA_COVER);
-        lv_draw_label(coords, mask, &lv_style_plain, LV_OPA_COVER, cdsc->dec_dsc.error_msg, LV_TXT_FLAG_NONE, NULL, -1,
-                      -1, NULL);
+        lv_draw_label(coords, mask, &lv_style_plain, LV_OPA_COVER, cdsc->dec_dsc.error_msg, LV_TXT_FLAG_NONE, NULL, NULL, NULL, LV_BIDI_DIR_LTR);
     }
     /* The decoder open could open the image and gave the entire uncompressed image.
      * Just draw it!*/
@@ -467,7 +574,7 @@ static lv_res_t lv_img_draw_core(const lv_area_t * coords, const lv_area_t * mas
     else {
         lv_coord_t width = lv_area_get_width(&mask_com);
 
-        uint8_t  * buf = lv_draw_get_buf(lv_area_get_width(&mask_com) * ((LV_COLOR_DEPTH >> 3) + 1));  /*+1 because of the possible alpha byte*/
+        uint8_t  * buf = lv_draw_get_buf(lv_area_get_width(&mask_com) * LV_IMG_PX_SIZE_ALPHA_BYTE);  /*space for the possible alpha byte*/
 
         lv_area_t line;
         lv_area_copy(&line, &mask_com);

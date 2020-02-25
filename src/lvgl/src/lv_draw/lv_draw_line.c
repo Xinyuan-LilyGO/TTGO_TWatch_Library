@@ -83,10 +83,10 @@ void lv_draw_line(const lv_point_t * point1, const lv_point_t * point2, const lv
     if(point1->x == point2->x && point1->y == point2->y) return;
 
     /*Return if the points are out of the mask*/
-    if(point1->x < mask->x1 && point2->x < mask->x1) return;
-    if(point1->x > mask->x2 && point2->x > mask->x2) return;
-    if(point1->y < mask->y1 && point2->y < mask->y1) return;
-    if(point1->y > mask->y2 && point2->y > mask->y2) return;
+    if(point1->x < mask->x1 - style->line.width && point2->x < mask->x1 - style->line.width) return;
+    if(point1->x > mask->x2 + style->line.width && point2->x > mask->x2 + style->line.width) return;
+    if(point1->y < mask->y1 - style->line.width && point2->y < mask->y1 - style->line.width) return;
+    if(point1->y > mask->y2 + style->line.width && point2->y > mask->y2 + style->line.width) return;
 
     line_draw_t main_line;
     lv_point_t p1;
@@ -263,7 +263,8 @@ static void line_draw_skew(line_draw_t * main_line, bool dir_ori, const lv_area_
     /* The pattern stores the points of the line ending. It has the good direction and length.
      * The worth case is the 45° line where pattern can have 1.41 x `width` points*/
 
-    lv_point_t * pattern = lv_draw_get_buf(width * 2 * sizeof(lv_point_t));
+    lv_coord_t pattern_size = width * 2;
+    lv_point_t * pattern = lv_draw_get_buf(pattern_size * sizeof(lv_point_t));
     lv_coord_t i = 0;
 
     /*Create a perpendicular pattern (a small line)*/
@@ -274,7 +275,7 @@ static void line_draw_skew(line_draw_t * main_line, bool dir_ori, const lv_area_
 
         uint32_t width_sqr = width * width;
         /* Run for a lot of times. Meanwhile the real width will be determined as well */
-        for(i = 0; i < (lv_coord_t)sizeof(pattern); i++) {
+        for(i = 0; i < (lv_coord_t)pattern_size - 1; i++) {
             pattern[i].x = pattern_line.p_act.x;
             pattern[i].y = pattern_line.p_act.y;
 

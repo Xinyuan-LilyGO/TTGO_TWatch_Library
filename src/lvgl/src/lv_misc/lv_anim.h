@@ -129,10 +129,10 @@ static inline void lv_anim_set_exec_cb(lv_anim_t * a, void * var, lv_anim_exec_x
  * @param duration duration of the animation in milliseconds
  * @param delay delay before the animation in milliseconds
  */
-static inline void lv_anim_set_time(lv_anim_t * a, uint16_t duration, uint16_t delay)
+static inline void lv_anim_set_time(lv_anim_t * a, uint16_t duration, int16_t delay)
 {
     a->time     = duration;
-    a->act_time = -delay;
+    a->act_time = (int16_t)(-delay);
 }
 
 /**
@@ -220,36 +220,6 @@ static inline void lv_anim_set_repeat(lv_anim_t * a, uint16_t wait_time)
 static inline void lv_anim_clear_repeat(lv_anim_t * a)
 {
     a->repeat = 0;
-}
-
-/**
- * Set a user specific data for the animation
- * @param a pointer to an initialized `lv_anim_t` variable
- * @param user_data the user data
- */
-static inline void lv_anim_set_user_data(lv_anim_t * a, lv_anim_user_data_t user_data)
-{
-    memcpy(&a->user_data, &user_data, sizeof(user_data));
-}
-
-/**
- * Get the user data
- * @param a pointer to an initialized `lv_anim_t` variable
- * @return the user data
- */
-static inline lv_anim_user_data_t lv_anim_get_user_data(lv_anim_t * a)
-{
-    return a->user_data;
-}
-
-/**
- * Get pointer to the user data
- * @param a pointer to an initialized `lv_anim_t` variable
- * @return pointer to the user data
- */
-static inline lv_anim_user_data_t * lv_anim_get_user_data_ptr(lv_anim_t * a)
-{
-    return &a->user_data;
 }
 
 /**

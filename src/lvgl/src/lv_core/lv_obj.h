@@ -28,6 +28,7 @@ extern "C" {
 #include "../lv_misc/lv_ll.h"
 #include "../lv_misc/lv_color.h"
 #include "../lv_misc/lv_log.h"
+#include "../lv_misc/lv_bidi.h"
 #include "../lv_hal/lv_hal.h"
 
 /*********************
@@ -111,7 +112,8 @@ enum {
     LV_SIGNAL_CHILD_CHG, /**< Child was removed/added */
     LV_SIGNAL_CORD_CHG, /**< Object coordinates/size have changed */
     LV_SIGNAL_PARENT_SIZE_CHG, /**< Parent's size has changed */
-    LV_SIGNAL_STYLE_CHG, /**< Object's style has changed */
+    LV_SIGNAL_STYLE_CHG,    /**< Object's style has changed */
+    LV_SIGNAL_BASE_DIR_CHG, /**<The base dir has changed*/
     LV_SIGNAL_REFR_EXT_DRAW_PAD, /**< Object's extra padding has changed */
     LV_SIGNAL_GET_TYPE, /**< LittlevGL needs to retrieve the object's type */
 
@@ -123,7 +125,8 @@ enum {
     LV_SIGNAL_LONG_PRESS,        /**< Object has been pressed for at least `LV_INDEV_LONG_PRESS_TIME`.  Not called if dragged.*/
     LV_SIGNAL_LONG_PRESS_REP,    /**< Called after `LV_INDEV_LONG_PRESS_TIME` in every `LV_INDEV_LONG_PRESS_REP_TIME` ms.  Not called if dragged.*/
     LV_SIGNAL_DRAG_BEGIN,	
-    LV_SIGNAL_DRAG_END,                                   
+    LV_SIGNAL_DRAG_END,
+
     /*Group related*/
     LV_SIGNAL_FOCUS,
     LV_SIGNAL_DEFOCUS,
@@ -218,7 +221,8 @@ typedef struct _lv_obj_t
     uint8_t opa_scale_en : 1;   /**< 1: opa_scale is set*/
     uint8_t parent_event : 1;   /**< 1: Send the object's events to the parent too. */
     lv_drag_dir_t drag_dir : 2; /**<  Which directions the object can be dragged in */
-    uint8_t reserved : 6;       /**<  Reserved for future use*/
+    lv_bidi_dir_t base_dir : 2; /**< Base direction of texts related to this object */
+    uint8_t reserved : 3;       /**<  Reserved for future use*/
     uint8_t protect;            /**< Automatically happening actions can be prevented. 'OR'ed values from
                                    `lv_protect_t`*/
     lv_opa_t opa_scale;         /**< Scale down the opacity by this factor. Effects all children as well*/
@@ -284,6 +288,14 @@ lv_obj_t * lv_obj_create(lv_obj_t * parent, const lv_obj_t * copy);
  * @return LV_RES_INV because the object is deleted
  */
 lv_res_t lv_obj_del(lv_obj_t * obj);
+
+/**
+ * Helper function for asynchronously deleting objects.
+ * Useful for cases where you can't delete an object directly in an `LV_EVENT_DELETE` handler (i.e. parent).
+ * @param obj object to delete
+ * @see lv_async_call
+ */
+void lv_obj_del_async(struct _lv_obj_t *obj);
 
 /**
  * Delete all children of an object
@@ -502,6 +514,7 @@ void lv_obj_set_drag_parent(lv_obj_t * obj, bool en);
  */
 void lv_obj_set_parent_event(lv_obj_t * obj, bool en);
 
+void lv_obj_set_base_dir(lv_obj_t * obj, lv_bidi_dir_t dir);
 /**
  * Set the opa scale enable parameter (required to set opa_scale with `lv_obj_set_opa_scale()`)
  * @param obj pointer to an object
@@ -510,7 +523,10 @@ void lv_obj_set_parent_event(lv_obj_t * obj, bool en);
 void lv_obj_set_opa_scale_enable(lv_obj_t * obj, bool en);
 
 /**
- * Set the opa scale of an object
+ * Set the opa scale of an object.
+ * The opacity of this object and all it's children will be scaled down with this factor.
+ * `lv_obj_set_opa_scale_enable(obj, true)` needs to be called to enable it.
+ * (not for all children just for the parent where to start the opa scaling)
  * @param obj pointer to an object
  * @param opa_scale a factor to scale down opacity [0..255]
  */
@@ -716,21 +732,21 @@ lv_coord_t lv_obj_get_height(const lv_obj_t * obj);
  * @param obj pointer to an object
  * @return the width which still fits into the container
  */
-lv_coord_t lv_obj_get_width_fit(lv_obj_t * obj);
+lv_coord_t lv_obj_get_width_fit(const lv_obj_t * obj);
 
 /**
  * Get that height reduced by the top an bottom padding.
  * @param obj pointer to an object
  * @return the height which still fits into the container
  */
-lv_coord_t lv_obj_get_height_fit(lv_obj_t * obj);
+lv_coord_t lv_obj_get_height_fit(const lv_obj_t * obj);
 
 /**
  * Get the automatic realign property of the object.
  * @param obj pointer to an object
  * @return  true: auto realign is enabled; false: auto realign is disabled
  */
-bool lv_obj_get_auto_realign(lv_obj_t * obj);
+bool lv_obj_get_auto_realign(const lv_obj_t * obj);
 
 /**
  * Get the left padding of extended clickable area
@@ -838,6 +854,9 @@ bool lv_obj_get_drag_parent(const lv_obj_t * obj);
  */
 bool lv_obj_get_parent_event(const lv_obj_t * obj);
 
+
+lv_bidi_dir_t lv_obj_get_base_dir(const lv_obj_t * obj);
+
 /**
  * Get the opa scale enable parameter
  * @param obj pointer to an object
@@ -906,7 +925,7 @@ void * lv_obj_get_ext_attr(const lv_obj_t * obj);
  * @param obj pointer to an object which type should be get
  * @param buf pointer to an `lv_obj_type_t` buffer to store the types
  */
-void lv_obj_get_type(lv_obj_t * obj, lv_obj_type_t * buf);
+void lv_obj_get_type(const lv_obj_t * obj, lv_obj_type_t * buf);
 
 #if LV_USE_USER_DATA
 /**
@@ -914,14 +933,14 @@ void lv_obj_get_type(lv_obj_t * obj, lv_obj_type_t * buf);
  * @param obj pointer to an object
  * @return user data
  */
-lv_obj_user_data_t lv_obj_get_user_data(lv_obj_t * obj);
+lv_obj_user_data_t lv_obj_get_user_data(const lv_obj_t * obj);
 
 /**
  * Get a pointer to the object's user data
  * @param obj pointer to an object
  * @return pointer to the user data
  */
-lv_obj_user_data_t * lv_obj_get_user_data_ptr(lv_obj_t * obj);
+lv_obj_user_data_t * lv_obj_get_user_data_ptr(const lv_obj_t * obj);
 
 /**
  * Set the object's user data. The data will be copied.
@@ -948,6 +967,18 @@ void * lv_obj_get_group(const lv_obj_t * obj);
 bool lv_obj_is_focused(const lv_obj_t * obj);
 
 #endif
+
+/*-------------------
+ * OTHER FUNCTIONS
+ *------------------*/
+
+/**
+ * Used in the signal callback to handle `LV_SIGNAL_GET_TYPE` signal
+ * @param buf pointer to `lv_obj_type_t`. (`param` in the signal callback)
+ * @param name name of the object. E.g. "lv_btn". (Only the pointer is saved)
+ * @return LV_RES_OK
+ */
+lv_res_t lv_obj_handle_get_type_signal(lv_obj_type_t * buf, const char * name);
 
 /**********************
  *      MACROS

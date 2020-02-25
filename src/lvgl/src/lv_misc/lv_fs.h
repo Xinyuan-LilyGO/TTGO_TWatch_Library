@@ -29,6 +29,7 @@ extern "C" {
  *      DEFINES
  *********************/
 #define LV_FS_MAX_FN_LENGTH 64
+#define LV_FS_MAX_PATH_LENGTH 256
 
 /**********************
  *      TYPEDEFS
@@ -125,6 +126,13 @@ void lv_fs_drv_init(lv_fs_drv_t * drv);
  * corresponding function pointers. The data will be copied so the variable can be local.
  */
 void lv_fs_drv_register(lv_fs_drv_t * drv_p);
+
+/**
+ * Give a pointer to a driver from its letter
+ * @param letter the driver letter
+ * @return pointer to a driver or NULL if not found
+ */
+lv_fs_drv_t * lv_fs_get_drv(char letter);
 
 /**
  * Test if a drive is rady or not. If the `ready` function was not initialized `true` will be

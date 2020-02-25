@@ -182,7 +182,7 @@ void lv_indev_enable(lv_indev_t * indev, bool en)
 {
     if(!indev) return;
 
-    indev->proc.disabled = en ? 1 : 0;
+    indev->proc.disabled = en ? 0 : 1;
 }
 
 /**
@@ -687,12 +687,14 @@ static void indev_proc_press(lv_indev_proc_t * proc)
     if(proc->wait_until_release != 0) return;
 
     lv_disp_t * disp = indev_act->driver.disp;
+    bool new_obj_searched = false;
 
     /*If there is no last object then search*/
     if(indev_obj_act == NULL) {
         indev_obj_act = indev_search_obj(proc, lv_disp_get_layer_sys(disp));
         if(indev_obj_act == NULL) indev_obj_act = indev_search_obj(proc, lv_disp_get_layer_top(disp));
         if(indev_obj_act == NULL) indev_obj_act = indev_search_obj(proc, lv_disp_get_scr_act(disp));
+        new_obj_searched = true;
     }
     /*If there is last object but it is not dragged and not protected also search*/
     else if(proc->types.pointer.drag_in_prog == 0 &&
@@ -700,14 +702,21 @@ static void indev_proc_press(lv_indev_proc_t * proc)
         indev_obj_act = indev_search_obj(proc, lv_disp_get_layer_sys(disp));
         if(indev_obj_act == NULL) indev_obj_act = indev_search_obj(proc, lv_disp_get_layer_top(disp));
         if(indev_obj_act == NULL) indev_obj_act = indev_search_obj(proc, lv_disp_get_scr_act(disp));
+        new_obj_searched = true;
     }
     /*If a dragable or a protected object was the last then keep it*/
     else {
     }
 
+    /*The last object might have drag throw. Stop it manually*/
+    if(new_obj_searched && proc->types.pointer.last_obj) {
+        proc->types.pointer.drag_throw_vect.x = 0;
+        proc->types.pointer.drag_throw_vect.y = 0;
+        indev_drag_throw(proc);
+    }
+
     /*If a new object was found reset some variables and send a pressed signal*/
     if(indev_obj_act != proc->types.pointer.act_obj) {
-
         proc->types.pointer.last_point.x = proc->types.pointer.act_point.x;
         proc->types.pointer.last_point.y = proc->types.pointer.act_point.y;
 
@@ -720,6 +729,7 @@ static void indev_proc_press(lv_indev_proc_t * proc)
             if(indev_reset_check(proc)) return;
             lv_event_send(last_obj, LV_EVENT_PRESS_LOST, NULL);
             if(indev_reset_check(proc)) return;
+
         }
 
         proc->types.pointer.act_obj  = indev_obj_act; /*Save the pressed object*/
@@ -868,8 +878,10 @@ static void indev_proc_release(lv_indev_proc_t * proc)
                 if(indev_reset_check(proc)) return;
             }
 
-            lv_event_send(indev_obj_act, LV_EVENT_CLICKED, NULL);
-            if(indev_reset_check(proc)) return;
+            if(proc->types.pointer.drag_in_prog == 0) {
+                lv_event_send(indev_obj_act, LV_EVENT_CLICKED, NULL);
+                if(indev_reset_check(proc)) return;
+            }
 
             lv_event_send(indev_obj_act, LV_EVENT_RELEASED, NULL);
             if(indev_reset_check(proc)) return;
@@ -1106,20 +1118,9 @@ static void indev_drag(lv_indev_proc_t * state)
                 lv_obj_set_y(drag_obj, act_y + state->types.pointer.vect.y);
             }
 
-            /*Set the drag in progress flag*/
-            /*Send the drag begin signal on first move*/
-            if(state->types.pointer.drag_in_prog == 0) {
-                drag_obj->signal_cb(drag_obj, LV_SIGNAL_DRAG_BEGIN, indev_act);
-                if(indev_reset_check(state)) return;
-                lv_event_send(drag_obj, LV_EVENT_DRAG_BEGIN, NULL);
-                if(indev_reset_check(state)) return;
-            }
-
-            state->types.pointer.drag_in_prog = 1;
-
             /*If the object didn't moved then clear the invalidated areas*/
             if(drag_obj->coords.x1 == prev_x && drag_obj->coords.y1 == prev_y) {
-                state->types.pointer.drag_in_prog = 0;
+//                state->types.pointer.drag_in_prog = 0;
                 /*In a special case if the object is moved on a page and
                  * the scrollable has fit == true and the object is dragged of the page then
                  * while its coordinate is not changing only the parent's size is reduced */
@@ -1128,6 +1129,16 @@ static void indev_drag(lv_indev_proc_t * state)
                 if(act_par_w == prev_par_w && act_par_h == prev_par_h) {
                     uint16_t new_inv_buf_size = lv_disp_get_inv_buf_size(indev_act->driver.disp);
                     lv_disp_pop_from_inv_buf(indev_act->driver.disp, new_inv_buf_size - inv_buf_size);
+                }
+            } else {
+                state->types.pointer.drag_in_prog = 1;
+                /*Set the drag in progress flag*/
+                /*Send the drag begin signal on first move*/
+                if(drag_just_started) {
+                    drag_obj->signal_cb(drag_obj, LV_SIGNAL_DRAG_BEGIN, indev_act);
+                    if(indev_reset_check(state)) return;
+                    lv_event_send(drag_obj, LV_EVENT_DRAG_BEGIN, NULL);
+                    if(indev_reset_check(state)) return;
                 }
             }
         }

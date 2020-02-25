@@ -9,6 +9,7 @@
 #include "lv_mbox.h"
 #if LV_USE_MBOX != 0
 
+#include "../lv_core/lv_debug.h"
 #include "../lv_core/lv_group.h"
 #include "../lv_themes/lv_theme.h"
 #include "../lv_misc/lv_anim.h"
@@ -17,6 +18,7 @@
 /*********************
  *      DEFINES
  *********************/
+#define LV_OBJX_NAME "lv_mbos"
 
 #if LV_USE_ANIMATION
 #ifndef LV_MBOX_CLOSE_ANIM_TIME
@@ -40,6 +42,7 @@ static void mbox_realign(lv_obj_t * mbox);
 static void lv_mbox_close_ready_cb(lv_anim_t * a);
 #endif
 static void lv_mbox_default_event_cb(lv_obj_t * mbox, lv_event_t event);
+static void lv_mbox_btnm_event_cb(lv_obj_t * btnm, lv_event_t event);
 
 /**********************
  *  STATIC VARIABLES
@@ -67,14 +70,14 @@ lv_obj_t * lv_mbox_create(lv_obj_t * par, const lv_obj_t * copy)
 
     /*Create the ancestor message box*/
     lv_obj_t * new_mbox = lv_cont_create(par, copy);
-    lv_mem_assert(new_mbox);
+    LV_ASSERT_MEM(new_mbox);
     if(new_mbox == NULL) return NULL;
 
     if(ancestor_signal == NULL) ancestor_signal = lv_obj_get_signal_cb(new_mbox);
 
     /*Allocate the message box type specific extended data*/
     lv_mbox_ext_t * ext = lv_obj_allocate_ext_attr(new_mbox, sizeof(lv_mbox_ext_t));
-    lv_mem_assert(ext);
+    LV_ASSERT_MEM(ext);
     if(ext == NULL) return NULL;
 
     ext->text = NULL;
@@ -136,8 +139,11 @@ lv_obj_t * lv_mbox_create(lv_obj_t * par, const lv_obj_t * copy)
  * @param btn_map button descriptor (button matrix map).
  *                E.g.  a const char *txt[] = {"ok", "close", ""} (Can not be local variable)
  */
-void lv_mbox_add_btns(lv_obj_t * mbox, const char ** btn_map)
+void lv_mbox_add_btns(lv_obj_t * mbox, const char * btn_map[])
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+    LV_ASSERT_NULL(btn_map);
+
     lv_mbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
 
     /*Create a button matrix if not exists yet*/
@@ -157,7 +163,7 @@ void lv_mbox_add_btns(lv_obj_t * mbox, const char ** btn_map)
 
     lv_btnm_set_map(ext->btnm, btn_map);
     lv_btnm_set_btn_ctrl_all(ext->btnm, LV_BTNM_CTRL_CLICK_TRIG | LV_BTNM_CTRL_NO_REPEAT);
-    lv_obj_set_parent_event(ext->btnm, true);
+    lv_obj_set_event_cb(ext->btnm, lv_mbox_btnm_event_cb);
 
     mbox_realign(mbox);
 }
@@ -173,6 +179,9 @@ void lv_mbox_add_btns(lv_obj_t * mbox, const char ** btn_map)
  */
 void lv_mbox_set_text(lv_obj_t * mbox, const char * txt)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+    LV_ASSERT_STR(txt);
+
     lv_mbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
     lv_label_set_text(ext->text, txt);
 
@@ -186,6 +195,8 @@ void lv_mbox_set_text(lv_obj_t * mbox, const char * txt)
  */
 void lv_mbox_set_anim_time(lv_obj_t * mbox, uint16_t anim_time)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+
 #if LV_USE_ANIMATION
     lv_mbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
     anim_time           = 0;
@@ -203,6 +214,8 @@ void lv_mbox_set_anim_time(lv_obj_t * mbox, uint16_t anim_time)
  */
 void lv_mbox_start_auto_close(lv_obj_t * mbox, uint16_t delay)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+
 #if LV_USE_ANIMATION
     if(lv_mbox_get_anim_time(mbox) != 0) {
         /*Add shrinking animations*/
@@ -257,6 +270,8 @@ void lv_mbox_start_auto_close(lv_obj_t * mbox, uint16_t delay)
  */
 void lv_mbox_stop_auto_close(lv_obj_t * mbox)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+
 #if LV_USE_ANIMATION
     lv_anim_del(mbox, NULL);
 #else
@@ -272,6 +287,8 @@ void lv_mbox_stop_auto_close(lv_obj_t * mbox)
  */
 void lv_mbox_set_style(lv_obj_t * mbox, lv_mbox_style_t type, const lv_style_t * style)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+
     lv_mbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
 
     switch(type) {
@@ -294,6 +311,8 @@ void lv_mbox_set_style(lv_obj_t * mbox, lv_mbox_style_t type, const lv_style_t *
  */
 void lv_mbox_set_recolor(lv_obj_t * mbox, bool en)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+
     lv_mbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
 
     if(ext->btnm) lv_btnm_set_recolor(ext->btnm, en);
@@ -310,6 +329,8 @@ void lv_mbox_set_recolor(lv_obj_t * mbox, bool en)
  */
 const char * lv_mbox_get_text(const lv_obj_t * mbox)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+
     lv_mbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
 
     return lv_label_get_text(ext->text);
@@ -323,6 +344,8 @@ const char * lv_mbox_get_text(const lv_obj_t * mbox)
  */
 uint16_t lv_mbox_get_active_btn(lv_obj_t * mbox)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+
     lv_mbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
     if(ext->btnm)
         return lv_btnm_get_active_btn(ext->btnm);
@@ -338,6 +361,8 @@ uint16_t lv_mbox_get_active_btn(lv_obj_t * mbox)
  */
 const char * lv_mbox_get_active_btn_text(lv_obj_t * mbox)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+
     lv_mbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
     if(ext->btnm)
         return lv_btnm_get_active_btn_text(ext->btnm);
@@ -352,6 +377,8 @@ const char * lv_mbox_get_active_btn_text(lv_obj_t * mbox)
  */
 uint16_t lv_mbox_get_anim_time(const lv_obj_t * mbox)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+
 #if LV_USE_ANIMATION
     lv_mbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
     return ext->anim_time;
@@ -369,6 +396,8 @@ uint16_t lv_mbox_get_anim_time(const lv_obj_t * mbox)
  */
 const lv_style_t * lv_mbox_get_style(const lv_obj_t * mbox, lv_mbox_style_t type)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+
     const lv_style_t * style = NULL;
     lv_mbox_ext_t * ext      = lv_obj_get_ext_attr(mbox);
 
@@ -393,6 +422,8 @@ const lv_style_t * lv_mbox_get_style(const lv_obj_t * mbox, lv_mbox_style_t type
  */
 bool lv_mbox_get_recolor(const lv_obj_t * mbox)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+
     lv_mbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
 
     if(!ext->btnm) return false;
@@ -408,6 +439,8 @@ bool lv_mbox_get_recolor(const lv_obj_t * mbox)
  */
 lv_obj_t * lv_mbox_get_btnm(lv_obj_t * mbox)
 {
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+
     lv_mbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
     return ext->btnm;
 }
@@ -440,6 +473,7 @@ static lv_res_t lv_mbox_signal(lv_obj_t * mbox, lv_signal_t sign, void * param)
     /* Include the ancient signal function */
     res = ancestor_signal(mbox, sign, param);
     if(res != LV_RES_OK) return res;
+    if(sign == LV_SIGNAL_GET_TYPE) return lv_obj_handle_get_type_signal(param, LV_OBJX_NAME);
 
     lv_mbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
     if(sign == LV_SIGNAL_CORD_CHG) {
@@ -475,13 +509,6 @@ static lv_res_t lv_mbox_signal(lv_obj_t * mbox, lv_signal_t sign, void * param)
             }
 #endif
         }
-    } else if(sign == LV_SIGNAL_GET_TYPE) {
-        lv_obj_type_t * buf = param;
-        uint8_t i;
-        for(i = 0; i < LV_MAX_ANCESTOR_NUM - 1; i++) { /*Find the last set data*/
-            if(buf->type[i] == NULL) break;
-        }
-        buf->type[i] = "lv_mbox";
     }
 
     return res;
@@ -527,6 +554,20 @@ static void lv_mbox_default_event_cb(lv_obj_t * mbox, lv_event_t event)
     if(btn_id == LV_BTNM_BTN_NONE) return;
 
     lv_mbox_start_auto_close(mbox, 0);
+}
+
+static void lv_mbox_btnm_event_cb(lv_obj_t * btnm, lv_event_t event)
+{
+    lv_obj_t * mbox = lv_obj_get_parent(btnm);
+
+    /*clang-format off*/
+    if(event == LV_EVENT_PRESSED || event == LV_EVENT_PRESSING || event == LV_EVENT_PRESS_LOST ||
+       event == LV_EVENT_RELEASED || event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_CLICKED ||
+       event == LV_EVENT_LONG_PRESSED || event == LV_EVENT_LONG_PRESSED_REPEAT ||
+       event == LV_EVENT_VALUE_CHANGED) {
+        lv_event_send(mbox, event, lv_event_get_data());
+    }
+    /*clang-format on*/
 }
 
 #endif

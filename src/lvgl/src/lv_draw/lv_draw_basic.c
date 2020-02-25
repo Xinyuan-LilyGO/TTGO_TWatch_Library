@@ -45,7 +45,9 @@ static void sw_mem_blend(lv_color_t * dest, const lv_color_t * src, uint32_t len
 static void sw_color_fill(lv_color_t * mem, lv_coord_t mem_width, const lv_area_t * fill_area, lv_color_t color,
                           lv_opa_t opa);
 
+#if LV_COLOR_DEPTH == 32 && LV_COLOR_SCREEN_TRANSP
 static inline lv_color_t color_mix_2_alpha(lv_color_t bg_color, lv_opa_t bg_opa, lv_color_t fg_color, lv_opa_t fg_opa);
+#endif
 
 /**********************
  *  STATIC VARIABLES
@@ -90,7 +92,7 @@ void lv_draw_px(lv_coord_t x, lv_coord_t y, const lv_area_t * mask_p, lv_color_t
         disp->driver.set_px_cb(&disp->driver, (uint8_t *)vdb->buf_act, vdb_width, x, y, color, opa);
     } else {
         bool scr_transp = false;
-#if LV_COLOR_SCREEN_TRANSP
+#if LV_COLOR_DEPTH == 32 && LV_COLOR_SCREEN_TRANSP
         scr_transp = disp->driver.screen_transp;
 #endif
 
@@ -104,7 +106,7 @@ void lv_draw_px(lv_coord_t x, lv_coord_t y, const lv_area_t * mask_p, lv_color_t
                 *vdb_px_p = lv_color_mix(color, *vdb_px_p, opa);
             }
         } else {
-#if LV_COLOR_DEPTH == 32
+#if LV_COLOR_DEPTH == 32 && LV_COLOR_SCREEN_TRANSP
             *vdb_px_p = color_mix_2_alpha(*vdb_px_p, (*vdb_px_p).ch.alpha, color, opa);
 #endif
         }
@@ -250,12 +252,16 @@ void lv_draw_letter(const lv_point_t * pos_p, const lv_area_t * mask_p, const lv
     bool g_ret = lv_font_get_glyph_dsc(font_p, &g, letter, '\0');
     if(g_ret == false) return;
 
+
     lv_coord_t pos_x = pos_p->x + g.ofs_x;
     lv_coord_t pos_y = pos_p->y + (font_p->line_height - font_p->base_line) - g.box_h - g.ofs_y;
 
     const uint8_t * bpp_opa_table;
     uint8_t bitmask_init;
     uint8_t bitmask;
+
+    /*bpp = 3 should be converted to bpp = 4 in lv_font_get_glyph_bitmap */
+    if(g.bpp == 3) g.bpp = 4;
 
     switch(g.bpp) {
         case 1:
@@ -295,63 +301,131 @@ void lv_draw_letter(const lv_point_t * pos_p, const lv_area_t * mask_p, const lv
     if(g.box_w & 0x7) width_byte_scr++;
     uint16_t width_bit = g.box_w * g.bpp; /*Letter width in bits*/
 
+    bool subpx = font_p->subpx == LV_FONT_SUBPX_NONE ? false : true;
+
     /* Calculate the col/row start/end on the map*/
-    lv_coord_t col_start = pos_x >= mask_p->x1 ? 0 : mask_p->x1 - pos_x;
-    lv_coord_t col_end   = pos_x + g.box_w <= mask_p->x2 ? g.box_w : mask_p->x2 - pos_x + 1;
-    lv_coord_t row_start = pos_y >= mask_p->y1 ? 0 : mask_p->y1 - pos_y;
-    lv_coord_t row_end   = pos_y + g.box_h <= mask_p->y2 ? g.box_h : mask_p->y2 - pos_y + 1;
+    lv_coord_t col_start;
+    lv_coord_t col_end;
+    lv_coord_t row_start;
+    lv_coord_t row_end;
+
+    if(subpx == false) {
+        col_start = pos_x >= mask_p->x1 ? 0 : mask_p->x1 - pos_x;
+        col_end   = pos_x + g.box_w <= mask_p->x2 ? g.box_w : mask_p->x2 - pos_x + 1;
+        row_start = pos_y >= mask_p->y1 ? 0 : mask_p->y1 - pos_y;
+        row_end   = pos_y + g.box_h <= mask_p->y2 ? g.box_h : mask_p->y2 - pos_y + 1;
+    } else {
+        col_start = pos_x >= mask_p->x1 ? 0 : (mask_p->x1 - pos_x) * 3;
+        col_end   = pos_x + g.box_w / 3 <= mask_p->x2 ? g.box_w : (mask_p->x2 - pos_x + 1) * 3;
+        row_start = pos_y >= mask_p->y1 ? 0 : mask_p->y1 - pos_y;
+        row_end   = pos_y + g.box_h <= mask_p->y2 ? g.box_h : mask_p->y2 - pos_y + 1;
+    }
 
     /*Set a pointer on VDB to the first pixel of the letter*/
     vdb_buf_tmp += ((pos_y - vdb->area.y1) * vdb_width) + pos_x - vdb->area.x1;
 
     /*If the letter is partially out of mask the move there on VDB*/
-    vdb_buf_tmp += (row_start * vdb_width) + col_start;
+    if(subpx) vdb_buf_tmp += (row_start * vdb_width) + col_start / 3;
+    else vdb_buf_tmp += (row_start * vdb_width) + col_start;
 
     /*Move on the map too*/
     uint32_t bit_ofs = (row_start * width_bit) + (col_start * g.bpp);
     map_p += bit_ofs >> 3;
 
     uint8_t letter_px;
-    lv_opa_t px_opa;
+    lv_opa_t px_opa = 0;
     uint16_t col_bit;
     col_bit = bit_ofs & 0x7; /* "& 0x7" equals to "% 8" just faster */
 
     bool scr_transp = false;
-#if LV_COLOR_SCREEN_TRANSP
+#if LV_COLOR_DEPTH == 32 && LV_COLOR_SCREEN_TRANSP
     scr_transp = disp->driver.screen_transp;
 #endif
 
+    uint8_t font_rgb[3];
+    uint8_t txt_rgb[3] = {LV_COLOR_GET_R(color), LV_COLOR_GET_G(color), LV_COLOR_GET_B(color)};
+
     for(row = row_start; row < row_end; row++) {
         bitmask = bitmask_init >> col_bit;
+        uint8_t sub_px_cnt = 0;
         for(col = col_start; col < col_end; col++) {
             letter_px = (*map_p & bitmask) >> (8 - col_bit - g.bpp);
-            if(letter_px != 0) {
-                if(opa == LV_OPA_COVER) {
-                    px_opa = g.bpp == 8 ? letter_px : bpp_opa_table[letter_px];
-                } else {
-                    px_opa = g.bpp == 8 ? (uint16_t)((uint16_t)letter_px * opa) >> 8
-                                        : (uint16_t)((uint16_t)bpp_opa_table[letter_px] * opa) >> 8;
-                }
 
-                if(disp->driver.set_px_cb) {
-                    disp->driver.set_px_cb(&disp->driver, (uint8_t *)vdb->buf_act, vdb_width,
-                                           (col + pos_x) - vdb->area.x1, (row + pos_y) - vdb->area.y1, color, px_opa);
-                } else if(vdb_buf_tmp->full != color.full) {
-                    if(px_opa > LV_OPA_MAX)
-                        *vdb_buf_tmp = color;
-                    else if(px_opa > LV_OPA_MIN) {
-                        if(scr_transp == false) {
-                            *vdb_buf_tmp = lv_color_mix(color, *vdb_buf_tmp, px_opa);
-                        } else {
-#if LV_COLOR_DEPTH == 32
-                            *vdb_buf_tmp = color_mix_2_alpha(*vdb_buf_tmp, (*vdb_buf_tmp).ch.alpha, color, px_opa);
+            /*subpx == 0*/
+            if(subpx == false) {
+                if(letter_px != 0) {
+                    if(opa == LV_OPA_COVER) {
+                        px_opa = g.bpp == 8 ? letter_px : bpp_opa_table[letter_px];
+                    } else {
+                        px_opa = g.bpp == 8 ? (uint16_t)((uint16_t)letter_px * opa) >> 8
+                                : (uint16_t)((uint16_t)bpp_opa_table[letter_px] * opa) >> 8;
+                    }
+
+                    if(disp->driver.set_px_cb) {
+                        disp->driver.set_px_cb(&disp->driver, (uint8_t *)vdb->buf_act, vdb_width,
+                                (col + pos_x) - vdb->area.x1, (row + pos_y) - vdb->area.y1, color, px_opa);
+                    } else if(vdb_buf_tmp->full != color.full) {
+                        if(px_opa > LV_OPA_MAX) {
+                            *vdb_buf_tmp = color;
+                        } else if(px_opa > LV_OPA_MIN) {
+                            if(scr_transp == false) {
+                                *vdb_buf_tmp = lv_color_mix(color, *vdb_buf_tmp, px_opa);
+                            } else {
+#if LV_COLOR_DEPTH == 32 && LV_COLOR_SCREEN_TRANSP
+        *vdb_buf_tmp = color_mix_2_alpha(*vdb_buf_tmp, (*vdb_buf_tmp).ch.alpha, color, px_opa);
 #endif
+                            }
                         }
                     }
                 }
+                vdb_buf_tmp++;
+            }
+            /*Handle subpx drawing*/
+            else {
+                if(letter_px != 0) {
+                    if(opa == LV_OPA_COVER) {
+                        px_opa = g.bpp == 8 ? letter_px : bpp_opa_table[letter_px];
+                    } else {
+                        px_opa = g.bpp == 8 ? (uint16_t)((uint16_t)letter_px * opa) >> 8
+                                : (uint16_t)((uint16_t)bpp_opa_table[letter_px] * opa) >> 8;
+                    }
+
+                    font_rgb[sub_px_cnt] = px_opa;
+                } else {
+                    font_rgb[sub_px_cnt] = 0;
+                }
+                sub_px_cnt ++;
+
+                if(sub_px_cnt == 3) {
+                    lv_color_t res_color;
+
+                    if(font_rgb[0] == 0 && font_rgb[1] == 0 && font_rgb[2] == 0) {
+                        res_color = *vdb_buf_tmp;
+                    } else {
+
+                        uint8_t bg_rgb[3] = {LV_COLOR_GET_R(*vdb_buf_tmp), LV_COLOR_GET_G(*vdb_buf_tmp), LV_COLOR_GET_B(*vdb_buf_tmp)};
+
+#if LV_FONT_SUBPX_BGR
+                        LV_COLOR_SET_B(res_color, (uint16_t)((uint16_t)txt_rgb[0] * font_rgb[0] + (bg_rgb[2] * (255 - font_rgb[0]))) >> 8);
+                        LV_COLOR_SET_R(res_color, (uint16_t)((uint16_t)txt_rgb[2] * font_rgb[2] + (bg_rgb[0] * (255 - font_rgb[2]))) >> 8);
+#else
+                        LV_COLOR_SET_R(res_color, (uint16_t)((uint16_t)txt_rgb[0] * font_rgb[0] + (bg_rgb[0] * (255 - font_rgb[0]))) >> 8);
+                        LV_COLOR_SET_B(res_color, (uint16_t)((uint16_t)txt_rgb[2] * font_rgb[2] + (bg_rgb[2] * (255 - font_rgb[2]))) >> 8);
+#endif
+                        LV_COLOR_SET_G(res_color, (uint16_t)((uint16_t)txt_rgb[1] * font_rgb[1] + (bg_rgb[1] * (255 - font_rgb[1]))) >> 8);
+                    }
+                    if(scr_transp == false) {
+                        vdb_buf_tmp->full = res_color.full;
+#if LV_COLOR_DEPTH == 32 && LV_COLOR_SCREEN_TRANSP
+                    } else {
+                        *vdb_buf_tmp = color_mix_2_alpha(*vdb_buf_tmp, (*vdb_buf_tmp).ch.alpha, color, px_opa);
+#endif
+                    }
+                    sub_px_cnt = 0;
+                    vdb_buf_tmp++;
+                }
             }
 
-            vdb_buf_tmp++;
 
             if(col_bit < 8 - g.bpp) {
                 col_bit += g.bpp;
@@ -362,11 +436,15 @@ void lv_draw_letter(const lv_point_t * pos_p, const lv_area_t * mask_p, const lv
                 map_p++;
             }
         }
+
         col_bit += ((g.box_w - col_end) + col_start) * g.bpp;
 
         map_p += (col_bit >> 3);
         col_bit = col_bit & 0x7;
-        vdb_buf_tmp += vdb_width - (col_end - col_start); /*Next row in VDB*/
+
+        /*Next row in VDB*/
+        if(subpx) vdb_buf_tmp += vdb_width - (col_end - col_start) / 3;
+        else vdb_buf_tmp += vdb_width - (col_end - col_start);
     }
 }
 
@@ -429,7 +507,7 @@ void lv_draw_map(const lv_area_t * cords_p, const lv_area_t * mask_p, const uint
     lv_coord_t map_useful_w = lv_area_get_width(&masked_a);
 
     bool scr_transp = false;
-#if LV_COLOR_SCREEN_TRANSP
+#if LV_COLOR_DEPTH == 32 && LV_COLOR_SCREEN_TRANSP
     scr_transp = disp->driver.screen_transp;
 #endif
 
@@ -535,7 +613,7 @@ void lv_draw_map(const lv_area_t * cords_p, const lv_area_t * mask_p, const uint
                             if(scr_transp == false) {
                                 vdb_buf_tmp[col] = lv_color_mix(px_color, vdb_buf_tmp[col], opa_result);
                             } else {
-#if LV_COLOR_DEPTH == 32
+#if LV_COLOR_DEPTH == 32 && LV_COLOR_SCREEN_TRANSP
                                 vdb_buf_tmp[col] = color_mix_2_alpha(vdb_buf_tmp[col], vdb_buf_tmp[col].ch.alpha,
                                                                      px_color, opa_result);
 #endif
@@ -620,7 +698,7 @@ static void sw_color_fill(lv_color_t * mem, lv_coord_t mem_width, const lv_area_
         /*Calculate with alpha too*/
         else {
             bool scr_transp = false;
-#if LV_COLOR_SCREEN_TRANSP
+#if LV_COLOR_DEPTH == 32 && LV_COLOR_SCREEN_TRANSP
             scr_transp = disp->driver.screen_transp;
 #endif
 
@@ -638,7 +716,7 @@ static void sw_color_fill(lv_color_t * mem, lv_coord_t mem_width, const lv_area_
                         mem[col] = opa_tmp;
 
                     } else {
-#if LV_COLOR_DEPTH == 32
+#if LV_COLOR_DEPTH == 32 && LV_COLOR_SCREEN_TRANSP
                         mem[col] = color_mix_2_alpha(mem[col], mem[col].ch.alpha, color, opa);
 #endif
                     }
@@ -649,6 +727,7 @@ static void sw_color_fill(lv_color_t * mem, lv_coord_t mem_width, const lv_area_
     }
 }
 
+#if LV_COLOR_DEPTH == 32 && LV_COLOR_SCREEN_TRANSP
 /**
  * Mix two colors. Both color can have alpha value. It requires ARGB888 colors.
  * @param bg_color background color
@@ -659,8 +738,6 @@ static void sw_color_fill(lv_color_t * mem, lv_coord_t mem_width, const lv_area_
  */
 static inline lv_color_t color_mix_2_alpha(lv_color_t bg_color, lv_opa_t bg_opa, lv_color_t fg_color, lv_opa_t fg_opa)
 {
-
-#if LV_COLOR_SCREEN_TRANSP
     /* Pick the foreground if it's fully opaque or the Background is fully transparent*/
     if(fg_opa > LV_OPA_MAX || bg_opa <= LV_OPA_MIN) {
         fg_color.ch.alpha = fg_opa;
@@ -702,13 +779,5 @@ static inline lv_color_t color_mix_2_alpha(lv_color_t bg_color, lv_opa_t bg_opa,
         }
         return c;
     }
-#else
-    (void)bg_color; /*Unused*/
-    (void)fg_color; /*Unused*/
-    (void)bg_opa;   /*Unused*/
-    (void)fg_opa;   /*Unused*/
-
-    return LV_COLOR_BLACK;
-
-#endif /*LV_COLOR_SCREEN_TRANSP*/
 }
+#endif

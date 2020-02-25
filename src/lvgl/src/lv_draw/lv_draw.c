@@ -10,10 +10,16 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "lv_draw.h"
+#include "../lv_core/lv_debug.h"
 #include "../lv_misc/lv_math.h"
 #include "../lv_misc/lv_log.h"
 #include "../lv_misc/lv_math.h"
 #include "../lv_misc/lv_mem.h"
+#include "../lv_misc/lv_gc.h"
+
+#if defined(LV_GC_INCLUDE)
+#include LV_GC_INCLUDE
+#endif /* LV_ENABLE_GC */
 
 /*********************
  *      DEFINES
@@ -30,7 +36,6 @@
 /**********************
  *  STATIC VARIABLES
  **********************/
-static void * draw_buf = NULL;
 static uint32_t draw_buf_size = 0;
 
 /**********************
@@ -48,21 +53,21 @@ static uint32_t draw_buf_size = 0;
  */
 void * lv_draw_get_buf(uint32_t size)
 {
-    if(size <= draw_buf_size) return draw_buf;
+    if(size <= draw_buf_size) return LV_GC_ROOT(_lv_draw_buf);
 
     LV_LOG_TRACE("lv_draw_get_buf: allocate");
 
     draw_buf_size = size;
 
-    if(draw_buf == NULL) {
-        draw_buf = lv_mem_alloc(size);
-        lv_mem_assert(draw_buf);
-        return draw_buf;
+    if(LV_GC_ROOT(_lv_draw_buf) == NULL) {
+        LV_GC_ROOT(_lv_draw_buf) = lv_mem_alloc(size);
+        LV_ASSERT_MEM(LV_GC_ROOT(_lv_draw_buf));
+        return LV_GC_ROOT(_lv_draw_buf);
     }
 
-    draw_buf = lv_mem_realloc(draw_buf, size);
-    lv_mem_assert(draw_buf);
-    return draw_buf;
+    LV_GC_ROOT(_lv_draw_buf) = lv_mem_realloc(LV_GC_ROOT(_lv_draw_buf), size);
+    LV_ASSERT_MEM(LV_GC_ROOT(_lv_draw_buf));
+    return LV_GC_ROOT(_lv_draw_buf);
 }
 
 /**
@@ -70,9 +75,9 @@ void * lv_draw_get_buf(uint32_t size)
  */
 void lv_draw_free_buf(void)
 {
-    if(draw_buf) {
-        lv_mem_free(draw_buf);
-        draw_buf = NULL;
+    if(LV_GC_ROOT(_lv_draw_buf)) {
+        lv_mem_free(LV_GC_ROOT(_lv_draw_buf));
+        LV_GC_ROOT(_lv_draw_buf) = NULL;
         draw_buf_size = 0;
     }
 }

@@ -89,16 +89,19 @@ public:
         power->setPowerOutPut(AXP202_LDO3, en);
     }
 
-    void lvgl_begin()
+    bool lvgl_begin()
     {
         lv_init();
         lv_disp_drv_t disp_drv;
         lv_indev_drv_t indev_drv;
         lv_disp_drv_init(&disp_drv);
         static lv_disp_buf_t disp_buf;
-        static lv_color_t buf1[LV_HOR_RES_MAX * 10];                        /*A buffer for 10 rows*/
-        static lv_color_t buf2[LV_HOR_RES_MAX * 10];                        /*An other buffer for 10 rows*/
-        lv_disp_buf_init(&disp_buf, buf1, buf2, LV_HOR_RES_MAX * 10);   /*Initialize the display buffer*/
+        lv_color_t *buf1 = (lv_color_t *)heap_caps_calloc(LV_HOR_RES_MAX * 10, sizeof(lv_color_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT );
+        if (!buf1) {
+            Serial.println("alloc failed\n");
+            return false;
+        }
+        lv_disp_buf_init(&disp_buf, buf1, NULL, LV_HOR_RES_MAX * 10);
         disp_drv.hor_res = 240;
         disp_drv.ver_res = 240;
         disp_drv.flush_cb = disp_flush;
@@ -112,6 +115,7 @@ public:
         lv_indev_drv_register(&indev_drv);
         tickTicker = new Ticker();
         startLvglTick();
+        return true;
     }
 
     void startLvglTick()
@@ -288,7 +292,7 @@ public:
         if (!i2c)return;
         i2c->readBytes(devAddress, data, len, delay_ms);
     }
-    
+
     bool deviceProbe(uint8_t addr)
     {
         if (!i2c)return false;
