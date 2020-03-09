@@ -1,5 +1,5 @@
 
-#pragma mark - Depend ArduinoJson and arduino-coinmarketcap-api libraries
+#pragma mark - Depend ArduinoJson 6.x and CoinMarketCapApi2 libraries
 /*
 cd ~/Arduino/libraries
 git clone https://github.com/lewisxhe/CoinMarketCapApi2
