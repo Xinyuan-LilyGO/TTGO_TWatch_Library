@@ -40,7 +40,7 @@ int FT5206_Class::begin()
 {
     uint8_t val;
     _readByte(FT5206_VENDID_REG, 1, &val);
-    if (val != FT5206_VENDID) {
+    if (val != FT5206_VENDID && val != FT5206_VENDID1) {
         return false;
     }
     _readByte(FT5206_CHIPID_REG, 1, &val);

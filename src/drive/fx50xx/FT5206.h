@@ -44,6 +44,7 @@ github:https://github.com/lewisxhe/FT5206_Library
 #define FT5206_SLEEP_IN        (0x03)
 
 #define FT5206_VENDID           0x11
+#define FT5206_VENDID1          0xcd
 #define FT6206_CHIPID           0x06
 #define FT6236_CHIPID           0x36
 #define FT6236U_CHIPID          0x64
