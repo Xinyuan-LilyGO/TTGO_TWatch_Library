@@ -42,4 +42,6 @@
 
 - [功耗详情点击查看](../docs/power.md)
 - [引脚映射点击查看](../docs/pinmap.md)
+- [3D Shell](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/images/shell.png)
+- [Acsip S76/78 Library&Examples](https://github.com/lewisxhe/Acsip-S7xG-Library)
 

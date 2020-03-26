@@ -48,7 +48,7 @@ For more info, see https://www.arduino.cc/en/Guide/Libraries
 - [Click for details of power consumption](../docs/power.md)
 - [Pin Map Click to View](../docs/pinmap.md)
 - [3D Shell](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/images/shell.png)
-
+- [Acsip S76/78 Library&Examples](https://github.com/lewisxhe/Acsip-S7xG-Library)
 
  <h2 align = "left">More interesting projects</h2>
 
