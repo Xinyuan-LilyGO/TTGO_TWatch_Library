@@ -21,7 +21,7 @@ char buf[256];
 
 void createWin();
 
-#define LORA_PERIOD 868
+#define LORA_PERIOD 470
 
 #if LORA_PERIOD == 433
 #define BAND 433E6
@@ -30,7 +30,7 @@ void createWin();
 #elif LORA_PERIOD == 915
 #define BAND 915E6
 #else
-#define BAND 433E6
+#define BAND 470E6
 #endif
 
 
