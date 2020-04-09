@@ -1,11 +1,11 @@
 /*
 
-  _       _   _            ____         
- | |     (_) | |  _   _   / ___|   ___  
- | |     | | | | | | | | | |  _   / _ \ 
+  _       _   _            ____
+ | |     (_) | |  _   _   / ___|   ___
+ | |     | | | | | | | | | |  _   / _ \
  | |___  | | | | | |_| | | |_| | | (_) |
- |_____| |_| |_|  \__, |  \____|  \___/ 
-                  |___/                 
+ |_____| |_| |_|  \__, |  \____|  \___/
+                  |___/
 
 website:https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library
 Written by Lewis he //https://github.com/lewisxhe
@@ -35,18 +35,24 @@ Written by Lewis he //https://github.com/lewisxhe
 class TTGOClass
 {
 public:
-
-    void begin()
+    void begin(bool tft = true, bool touchScreen = true)
     {
         bl->begin();
         int ret = power->begin(axpReadBytes, axpWriteBytes);
         if (ret == AXP_FAIL) {
             Serial.println("AXP Power begin failed");
         }
-        if (!touch->begin()) {
-            Serial.println("Begin touch fail");
+        if (touchScreen) {
+            Wire1.begin(I2C_SDA, I2C_SCL);
+            touch = new FT5206_Class(Wire1);
+            if (!touch->begin()) {
+                Serial.println("Begin touch fail");
+            }
         }
-        eTFT->init();
+        if (tft) {
+            eTFT = new TFT_eSPI();
+            eTFT->init();
+        }
     }
 
     void powerOff()
@@ -56,19 +62,29 @@ public:
 
     void displayOff()
     {
-        eTFT->writecommand(0x10);
-        touch->enterSleepMode();
+        if (eTFT) {
+            eTFT->writecommand(0x10);
+        }
+        if (touch) {
+            touch->enterSleepMode();
+        }
     }
 
     void displaySleep()
     {
-        eTFT->writecommand(0x10);
-        touch->enterMonitorMode();
+        if (eTFT) {
+            eTFT->writecommand(0x10);
+        }
+        if (touch) {
+            touch->enterMonitorMode();
+        }
     }
 
     void displayWakeup()
     {
-        eTFT->writecommand(0x11);
+        if (eTFT) {
+            eTFT->writecommand(0x11);
+        }
     }
 
     void openBL()
@@ -104,30 +120,35 @@ public:
 
     bool lvgl_begin()
     {
-        lv_init();
-        lv_disp_drv_t disp_drv;
-        lv_indev_drv_t indev_drv;
-        lv_disp_drv_init(&disp_drv);
-        static lv_disp_buf_t disp_buf;
-        lv_color_t *buf1 = (lv_color_t *)heap_caps_calloc(LV_HOR_RES_MAX * 10, sizeof(lv_color_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT );
-        if (!buf1) {
-            Serial.println("alloc failed\n");
-            return false;
+        if (eTFT) {
+            lv_init();
+            lv_disp_drv_t disp_drv;
+            lv_indev_drv_t indev_drv;
+            lv_disp_drv_init(&disp_drv);
+            static lv_disp_buf_t disp_buf;
+            lv_color_t *buf1 = (lv_color_t *)heap_caps_calloc(LV_HOR_RES_MAX * 10, sizeof(lv_color_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT );
+            if (!buf1) {
+                Serial.println("alloc failed\n");
+                return false;
+            }
+            lv_disp_buf_init(&disp_buf, buf1, NULL, LV_HOR_RES_MAX * 10);
+            disp_drv.hor_res = 240;
+            disp_drv.ver_res = 240;
+            disp_drv.flush_cb = disp_flush;
+            /*Set a display buffer*/
+            disp_drv.buffer = &disp_buf;
+            lv_disp_drv_register(&disp_drv);
+
+            if (touch) {
+                /*Register a touchpad input device*/
+                lv_indev_drv_init(&indev_drv);
+                indev_drv.type = LV_INDEV_TYPE_POINTER;
+                indev_drv.read_cb = touchpad_read;
+                lv_indev_drv_register(&indev_drv);
+            }
+            tickTicker = new Ticker();
+            startLvglTick();
         }
-        lv_disp_buf_init(&disp_buf, buf1, NULL, LV_HOR_RES_MAX * 10);
-        disp_drv.hor_res = 240;
-        disp_drv.ver_res = 240;
-        disp_drv.flush_cb = disp_flush;
-        /*Set a display buffer*/
-        disp_drv.buffer = &disp_buf;
-        lv_disp_drv_register(&disp_drv);
-        /*Register a touchpad input device*/
-        lv_indev_drv_init(&indev_drv);
-        indev_drv.type = LV_INDEV_TYPE_POINTER;
-        indev_drv.read_cb = touchpad_read;
-        lv_indev_drv_register(&indev_drv);
-        tickTicker = new Ticker();
-        startLvglTick();
         return true;
     }
 
@@ -231,7 +252,9 @@ public:
 
     void gameControlBegin()
     {
-        eTFT->setRotation(3);
+        if (eTFT) {
+            eTFT->setRotation(3);
+        }
         buzzer = new Buzzer(GAMECONTROL_BUZZER);
         buzzer->begin();
         uint8_t pins[GAMECONTROL_CONTS] = GAMECONTROL_PINS;
@@ -240,6 +263,7 @@ public:
             gameControl[i] = Button2(pins[i]);
         }
     }
+
     void gameControlBuzzer()
     {
         if (buzzer == nullptr)return;
@@ -314,15 +338,12 @@ public:
 private:
     TTGOClass()
     {
-        Wire1.begin(I2C_SDA, I2C_SCL);
         i2c = new I2CBus();
         rtc = new PCF8563_Class(*i2c);
         bl = new BackLight(TWATCH_TFT_BL);
         power = new AXP20X_Class();
-        touch = new FT5206_Class(Wire1);
         bma = new BMA(*i2c);
         button = new Button2(USER_BUTTON);
-        eTFT = new TFT_eSPI();
     };
 
     ~TTGOClass()
