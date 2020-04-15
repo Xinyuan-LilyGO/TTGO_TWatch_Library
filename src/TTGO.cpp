@@ -31,8 +31,6 @@ bool TTGOClass::touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     data->state = _ttgo->touch->touched() ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
     if (data->state == LV_INDEV_STATE_PR) {
         p = _ttgo->touch->getPoint();
-        p.x = map(p.x, 0, 320, 0, 240);
-        p.y = map(p.y, 0, 320, 0, 240);
     }
     /*Set the coordinates (if released use the last pressed coordinates)*/
     data->point.x = p.x;

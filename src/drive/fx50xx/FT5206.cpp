@@ -43,6 +43,7 @@ int FT5206_Class::begin()
     if (val != FT5206_VENDID && val != FT5206_VENDID1) {
         return false;
     }
+    _type = val;
     _readByte(FT5206_CHIPID_REG, 1, &val);
     if ((val != FT6206_CHIPID) && (val != FT6236_CHIPID) && (val != FT6236U_CHIPID) && (val != FT5206U_CHIPID)) {
         return false;
@@ -65,6 +66,14 @@ TP_Point FT5206_Class::getPoint(uint8_t num)
     if ((_touches == 0) || (num > 1)) {
         return TP_Point(0, 0);
     } else {
+        switch (_type) {
+        case FT5206_VENDID:
+            return TP_Point(map(_x[num], 0, 320, 0, 240), map( _y[num], 0, 320, 0, 240));
+        case FT5206_VENDID1:
+            return TP_Point(240 - _x[num], 240 - _y[num]);
+        default:
+            break;
+        }
         return TP_Point(_x[num], _y[num]);
     }
 }
@@ -109,3 +118,10 @@ void FT5206_Class::_readRegister()
         _id[i] = _data[TOUCH1_YH + i * 6] >> 4;
     }
 }
+
+uint8_t FT5206_Class::getType()
+{
+    return _type;
+}
+
+

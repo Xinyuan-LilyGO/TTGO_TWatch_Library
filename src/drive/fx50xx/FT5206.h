@@ -86,6 +86,7 @@ public:
     uint8_t touched();
     void enterSleepMode();
     void enterMonitorMode();
+    uint8_t getType();
 private:
     void _readRegister();
     int _readByte(uint8_t reg, uint8_t nbytes, uint8_t *data)
@@ -119,4 +120,5 @@ private:
     uint8_t _touches = 0;
     bool _init = false;
     TwoWire *_i2cPort;
+    uint8_t _type;
 };
