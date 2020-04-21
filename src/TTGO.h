@@ -32,6 +32,9 @@ Written by Lewis he //https://github.com/lewisxhe
 #include "./TinyGPSPlus/TinyGPS++.h"
 #include "./S7xG_Library/src/s7xg.h"
 
+#define TTGO_WATCH_VERSION1     (0X01)      //Plastic shell
+#define TTGO_WATCH_VERSION2     (0X02)      //Steel shell
+
 class TTGOClass
 {
 public:
@@ -48,6 +51,7 @@ public:
             if (!touch->begin()) {
                 Serial.println("Begin touch fail");
             }
+            watchVersion = touch->getType() == FT5206_VENDID ? TTGO_WATCH_VERSION1 : TTGO_WATCH_VERSION2;
         }
         if (tft) {
             eTFT = new TFT_eSPI();
@@ -57,7 +61,9 @@ public:
 
     void powerOff()
     {
-        power->setPowerOutPut(0xff, false);
+        if (watchVersion == TTGO_WATCH_VERSION1) {
+            power->setPowerOutPut(0xff, false);
+        }
     }
 
     void displayOff()
@@ -89,13 +95,17 @@ public:
 
     void openBL()
     {
-        power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
+        if (watchVersion == TTGO_WATCH_VERSION1) {
+            power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
+        }
         bl->on();
     }
 
     void closeBL()
     {
-        power->setPowerOutPut(AXP202_LDO2, AXP202_OFF);
+        if (watchVersion == TTGO_WATCH_VERSION1) {
+            power->setPowerOutPut(AXP202_LDO2, AXP202_OFF);
+        }
         bl->off();
     }
 
@@ -379,4 +389,5 @@ private:
     I2CBus *i2c = nullptr;
     static TTGOClass *_ttgo;
     Ticker *tickTicker = nullptr;
+    uint8_t watchVersion = TTGO_WATCH_VERSION1; //default version
 };
