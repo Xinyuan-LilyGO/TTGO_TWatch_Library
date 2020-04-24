@@ -3,14 +3,14 @@
 **English | [中文](docs/details_cn.md)**
 
 
-The code bin will demonstrate the basic functionality of T-Watch, including all on-board chips from T-Watch, using the **lvgl 6.1.1** as the display graphics framework.
+The code bin will demonstrate the basic functionality of T-Watch, including all on-board chips from T-Watch, using the **lvgl 6.1.2** as the display graphics framework.
 
 
 <h2 align = "left">🚀 Characteristics</h2>
 
 1. The library already contains all the hardware drivers for `T-Watch`
 1. Using **TFT_eSPI** as the display driver, you can directly call **TFT_eSPI** through the construction object.
-1. Using **lvgl 6.1.1** as the display graphics framework, the driver method has been implemented, you only need to call lvgl api according to your own needs.
+1. Using **lvgl 6.1.2** as the display graphics framework, the driver method has been implemented, you only need to call lvgl api according to your own needs.
 1. For the use of lvgl please refer to **[lvgl docs](https://docs.littlevgl.com/en/html/index.html)**
 
 

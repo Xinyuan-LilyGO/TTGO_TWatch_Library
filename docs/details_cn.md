@@ -2,13 +2,13 @@
 
 [English](../README.MD) | 中文
 
-该代码仓将演示**T-Watch**的基础功能，包含T-Watch所有板载芯片,该项目使用**lvgl 6.1.1**作为显示图形框架
+该代码仓将演示**T-Watch**的基础功能，包含T-Watch所有板载芯片,该项目使用**lvgl 6.1.2**作为显示图形框架
 
 <h2 align = "left">特性</h2>
 
 1. 该库已经包含`T-Watch`所有硬件驱动
 2. 使用**TFT_eSPI** 作为显示屏驱动，可直接通过通过构造对象调用**TFT_eSPI**的方法
-3. 使用**lvgl 6.1.1**作为显示图形框架,驱动方法已经实现，只需要按自己的需求调用lvgl api即可
+3. 使用**lvgl 6.1.2**作为显示图形框架,驱动方法已经实现，只需要按自己的需求调用lvgl api即可
 4. 关于lvgl的使用请参考 **[lvgl 文档](https://docs.littlevgl.com/en/html/index.html)**
   
 
