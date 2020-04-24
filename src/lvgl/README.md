@@ -1,7 +1,7 @@
 <h1 align="center"> LittlevGL - Open-source Embedded GUI Library</h1>
 <p align="center">
 <a href="https://github.com/littlevgl/lvgl/blob/master/LICENCE.txt"><img src="https://img.shields.io/badge/licence-MIT-blue.svg"></a>
-<a href="https://github.com/littlevgl/lvgl/releases/tag/v6.0"><img src="https://img.shields.io/badge/version-6.0-blue.svg"></a>
+<a href="https://github.com/littlevgl/lvgl/releases/tag/v6.1.2"><img src="https://img.shields.io/badge/version-6.1.2-blue.svg"></a>
 </p>
 
 <p align="center">
@@ -71,7 +71,7 @@ Just to mention some **platforms**:
 - NXP Kinetis, LPC, iMX
 - [Linux frame buffer](https://blog.littlevgl.com/2018-01-03/linux_fb) (/dev/fb)
 - [Raspberry PI](http://www.vk3erw.com/index.php/16-software/63-raspberry-pi-official-7-touchscreen-and-littlevgl)
-- [Espressif ESP32](https://github.com/littlevgl/esp32_ili9431)
+- [Espressif ESP32](https://github.com/littlevgl/lv_port_esp32)
 - Nordic nrf52
 - Quectell M66
 
@@ -93,7 +93,7 @@ You can use the [Simulators](https://docs.littlevgl.com/en/html/get-started/pc-s
 
 1. [Download](https://littlevgl.com/download) or [Clone](https://github.com/littlevgl/lvgl) the library
 2. Copy the `lvgl` folder into your project
-3. Copy `lvgl/lv_conf_template.h` as `lv_conf.h` next to the `lvgl` folder and set at least `LV_HOR_RES_MAX`, `LV_VER_RES_MAX` and `LV_COLOR_DEPTH`.
+3. Copy `lvgl/lv_conf_template.h` as `lv_conf.h` next to the `lvgl` folder and set at least `LV_HOR_RES_MAX`, `LV_VER_RES_MAX` and `LV_COLOR_DEPTH`. Don't forget to **change the `#if 0` statement near the top of the file to `#if 1`**, otherwise you will get compilation errors.
 4. Include `lvgl/lvgl.h` where you need to use LittlevGL related functions.
 5. Call `lv_tick_inc(x)` every `x` milliseconds **in a Timer or Task** (`x` should be between 1 and 10). It is required for the internal timing of LittlevGL.
 6. Call `lv_init()`

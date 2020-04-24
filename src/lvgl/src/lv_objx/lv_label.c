@@ -68,7 +68,7 @@ static lv_signal_cb_t ancestor_signal;
 /**
  * Create a label objects
  * @param par pointer to an object, it will be the parent of the new label
- * @param copy pointer to a button object, if not NULL then the new object will be copied from it
+ * @param copy pointer to a label object, if not NULL then the new object will be copied from it
  * @return pointer to the created button
  */
 lv_obj_t * lv_label_create(lv_obj_t * par, const lv_obj_t * copy)
@@ -308,7 +308,6 @@ void lv_label_set_array_text(lv_obj_t * label, const char * array, uint16_t size
 void lv_label_set_static_text(lv_obj_t * label, const char * text)
 {
     LV_ASSERT_OBJ(label, LV_OBJX_NAME);
-    LV_ASSERT_STR(text);
 
     lv_label_ext_t * ext = lv_obj_get_ext_attr(label);
     if(ext->static_txt == 0 && ext->text != NULL) {
@@ -728,7 +727,7 @@ uint16_t lv_label_get_letter_on(const lv_obj_t * label, lv_point_t * pos)
 #if LV_USE_BIDI
     bidi_txt = lv_draw_get_buf(new_line_start - line_start + 1);
     uint16_t txt_len = new_line_start - line_start;
-    if(bidi_txt[new_line_start] == '\0') txt_len--;
+    if(txt[new_line_start] == '\0') txt_len--;
     lv_bidi_process_paragraph(txt + line_start, bidi_txt, txt_len, lv_obj_get_base_dir(label), NULL, 0);
 #else
     bidi_txt = (char*)txt + line_start;
@@ -1066,7 +1065,13 @@ static bool lv_label_design(lv_obj_t * label, const lv_area_t * mask, lv_design_
 
         sel.start = lv_label_get_text_sel_start(label);
         sel.end = lv_label_get_text_sel_end(label);
-        lv_draw_label(&coords, mask, style, opa_scale, ext->text, flag, &ext->offset, &sel, hint, lv_obj_get_base_dir(label));
+
+        lv_area_t mask2;
+        bool has_common;
+        has_common = lv_area_intersect(&mask2, &coords, mask);
+        if(!has_common) return false;
+
+        lv_draw_label(&coords, &mask2, style, opa_scale, ext->text, flag, &ext->offset, &sel, hint, lv_obj_get_base_dir(label));
 
 
         if(ext->long_mode == LV_LABEL_LONG_SROLL_CIRC) {
@@ -1082,14 +1087,14 @@ static bool lv_label_design(lv_obj_t * label, const lv_area_t * mask, lv_design_
                         lv_font_get_glyph_width(style->text.font, ' ', ' ') * LV_LABEL_WAIT_CHAR_COUNT;
                 ofs.y = ext->offset.y;
 
-                lv_draw_label(&coords, mask, style, opa_scale, ext->text, flag, &ofs, &sel, NULL, lv_obj_get_base_dir(label));
+                lv_draw_label(&coords, &mask2, style, opa_scale, ext->text, flag, &ofs, &sel, NULL, lv_obj_get_base_dir(label));
             }
 
             /*Draw the text again below the original to make an circular effect */
             if(size.y > lv_obj_get_height(label)) {
                 ofs.x = ext->offset.x;
                 ofs.y = ext->offset.y + size.y + lv_font_get_line_height(style->text.font);
-                lv_draw_label(&coords, mask, style, opa_scale, ext->text, flag, &ofs, &sel, NULL, lv_obj_get_base_dir(label));
+                lv_draw_label(&coords, &mask2, style, opa_scale, ext->text, flag, &ofs, &sel, NULL, lv_obj_get_base_dir(label));
             }
         }
     }
@@ -1303,10 +1308,18 @@ static void lv_label_refr_text(lv_obj_t * label)
             p.y -= style->text.line_space;                                               /*Trim the last line space*/
             uint32_t letter_id = lv_label_get_letter_on(label, &p);
 
-            /*Save letters under the dots and replace them with dots*/
-            uint32_t i;
+
+            /*Be sure there is space for the dots*/
+            size_t txt_len = strlen(ext->text);
             uint32_t byte_id     = lv_txt_encoded_get_byte_id(ext->text, letter_id);
+            while(byte_id + LV_LABEL_DOT_NUM > txt_len) {
+                byte_id -= lv_txt_encoded_size(&ext->text[byte_id]);
+                letter_id--;
+            }
+
+            /*Save letters under the dots and replace them with dots*/
             uint32_t byte_id_ori = byte_id;
+            uint32_t i;
             uint8_t len          = 0;
             for(i = 0; i <= LV_LABEL_DOT_NUM; i++) {
                 len += lv_txt_encoded_size(&ext->text[byte_id]);

@@ -199,6 +199,8 @@ void lv_spinbox_set_range(lv_obj_t * spinbox, int32_t range_min, int32_t range_m
         ext->value = ext->range_min;
         lv_obj_invalidate(spinbox);
     }
+
+    lv_spinbox_updatevalue(spinbox);
 }
 
 /**
@@ -405,11 +407,15 @@ static void lv_spinbox_updatevalue(lv_obj_t * spinbox)
     char buf[LV_SPINBOX_MAX_DIGIT_COUNT + 8];
     memset(buf, 0, sizeof(buf));
     char * buf_p = buf;
+    uint8_t cur_shift_left = 0;
 
     if (ext->range_min < 0) { // hide sign if there are only positive values
         /*Add the sign*/
         (*buf_p) = ext->value >= 0 ? '+' : '-';
         buf_p++;
+    } else {
+    	/*Cursor need shift to left*/
+    	cur_shift_left++;
     }
 
     int32_t i;
@@ -467,7 +473,7 @@ static void lv_spinbox_updatevalue(lv_obj_t * spinbox)
 
     if(cur_pos > intDigits) cur_pos++; /*Skip teh decimal point*/
 
-    cur_pos += ext->digit_padding_left;
+    cur_pos += (ext->digit_padding_left - cur_shift_left);
 
     lv_ta_set_cursor_pos(spinbox, cur_pos);
 }

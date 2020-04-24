@@ -114,8 +114,17 @@ lv_obj_t * lv_tabview_create(lv_obj_t * par, const lv_obj_t * copy)
         /* Set a size which fits into the parent.
          * Don't use `par` directly because if the tabview is created on a page it is moved to the
          * scrollable so the parent has changed */
-        lv_obj_set_size(new_tabview, lv_obj_get_width_fit(lv_obj_get_parent(new_tabview)),
-                        lv_obj_get_height_fit(lv_obj_get_parent(new_tabview)));
+        lv_coord_t w;
+        lv_coord_t h;
+        if(par) {
+            w = lv_obj_get_width_fit(lv_obj_get_parent(new_tabview));
+            h = lv_obj_get_height_fit(lv_obj_get_parent(new_tabview));
+        } else {
+            w = lv_disp_get_hor_res(NULL);
+            h = lv_disp_get_ver_res(NULL);
+        }
+
+        lv_obj_set_size(new_tabview, w, h);
 
         ext->content = lv_cont_create(new_tabview, NULL);
         ext->btns    = lv_btnm_create(new_tabview, NULL);
@@ -156,6 +165,7 @@ lv_obj_t * lv_tabview_create(lv_obj_t * par, const lv_obj_t * copy)
         lv_tabview_ext_t * copy_ext = lv_obj_get_ext_attr(copy);
         ext->point_last.x           = 0;
         ext->point_last.y           = 0;
+        ext->tab_cnt                = 0; /*Incremented later when the old tabs are copied*/
         ext->btns                   = lv_btnm_create(new_tabview, copy_ext->btns);
         ext->indic                  = lv_obj_create(ext->btns, copy_ext->indic);
         ext->content                = lv_cont_create(new_tabview, copy_ext->content);
@@ -914,12 +924,14 @@ static void tabpage_pressing_handler(lv_obj_t * tabview, lv_obj_t * tabpage)
                 p = ((tabpage->coords.x1 - tabview->coords.x1) * (indic_size + tabs_style->body.padding.inner)) /
                     lv_obj_get_width(tabview);
 
-                uint16_t id = ext->tab_cur;
-                if(lv_obj_get_base_dir(tabview) == LV_BIDI_DIR_RTL) {
-                    id = (ext->tab_cnt - (id + 1));
+                {
+                    uint16_t id = ext->tab_cur;
+                    if(lv_obj_get_base_dir(tabview) == LV_BIDI_DIR_RTL) {
+                        id = (ext->tab_cnt - (id + 1));
+                    }
+                    lv_obj_set_x(ext->indic, indic_size * id + tabs_style->body.padding.inner * id +
+                                                 indic_style->body.padding.left - p);
                 }
-                lv_obj_set_x(ext->indic, indic_size * id + tabs_style->body.padding.inner * id +
-                                             indic_style->body.padding.left - p);
                 break;
             case LV_TABVIEW_BTNS_POS_LEFT:
             case LV_TABVIEW_BTNS_POS_RIGHT:
@@ -994,6 +1006,8 @@ static void tab_btnm_event_cb(lv_obj_t * tab_btnm, lv_event_t event)
 
     uint16_t btn_id = lv_btnm_get_active_btn(tab_btnm);
     if(btn_id == LV_BTNM_BTN_NONE) return;
+    
+    if(lv_btnm_get_btn_ctrl(tab_btnm, btn_id, LV_BTNM_CTRL_INACTIVE)) return;
 
     lv_btnm_clear_btn_ctrl_all(tab_btnm, LV_BTNM_CTRL_TGL_STATE);
     lv_btnm_set_btn_ctrl(tab_btnm, btn_id, LV_BTNM_CTRL_TGL_STATE);

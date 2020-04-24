@@ -57,6 +57,10 @@ public:
             eTFT = new TFT_eSPI();
             eTFT->init();
         }
+
+        if (watchVersion == TTGO_WATCH_VERSION1) {
+            button = new Button2(USER_BUTTON);
+        }
     }
 
     void powerOff()
@@ -353,7 +357,6 @@ private:
         bl = new BackLight(TWATCH_TFT_BL);
         power = new AXP20X_Class();
         bma = new BMA(*i2c);
-        button = new Button2(USER_BUTTON);
     };
 
     ~TTGOClass()
