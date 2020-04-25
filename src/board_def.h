@@ -80,7 +80,8 @@
 #define TWATCH_LORA_DI0     26
 #define TWATCH_LORA_RST     25
 
-
+#define TWATCH_2020_IR_PIN      13
+#define TWATCH_2020_MOTOR_PIN   4
 #endif
 
 

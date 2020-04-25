@@ -52,6 +52,9 @@ public:
                 Serial.println("Begin touch fail");
             }
             watchVersion = touch->getType() == FT5206_VENDID ? TTGO_WATCH_VERSION1 : TTGO_WATCH_VERSION2;
+            if (watchVersion == TTGO_WATCH_VERSION2) {
+                power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
+            }
         }
         if (tft) {
             eTFT = new TFT_eSPI();
@@ -194,7 +197,11 @@ public:
     void motor_begin()
     {
         if (motor == nullptr) {
-            motor = new Motor(MOTOR_PIN);
+            if (watchVersion == TTGO_WATCH_VERSION1) {
+                motor = new Motor(MOTOR_PIN);
+            } else {
+                motor = new Motor(TWATCH_2020_MOTOR_PIN);
+            }
         }
         motor->begin();
     }
