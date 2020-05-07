@@ -32,9 +32,6 @@ Written by Lewis he //https://github.com/lewisxhe
 #include "./TinyGPSPlus/TinyGPS++.h"
 #include "./S7xG_Library/src/s7xg.h"
 
-#define TTGO_WATCH_VERSION1     (0X01)      //Plastic shell
-#define TTGO_WATCH_VERSION2     (0X02)      //Steel shell
-
 class TTGOClass
 {
 public:
@@ -48,29 +45,28 @@ public:
         if (touchScreen) {
             Wire1.begin(I2C_SDA, I2C_SCL);
             touch = new FT5206_Class(Wire1);
-            if (!touch->begin()) {
+#ifdef LILYGO_TWATCH_2020_V1
+            if (!touch->begin(LILYGO_TWATCH_CST026)) {
+#else
+            if (!touch->begin(LILYGO_TWATCH_FT62XX)) {
+#endif
                 Serial.println("Begin touch fail");
             }
-            watchVersion = touch->getType() == FT5206_VENDID ? TTGO_WATCH_VERSION1 : TTGO_WATCH_VERSION2;
-            if (watchVersion == TTGO_WATCH_VERSION2) {
-                power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
-            }
         }
+#ifdef LILYGO_TWATCH_2020_V1
+        power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
+#endif
         if (tft) {
             eTFT = new TFT_eSPI();
             eTFT->init();
-        }
-
-        if (watchVersion == TTGO_WATCH_VERSION1) {
-            button = new Button2(USER_BUTTON);
         }
     }
 
     void powerOff()
     {
-        if (watchVersion == TTGO_WATCH_VERSION1) {
-            power->setPowerOutPut(0xff, false);
-        }
+#ifndef LILYGO_TWATCH_2020_V1
+        power->setPowerOutPut(0xff, false);
+#endif
     }
 
     void displayOff()
@@ -102,17 +98,17 @@ public:
 
     void openBL()
     {
-        if (watchVersion == TTGO_WATCH_VERSION1) {
-            power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
-        }
+#ifndef LILYGO_TWATCH_2020_V1
+        power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
+#endif
         bl->on();
     }
 
     void closeBL()
     {
-        if (watchVersion == TTGO_WATCH_VERSION1) {
-            power->setPowerOutPut(AXP202_LDO2, AXP202_OFF);
-        }
+#ifndef LILYGO_TWATCH_2020_V1
+        power->setPowerOutPut(AXP202_LDO2, AXP202_OFF);
+#endif
         bl->off();
     }
 
@@ -197,11 +193,11 @@ public:
     void motor_begin()
     {
         if (motor == nullptr) {
-            if (watchVersion == TTGO_WATCH_VERSION1) {
-                motor = new Motor(MOTOR_PIN);
-            } else {
-                motor = new Motor(TWATCH_2020_MOTOR_PIN);
-            }
+#ifdef LILYGO_TWATCH_2020_V1
+            motor = new Motor(TWATCH_2020_MOTOR_PIN);
+#else
+            motor = new Motor(MOTOR_PIN);
+#endif
         }
         motor->begin();
     }
@@ -364,6 +360,9 @@ private:
         bl = new BackLight(TWATCH_TFT_BL);
         power = new AXP20X_Class();
         bma = new BMA(*i2c);
+        //In the 2020 version, Button IO36 is not used. 
+        //In order to be compatible with the original sample code, keep it here
+        button = new Button2(USER_BUTTON);
     };
 
     ~TTGOClass()
@@ -399,5 +398,4 @@ private:
     I2CBus *i2c = nullptr;
     static TTGOClass *_ttgo;
     Ticker *tickTicker = nullptr;
-    uint8_t watchVersion = TTGO_WATCH_VERSION1; //default version
 };

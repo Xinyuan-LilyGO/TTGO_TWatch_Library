@@ -57,6 +57,12 @@ github:https://github.com/lewisxhe/FT5206_Library
 #define TOUCH1_YH   0x05
 #define TOUCH1_YL   0x06
 
+#define LILYGO_TWATCH_FT62XX    0x00
+#define LILYGO_TWATCH_CST026    0x01
+
+#define CST026_VENDID           0x26
+
+
 class TP_Point
 {
 public:
@@ -79,7 +85,7 @@ class FT5206_Class
 {
 public:
     FT5206_Class(TwoWire &port, uint8_t addr = FT5206_SLAVE_ADDRESS) ;
-    int begin();
+    int begin(uint8_t version);
     // valid touching detect threshold.
     void adjustTheshold(uint8_t thresh);
     TP_Point getPoint(uint8_t num = 0);
