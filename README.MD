@@ -5,13 +5,17 @@
 
 The code bin will demonstrate the basic functionality of T-Watch, including all on-board chips from T-Watch, using the **lvgl 6.1.2** as the display graphics framework.
 
+<h2 align = "left">⭐ News </h2>
+
+1. Currently there are multiple versions of T-Watch, if you use **T-Watch-2020** version T-Watch, please define the **LILYGO_TWATCH_2020_V1** macro above the sketch `#include <TTGO.h>` to preset the program Run in `T-Watch-2020 version hardware`.
+2. Some sample programs cannot be run on special versions of hardware, such as the `UserButton` sample program, which cannot be run in the **T-Watch-2020** version, because this version of the hardware does not have physical buttons
 
 <h2 align = "left">🚀 Characteristics</h2>
 
 1. The library already contains all the hardware drivers for `T-Watch`
-1. Using **TFT_eSPI** as the display driver, you can directly call **TFT_eSPI** through the construction object.
-1. Using **lvgl 6.1.2** as the display graphics framework, the driver method has been implemented, you only need to call lvgl api according to your own needs.
-1. For the use of lvgl please refer to **[lvgl docs](https://docs.littlevgl.com/en/html/index.html)**
+2. Using **TFT_eSPI** as the display driver, you can directly call **TFT_eSPI** through the construction object.
+3. Using **lvgl 6.1.2** as the display graphics framework, the driver method has been implemented, you only need to call lvgl api according to your own needs.
+4. For the use of lvgl please refer to **[lvgl docs](https://docs.littlevgl.com/en/html/index.html)**
 
 
 <h2 align = "left">🔷 Install</h2>

@@ -4,6 +4,12 @@
 
 该代码仓将演示**T-Watch**的基础功能，包含T-Watch所有板载芯片,该项目使用**lvgl 6.1.2**作为显示图形框架
 
+
+<h2 align = "left">新闻</h2>
+
+1. 当前T-Watch有多种版本,如果使用**T-Watch-2020**版本T-Watch,请在草图`#include <TTGO.h>` 上方定义**LILYGO_TWATCH_2020_V1**宏,以预设程序运行在`T-Watch-2020版本硬件`中.
+2. 有些示例程序无法运行在特殊版本的硬件中,比如`UserButton`示例程序,在**T-Watch-2020**版本中就无法运行,因为该版本硬件没有物理按键
+
 <h2 align = "left">特性</h2>
 
 1. 该库已经包含`T-Watch`所有硬件驱动

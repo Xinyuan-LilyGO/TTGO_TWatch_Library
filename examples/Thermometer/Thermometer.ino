@@ -13,6 +13,9 @@ cd ~/Arduino/libraries
 git clone https://github.com/bblanchon/ArduinoJson.git
 */
 
+// #define LILYGO_TWATCH_2020_V1        // If you are using T-Watch-2020 version, please open this macro definition
+
+
 #include <TTGO.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
