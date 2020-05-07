@@ -1,3 +1,5 @@
+ //Base on arturo182 arduino_bbq10kbd library https://github.com/arturo182/arduino_bbq10kbd
+ 
 #include <Arduino.h>
 
 #include "BBQ10Keyboard.h"

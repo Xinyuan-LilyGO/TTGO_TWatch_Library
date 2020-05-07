@@ -1,3 +1,5 @@
+ //Base on arturo182 arduino_bbq10kbd library https://github.com/arturo182/arduino_bbq10kbd
+
 #include <Wire.h>
 
 #define BBQ10KEYBOARD_DEFAULT_ADDR 0x1f
