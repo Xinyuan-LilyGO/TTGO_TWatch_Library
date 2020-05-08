@@ -59,6 +59,9 @@ public:
         if (tft) {
             eTFT = new TFT_eSPI();
             eTFT->init();
+#ifdef LILYGO_TWATCH_2020_V1
+            eTFT->setRotation(2);
+#endif
         }
     }
 
@@ -360,7 +363,7 @@ private:
         bl = new BackLight(TWATCH_TFT_BL);
         power = new AXP20X_Class();
         bma = new BMA(*i2c);
-        //In the 2020 version, Button IO36 is not used. 
+        //In the 2020 version, Button IO36 is not used.
         //In order to be compatible with the original sample code, keep it here
         button = new Button2(USER_BUTTON);
     };
