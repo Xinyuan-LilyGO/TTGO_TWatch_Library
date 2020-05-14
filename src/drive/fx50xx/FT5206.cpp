@@ -38,6 +38,7 @@ FT5206_Class::FT5206_Class(TwoWire &port, uint8_t addr)
 
 int FT5206_Class::begin(uint8_t version)
 {
+#if 0
     if (version == LILYGO_TWATCH_FT62XX) {
         uint8_t val;
         _readByte(FT5206_VENDID_REG, 1, &val);
@@ -55,6 +56,22 @@ int FT5206_Class::begin(uint8_t version)
         _init = (0 == _i2cPort->endTransmission());
         _type = CST026_VENDID;
     }
+#else
+    uint8_t val;
+    _i2cPort->beginTransmission(_address);
+    if (0 != _i2cPort->endTransmission()) {
+        return false;
+    }
+    _readByte(FT5206_VENDID_REG, 1, &val);
+    if (val == FT5206_VENDID || val == FT5206_VENDID1) {
+        // Serial.print("FT5206_VENDID1 "); Serial.println(val);
+        _type = val;
+    } else {
+        // Serial.print("CST026_VENDID "); Serial.println(val);
+        _type = CST026_VENDID;
+    }
+    _init = true;
+#endif
     return _init;
 }
 
@@ -76,9 +93,11 @@ TP_Point FT5206_Class::getPoint(uint8_t num)
         case FT5206_VENDID:
             return TP_Point(map(_x[num], 0, 320, 0, 240), map( _y[num], 0, 320, 0, 240));
         case FT5206_VENDID1:
-            return TP_Point(240 - _x[num], 240 - _y[num]);
+            // return TP_Point(240 - _x[num], 240 - _y[num]);
+            return TP_Point(_x[num], _y[num]);
         case CST026_VENDID:
-            return TP_Point(240 - _x[num], 240 - _y[num]);
+            // return TP_Point(240 - _x[num], 240 - _y[num]);
+            return TP_Point(_x[num], _y[num]);
         default:
             break;
         }
