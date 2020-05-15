@@ -85,7 +85,7 @@ class FT5206_Class
 {
 public:
     FT5206_Class(TwoWire &port, uint8_t addr = FT5206_SLAVE_ADDRESS) ;
-    int begin(uint8_t version);
+    int begin();
     // valid touching detect threshold.
     void adjustTheshold(uint8_t thresh);
     TP_Point getPoint(uint8_t num = 0);

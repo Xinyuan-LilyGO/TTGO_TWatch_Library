@@ -25,12 +25,15 @@ Written by Lewis he //https://github.com/lewisxhe
 #include "./font/font.h"
 #include "board_def.h"
 #include <Ticker.h>
-#include <SD.h>
 #include <FS.h>
 #include <SPI.h>
+#ifndef LILYGO_TWATCH_2020_V1
+#include <SD.h>
 #include "./PN532/Adafruit_PN532.h"
 #include "./TinyGPSPlus/TinyGPS++.h"
 #include "./S7xG_Library/src/s7xg.h"
+#endif
+
 
 class TTGOClass
 {
@@ -41,25 +44,31 @@ public:
         int ret = power->begin(axpReadBytes, axpWriteBytes);
         if (ret == AXP_FAIL) {
             Serial.println("AXP Power begin failed");
+        } else {
+            //Change the button boot time to 4 seconds
+            power->setShutdownTime(AXP_POWER_OFF_TIME_4S);
+            // Turn off the charging instructions, there should be no
+            power->setChgLEDMode(AXP20X_LED_OFF);
+            // Turn off external enable
+            power->setPowerOutPut(AXP202_EXTEN, false);
         }
         if (touchScreen) {
             Wire1.begin(I2C_SDA, I2C_SCL);
             touch = new FT5206_Class(Wire1);
-#ifdef LILYGO_TWATCH_2020_V1
-            if (!touch->begin(LILYGO_TWATCH_CST026)) {
-#else
-            if (!touch->begin(LILYGO_TWATCH_FT62XX)) {
-#endif
+            if (!touch->begin()) {
                 Serial.println("Begin touch fail");
             }
         }
 #ifdef LILYGO_TWATCH_2020_V1
+        //In the 2020V1 version, the ST7789 chip power supply
+        //is shared with the backlight, so LDO2 cannot be turned off
         power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
 #endif
         if (tft) {
             eTFT = new TFT_eSPI();
             eTFT->init();
 #ifdef LILYGO_TWATCH_2020_V1
+            // Set default initial orientation
             eTFT->setRotation(2);
 #endif
         }
@@ -68,7 +77,19 @@ public:
     void powerOff()
     {
 #ifndef LILYGO_TWATCH_2020_V1
-        power->setPowerOutPut(0xff, false);
+        power->setPowerOutPut(AXP202_EXTEN
+                              | AXP202_LDO4
+                              | AXP202_DCDC2
+                              | AXP202_LDO3
+                              | AXP202_LDO2
+                              , false);
+#else
+        power->setPowerOutPut(AXP202_EXTEN
+                              | AXP202_LDO4
+                              | AXP202_DCDC2
+                              | AXP202_LDO3
+                              //   | AXP202_LDO2
+                              , false);
 #endif
     }
 
@@ -115,18 +136,7 @@ public:
         bl->off();
     }
 
-    bool sdcard_begin()
-    {
-        if (!sdhander) {
-            sdhander = new SPIClass(HSPI);
-            sdhander->begin(SD_SCLK, SD_MISO, SD_MOSI, SD_CS);
-        }
-        if (!SD.begin(SD_CS, *sdhander)) {
-            Serial.println("\nSD Card Mount Failed");
-            return false;
-        }
-        return true;
-    }
+
 
     void enableLDO3(bool en = true)
     {
@@ -142,11 +152,15 @@ public:
             lv_indev_drv_t indev_drv;
             lv_disp_drv_init(&disp_drv);
             static lv_disp_buf_t disp_buf;
+#ifdef TWATCH_USE_PSRAM_ALLOC_LVGL
             lv_color_t *buf1 = (lv_color_t *)heap_caps_calloc(LV_HOR_RES_MAX * 10, sizeof(lv_color_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT );
             if (!buf1) {
                 Serial.println("alloc failed\n");
                 return false;
             }
+#else
+            static lv_color_t buf1[LV_HOR_RES_MAX * 100];
+#endif
             lv_disp_buf_init(&disp_buf, buf1, NULL, LV_HOR_RES_MAX * 10);
             disp_drv.hor_res = 240;
             disp_drv.ver_res = 240;
@@ -205,6 +219,42 @@ public:
         motor->begin();
     }
 
+    BackLight *bl = nullptr;
+    PCF8563_Class *rtc = nullptr;
+    AXP20X_Class *power = nullptr;
+    TFT_eSPI *eTFT = nullptr;
+    FT5206_Class *touch = nullptr;
+    Buzzer *buzzer = nullptr;
+    BMA *bma = nullptr;
+    Button2 *button = nullptr;
+    Motor *motor = nullptr;
+
+#ifndef LILYGO_TWATCH_2020_V1
+    S7XG_Class *s7xg = nullptr;
+    HardwareSerial *hwSerial = nullptr;
+    Adafruit_PN532 *nfc = nullptr;
+    TinyGPSPlus *gps = nullptr;
+    Button2 *gameControl = nullptr;
+
+    void enableLDO4()
+    {
+        power->setLDO4Voltage(AXP202_LDO4_1800MV);
+        power->setPowerOutPut(AXP202_LDO4, AXP202_ON);
+    }
+
+    bool sdcard_begin()
+    {
+        if (!sdhander) {
+            sdhander = new SPIClass(HSPI);
+            sdhander->begin(SD_SCLK, SD_MISO, SD_MOSI, SD_CS);
+        }
+        if (!SD.begin(SD_CS, *sdhander)) {
+            Serial.println("\nSD Card Mount Failed");
+            return false;
+        }
+        return true;
+    }
+
     void nfc_begin()
     {
         if (nfc == nullptr) {
@@ -226,6 +276,7 @@ public:
         hwSerial->begin(GPS_BANUD_RATE, SERIAL_8N1, GPS_RX, GPS_TX);
     }
 
+
     bool gpsHandler()
     {
         if (gps == nullptr) return false;
@@ -235,12 +286,6 @@ public:
             }
         }
         return false;
-    }
-
-    void enableLDO4()
-    {
-        power->setLDO4Voltage(AXP202_LDO4_1800MV);
-        power->setPowerOutPut(AXP202_LDO4, AXP202_ON);
     }
 
     void s7xg_begin()
@@ -254,21 +299,6 @@ public:
         hwSerial->begin(115200, SERIAL_8N1, GPS_RX, GPS_TX);
         s7xg->begin(*hwSerial);
     }
-
-    S7XG_Class *s7xg = nullptr;
-    HardwareSerial *hwSerial = nullptr;
-    BackLight *bl = nullptr;
-    PCF8563_Class *rtc = nullptr;
-    AXP20X_Class *power = nullptr;
-    TFT_eSPI *eTFT = nullptr;
-    FT5206_Class *touch = nullptr;
-    Buzzer *buzzer = nullptr;
-    BMA *bma = nullptr;
-    Button2 *button = nullptr;
-    Button2 *gameControl = nullptr;
-    Motor *motor = nullptr;
-    Adafruit_PN532 *nfc = nullptr;
-    TinyGPSPlus *gps = nullptr;
 
     void gameControlBegin()
     {
@@ -317,6 +347,7 @@ public:
         return gameControl[4].isPressed();
     }
 
+#endif  /*LILYGO_TWATCH_2020_V1*/
 
     void writeByte(uint8_t devAddress, uint8_t regAddress, uint8_t data)
     {
@@ -397,7 +428,9 @@ private:
 
     static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p);
     static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
+#ifndef LILYGO_TWATCH_2020_V1
     SPIClass *sdhander = nullptr;
+#endif
     I2CBus *i2c = nullptr;
     static TTGOClass *_ttgo;
     Ticker *tickTicker = nullptr;

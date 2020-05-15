@@ -36,7 +36,7 @@ FT5206_Class::FT5206_Class(TwoWire &port, uint8_t addr)
 }
 
 
-int FT5206_Class::begin(uint8_t version)
+int FT5206_Class::begin()
 {
 #if 0
     if (version == LILYGO_TWATCH_FT62XX) {
