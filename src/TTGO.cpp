@@ -1,11 +1,11 @@
 /*
 
-  _       _   _            ____         
- | |     (_) | |  _   _   / ___|   ___  
- | |     | | | | | | | | | |  _   / _ \ 
+  _       _   _            ____
+ | |     (_) | |  _   _   / ___|   ___
+ | |     | | | | | | | | | |  _   / _ \
  | |___  | | | | | |_| | | |_| | | (_) |
- |_____| |_| |_|  \__, |  \____|  \___/ 
-                  |___/                 
+ |_____| |_| |_|  \__, |  \____|  \___/
+                  |___/
 
 website:https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library
 Written by Lewis he //https://github.com/lewisxhe
@@ -28,9 +28,10 @@ void TTGOClass::disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_co
 bool TTGOClass::touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
 {
     static TP_Point p;
+    uint8_t rotation = _ttgo->eTFT->getRotation();
     data->state = _ttgo->touch->touched() ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
     if (data->state == LV_INDEV_STATE_PR) {
-        p = _ttgo->touch->getPoint();
+        p = _ttgo->touch->getPoint(0, rotation);
     }
     /*Set the coordinates (if released use the last pressed coordinates)*/
     data->point.x = p.x;

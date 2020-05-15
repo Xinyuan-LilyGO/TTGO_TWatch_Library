@@ -82,7 +82,7 @@ void FT5206_Class::adjustTheshold(uint8_t thresh)
     _writeByte(FT5206_THRESHHOLD_REG, 1, &thresh);
 }
 
-TP_Point FT5206_Class::getPoint(uint8_t num)
+TP_Point FT5206_Class::getPoint(uint8_t num, uint8_t rotation)
 {
     if (!_init) return TP_Point(0, 0);
     _readRegister();
@@ -90,14 +90,37 @@ TP_Point FT5206_Class::getPoint(uint8_t num)
         return TP_Point(0, 0);
     } else {
         switch (_type) {
-        case FT5206_VENDID:
-            return TP_Point(map(_x[num], 0, 320, 0, 240), map( _y[num], 0, 320, 0, 240));
-        case FT5206_VENDID1:
-            // return TP_Point(240 - _x[num], 240 - _y[num]);
-            return TP_Point(_x[num], _y[num]);
+        case FT5206_VENDID: {
+            int16_t x = map(_x[num], 0, 320, 0, 240);
+            int16_t y = map(_y[num], 0, 320, 0, 240);
+            switch (rotation) {
+            case 0:
+                return TP_Point(x,  y);
+            case 1:
+                return TP_Point(y, 240 - x);
+            case 2:
+                return TP_Point(240 - x, 240 - y);
+            case 3:
+                return TP_Point( 240 - y, x);
+            default:
+                return TP_Point(x, y);
+            }
+        }
         case CST026_VENDID:
-            // return TP_Point(240 - _x[num], 240 - _y[num]);
-            return TP_Point(_x[num], _y[num]);
+        case FT5206_VENDID1: {
+            switch (rotation) {
+            case 0:
+                return TP_Point(240 - _x[num], 240 - _y[num]);
+            case 1:
+                return TP_Point(240 - _y[num], _x[num]);
+            case 2:
+                return TP_Point(_x[num], _y[num]);
+            case 3:
+                return TP_Point(_y[num], 240 - _x[num]);
+            default:
+                return TP_Point(_x[num], _y[num]);
+            }
+        }
         default:
             break;
         }
