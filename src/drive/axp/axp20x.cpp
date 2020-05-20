@@ -59,6 +59,8 @@ const uint8_t AXP20X_Class::targetVolParams[] = {
     0b01100000
 };
 
+
+
 // Power Output Control register
 uint8_t AXP20X_Class::_outputReg;
 
@@ -362,7 +364,7 @@ uint32_t AXP20X_Class::getBattChargeCoulomb()
     uint8_t buffer[4];
     if (!_init)
         return AXP_NOT_INIT;
-    _readByte(0xB1, 4, buffer);
+    _readByte(0xB0, 4, buffer);
     return (buffer[0] << 24) + (buffer[1] << 16) + (buffer[2] << 8) + buffer[3];
 }
 
@@ -384,6 +386,77 @@ float AXP20X_Class::getCoulombData()
     float result = 65536.0 * 0.5 * (charge - discharge) / 3600.0 / rate;
     return result;
 }
+
+
+//-------------------------------------------------------
+// New Coulomb functions  by MrFlexi
+//-------------------------------------------------------
+
+uint8_t AXP20X_Class::getCoulombRegister()
+{
+    uint8_t buffer;
+    if (!_init)
+        return AXP_NOT_INIT;
+    _readByte(AXP202_COULOMB_CTL, 1, &buffer);
+    return buffer;
+}
+
+
+int AXP20X_Class::setCoulombRegister(uint8_t val)
+{
+    if (!_init)
+        return AXP_NOT_INIT;    
+    _writeByte(AXP202_COULOMB_CTL, 1, &val);
+    return AXP_PASS;
+}
+
+
+int AXP20X_Class::EnableCoulombcounter(void)
+{
+   
+     if (!_init)
+        return AXP_NOT_INIT;    
+     uint8_t val = 0x80;    
+    _writeByte(AXP202_COULOMB_CTL, 1, &val);
+    return AXP_PASS;    
+}
+
+int AXP20X_Class::DisableCoulombcounter(void)
+{
+   
+     if (!_init)
+        return AXP_NOT_INIT;    
+     uint8_t val = 0x00;    
+    _writeByte(AXP202_COULOMB_CTL, 1, &val);
+    return AXP_PASS;    
+}
+
+int AXP20X_Class::StopCoulombcounter(void)
+{
+   
+     if (!_init)
+        return AXP_NOT_INIT;    
+     uint8_t val = 0xB8;    
+    _writeByte(AXP202_COULOMB_CTL, 1, &val);
+    return AXP_PASS;    
+}
+
+
+int AXP20X_Class::ClearCoulombcounter(void)
+{
+   
+     if (!_init)
+        return AXP_NOT_INIT;    
+     uint8_t val = 0xA0;    
+    _writeByte(AXP202_COULOMB_CTL, 1, &val);
+    return AXP_PASS;    
+}
+
+//-------------------------------------------------------
+// END 
+//-------------------------------------------------------
+
+
 
 uint8_t AXP20X_Class::getAdcSamplingRate()
 {
@@ -1053,6 +1126,8 @@ int AXP20X_Class::getBattPercentage()
 {
     if (!_init)
         return AXP_NOT_INIT;
+    if (_chip_id != AXP202_CHIP_ID)
+        return AXP_NOT_SUPPORT;
     uint8_t val;
     if (!isBatteryConnect())
         return 0;
@@ -1669,3 +1744,57 @@ int AXP20X_Class::gpioRead(axp_gpio_t gpio)
     }
     return AXP_NOT_SUPPORT;
 }
+
+
+
+int AXP20X_Class::getChargeControlCur()
+{
+    int cur;
+    uint8_t val;
+    if (!_init)
+        return AXP_NOT_INIT;
+    switch (_chip_id) {
+    case AXP202_CHIP_ID:
+        _readByte(AXP202_CHARGE1, 1, &val);
+        val &= 0x0F;
+        cur =  val * 100 + 300;
+        if (cur > 1800 || cur < 300)return 0;
+        return cur;
+    case AXP192_CHIP_ID:
+    case AXP173_CHIP_ID:
+        _readByte(AXP202_CHARGE1, 1, &val);
+        return val & 0x0F;
+    default:
+        break;
+    }
+    return AXP_NOT_SUPPORT;
+}
+
+int AXP20X_Class::setChargeControlCur(uint16_t mA)
+{
+    uint8_t val;
+    if (!_init)
+        return AXP_NOT_INIT;
+    switch (_chip_id) {
+    case AXP202_CHIP_ID:
+        _readByte(AXP202_CHARGE1, 1, &val);
+        val &= 0b11110000;
+        mA -= 300;
+        val |= (mA / 100);
+        _writeByte(AXP202_CHARGE1, 1, &val);
+        return AXP_PASS;
+    case AXP192_CHIP_ID:
+    case AXP173_CHIP_ID:
+        _readByte(AXP202_CHARGE1, 1, &val);
+        val &= 0b11110000;
+        if(mA > AXP1XX_CHARGE_CUR_1320MA)
+            mA = AXP1XX_CHARGE_CUR_1320MA;
+        val |= mA;
+        _writeByte(AXP202_CHARGE1, 1, &val);
+        return AXP_PASS;
+    default:
+        break;
+    }
+    return AXP_NOT_SUPPORT;
+}
+

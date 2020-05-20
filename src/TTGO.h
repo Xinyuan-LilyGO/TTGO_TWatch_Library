@@ -51,6 +51,8 @@ public:
             power->setChgLEDMode(AXP20X_LED_OFF);
             // Turn off external enable
             power->setPowerOutPut(AXP202_EXTEN, false);
+            //axp202 allows maximum charging current of 1800mA, minimum 300mA
+            power->setChargeControlCur(300);
         }
         if (touchScreen) {
             Wire1.begin(I2C_SDA, I2C_SCL);

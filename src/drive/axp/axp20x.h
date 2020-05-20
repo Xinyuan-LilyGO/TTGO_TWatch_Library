@@ -542,7 +542,24 @@ typedef enum {
     AXP192_GPIO_3V3,
 } axp192_gpio_voltage_t;
 
-
+typedef enum {
+    AXP1XX_CHARGE_CUR_100MA,
+    AXP1XX_CHARGE_CUR_190MA,
+    AXP1XX_CHARGE_CUR_280MA,
+    AXP1XX_CHARGE_CUR_360MA,
+    AXP1XX_CHARGE_CUR_450MA,
+    AXP1XX_CHARGE_CUR_550MA,
+    AXP1XX_CHARGE_CUR_630MA,
+    AXP1XX_CHARGE_CUR_700MA,
+    AXP1XX_CHARGE_CUR_780MA,
+    AXP1XX_CHARGE_CUR_880MA,
+    AXP1XX_CHARGE_CUR_960MA,
+    AXP1XX_CHARGE_CUR_1000MA,
+    AXP1XX_CHARGE_CUR_1080MA,
+    AXP1XX_CHARGE_CUR_1160MA,
+    AXP1XX_CHARGE_CUR_1240MA,
+    AXP1XX_CHARGE_CUR_1320MA,
+} axp1xx_charge_current_t;
 
 typedef uint8_t (*axp_com_fptr_t)(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint8_t len);
 
@@ -709,6 +726,12 @@ public:
     int setAdcSamplingRate(axp_adc_sampling_rate_t rate);
     uint8_t getAdcSamplingRate();
     float getCoulombData();
+    uint8_t getCoulombRegister();
+    int setCoulombRegister(uint8_t val);
+    int EnableCoulombcounter(void);
+    int DisableCoulombcounter(void);
+    int StopCoulombcounter(void);
+    int ClearCoulombcounter(void);
 
 
     int setGPIOMode(axp_gpio_t gpio, axp_gpio_mode_t mode);
@@ -717,6 +740,11 @@ public:
 
     int gpioWrite(axp_gpio_t gpio, uint8_t vol);
     int gpioRead(axp_gpio_t gpio);
+
+    // When the chip is axp192 / 173, the allowed values are 0 ~ 15, corresponding to the axp1xx_charge_current_t enumeration
+    // When the chip is axp202 allows maximum charging current of 1800mA, minimum 300mA
+    int getChargeControlCur();
+    int setChargeControlCur(uint16_t mA);
 
 private:
     uint16_t _getRegistH8L5(uint8_t regh8, uint8_t regl5)
