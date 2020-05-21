@@ -12,6 +12,9 @@
 
 #include <TTGO.h>
 
+void plotNeedle(int value, byte ms_delay);
+void analogMeter();
+
 TTGOClass *ttgo;
 
 #define TFT_GREY 0x5AEB
@@ -34,7 +37,7 @@ void setup(void)
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
-
+    ttgo->eTFT->setTextFont(1);
     ttgo->eTFT->fillScreen(TFT_BLACK);
 
     analogMeter(); // Draw analogue meter
