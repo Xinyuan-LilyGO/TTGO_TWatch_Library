@@ -3,3 +3,4 @@
 build
 make
 bin
+.gitignore
