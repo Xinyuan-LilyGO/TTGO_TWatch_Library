@@ -1,5 +1,5 @@
- //Base on arturo182 arduino_bbq10kbd library https://github.com/arturo182/arduino_bbq10kbd
- 
+//Base on arturo182 arduino_bbq10kbd library https://github.com/arturo182/arduino_bbq10kbd
+
 #include <Arduino.h>
 
 #include "BBQ10Keyboard.h"
@@ -130,7 +130,7 @@ uint8_t BBQ10Keyboard::readRegister8(uint8_t reg) const
         m_wire->write(reg);
         m_wire->endTransmission();
 
-        m_wire->requestFrom(m_addr, 1);
+        m_wire->requestFrom(m_addr, (uint8_t)1);
         if (m_wire->available() < 1)
             return 0;
 
@@ -147,13 +147,13 @@ uint8_t BBQ10Keyboard::readRegister8(uint8_t reg) const
 uint16_t BBQ10Keyboard::readRegister16(uint8_t reg) const
 {
     uint8_t data[2] = {0};
-    uint8_t low = 0, high = 0;
+    // uint8_t low = 0, high = 0;
     if (m_wire) {
         m_wire->beginTransmission(m_addr);
         m_wire->write(reg);
         m_wire->endTransmission();
 
-        m_wire->requestFrom(m_addr, 2);
+        m_wire->requestFrom(m_addr, (uint8_t)2);
         if (m_wire->available() < 2)
             return 0;
         data[0] = m_wire->read();
