@@ -48,13 +48,13 @@ GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display(GxEPD2_154_D67(INK_SS,
 U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 TTGOClass *twatch = nullptr;
 PCF8563_Class *rtc = nullptr;
-BMA *sensor = nullptr;
 AXP20X_Class *power = nullptr;
 Button2 *btn = nullptr;
 uint32_t seupCount = 0;
-bool bmaIRQ = false;
 bool pwIRQ = false;
 
+
+void sleepSensor();
 
 void setupDisplay()
 {
@@ -215,8 +215,6 @@ void setup()
 
     power = twatch->power;
 
-    sensor = twatch->bma;
-
     btn = twatch->button;
 
     // Use compile time as RTC input time
@@ -228,11 +226,8 @@ void setup()
     // Clear power interruption
     power->clearIRQ();
 
-    // Set Pin to interrupt
-    pinMode(BMA423_INT1, INPUT);
-    attachInterrupt(BMA423_INT1, [] {
-        bmaIRQ = true;
-    }, RISING);
+    // Set MPU6050 to sleep
+    sleepSensor();
 
     // Set Pin to interrupt
     pinMode(AXP202_INT, INPUT_PULLUP);
@@ -241,17 +236,18 @@ void setup()
     }, FALLING);
 
     btn->setPressedHandler([]() {
-        esp_restart();
+
+        display.powerOff();
+
+        delay(2000);
+
+        esp_sleep_enable_ext1_wakeup(GPIO_SEL_36, ESP_EXT1_WAKEUP_ALL_LOW);
+
+        esp_deep_sleep_start();
     });
 
     // Adjust the backlight to reduce current consumption
     twatch->bl->adjust(DEFAULT_BRIGHTNESS);
-
-    // Initialize the accelerometer
-    sensor->begin();
-
-    // Turn on accelerometer interrupt
-    sensor->attachInterrupt();
 
     // Initialize the ink screen
     setupDisplay();
@@ -261,6 +257,7 @@ void setup()
 
     // Reduce CPU frequency
     setCpuFrequencyMhz(40);
+
 }
 
 uint32_t loopMillis = 0;
@@ -282,19 +279,6 @@ void loop()
         power->clearIRQ();
     }
 
-    if (bmaIRQ) {
-        bmaIRQ = false;
-        bool  rlst;
-        // Need to wait for the interrupt status to return true
-        do {
-            rlst =  sensor->readInterrupt();
-        } while (!rlst);
-
-        if (sensor->isStepCounter()) {
-            seupCount =  sensor->getCounter();
-        }
-    }
-
     if (millis() - loopMillis > 1000) {
         loopMillis = millis();
         // Partial refresh
@@ -303,6 +287,22 @@ void loop()
 }
 
 
+#define MPU6050_ADDRESS_ADD             0x68
+#define MPU6050_RA_PWR_MGMT_1           0x6B
+#define MPU6050_PWR1_SLEEP_BIT          6
+
+void writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t data)
+{
+    uint8_t b;
+    twatch->readBytes(devAddr, regAddr, &b, 1);
+    b = (data != 0) ? (b | (1 << bitNum)) : (b & ~(1 << bitNum));
+    twatch->writeBytes(devAddr, regAddr, &b, 1);
+}
+
+void sleepSensor()
+{
+    writeBit(MPU6050_ADDRESS_ADD, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, true);
+}
 
 const unsigned char logoIcon[280] =  {
     0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00,
