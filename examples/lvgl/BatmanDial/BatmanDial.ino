@@ -3,8 +3,16 @@
  * Written by lewishe
  * */
 
-// #define LILYGO_TWATCH_2020_V1        // If you are using T-Watch-2020 version, please open this macro definition
-#include <TTGO.h>
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH          // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_2020_V1             //To use T-Watch2020, please uncomment this line
+
+
+// => Function select
+#define LILYGO_WATCH_LVGL                   //To use LVGL, you need to enable the macro LVGL
+
+#include <LilyGoWatch.h>
 
 typedef struct {
     lv_obj_t *hour;
@@ -24,7 +32,6 @@ void setup()
     Serial.begin(115200);
     watch = TTGOClass::getWatch();
     watch->begin();
-    watch->eTFT->fillScreen(TFT_BLACK);
     watch->lvgl_begin();
     rtc = watch->rtc;
 
