@@ -29,14 +29,30 @@ github:https://github.com/lewisxhe/FT5206_Library
 /////////////////////////////////////////////////////////////////
 #include "FT5206.h"
 
-FT5206_Class::FT5206_Class(TwoWire &port, uint8_t addr)
+void FT5206_Class::setType(uint8_t type)
+{
+    _type = type;
+}
+
+int FT5206_Class::begin(TwoWire &port, uint8_t addr)
 {
     _i2cPort = &port;
     _address = addr;
+    return dev_probe();
 }
 
+int FT5206_Class::begin(tp_com_fptr_t read_cb, tp_com_fptr_t write_cb, uint8_t addr )
+{
+    if (read_cb == nullptr || write_cb == nullptr) {
+        return false;
+    }
+    _read_cb = read_cb;
+    _write_cb = write_cb;
+    _address = addr;
+    return dev_probe();
+}
 
-int FT5206_Class::begin()
+int FT5206_Class::dev_probe()
 {
 #if 0
     if (version == LILYGO_TWATCH_FT62XX) {
@@ -58,17 +74,22 @@ int FT5206_Class::begin()
     }
 #else
     uint8_t val;
-    _i2cPort->beginTransmission(_address);
-    if (0 != _i2cPort->endTransmission()) {
-        return false;
+    if (_read_cb == nullptr || _write_cb == nullptr) {
+        _i2cPort->beginTransmission(_address);
+        if (0 != _i2cPort->endTransmission()) {
+            Serial.println("Not find device");
+            return false;
+        }
     }
+    Serial.println("dev_probe==>");
     _readByte(FT5206_VENDID_REG, 1, &val);
-    if (val == FT5206_VENDID || val == FT5206_VENDID1) {
-        // Serial.print("FT5206_VENDID1 "); Serial.println(val);
-        _type = val;
-    } else {
-        // Serial.print("CST026_VENDID "); Serial.println(val);
-        _type = CST026_VENDID;
+    Serial.print("FT5206_VENDID_REG "); Serial.println(val, HEX);
+    if (_type == 0xFF) {
+        if (val == FT5206_VENDID || val == FT5206_VENDID1) {
+            _type = val;
+        } else {
+            _type = CST026_VENDID;
+        }
     }
     _init = true;
 #endif
@@ -90,6 +111,9 @@ TP_Point FT5206_Class::getPoint(uint8_t num, uint8_t rotation)
         return TP_Point(0, 0);
     } else {
         switch (_type) {
+        case FT5X0X_VENDID:
+            return TP_Point(_x[num], _y[num]);
+
         case FT5206_VENDID: {
             int16_t x = map(_x[num], 0, 320, 0, 240);
             int16_t y = map(_y[num], 0, 320, 0, 240);

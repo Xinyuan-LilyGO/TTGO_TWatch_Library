@@ -61,6 +61,8 @@ github:https://github.com/lewisxhe/FT5206_Library
 #define LILYGO_TWATCH_CST026    0x01
 
 #define CST026_VENDID           0x26
+#define FT5X0X_VENDID           0X56
+
 
 
 class TP_Point
@@ -80,15 +82,21 @@ public:
     int16_t y;
 };
 
+typedef uint8_t (*tp_com_fptr_t)(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint8_t len);
+
 
 class FT5206_Class
 {
 public:
-    FT5206_Class(TwoWire &port, uint8_t addr = FT5206_SLAVE_ADDRESS) ;
-    int begin();
+
+    int begin(TwoWire &port, uint8_t addr = FT5206_SLAVE_ADDRESS);
+    int begin(tp_com_fptr_t read_cb, tp_com_fptr_t write_cb, uint8_t addr = FT5206_SLAVE_ADDRESS);
+    void setType(uint8_t type);
+
+    int dev_probe();
     // valid touching detect threshold.
     void adjustTheshold(uint8_t thresh);
-    TP_Point getPoint(uint8_t num = 0,uint8_t rotation = 0);
+    TP_Point getPoint(uint8_t num = 0, uint8_t rotation = 0);
     uint8_t touched();
     void enterSleepMode();
     void enterMonitorMode();
@@ -97,6 +105,9 @@ private:
     void _readRegister();
     int _readByte(uint8_t reg, uint8_t nbytes, uint8_t *data)
     {
+        if (_read_cb != nullptr) {
+            return _read_cb(_address, reg, data, nbytes);
+        }
         _i2cPort->beginTransmission(_address);
         _i2cPort->write(reg);
         _i2cPort->endTransmission();
@@ -109,6 +120,9 @@ private:
 
     int _writeByte(uint8_t reg, uint8_t nbytes, uint8_t *data)
     {
+        if (_write_cb != nullptr) {
+            return _write_cb(_address, reg, data, nbytes);
+        }
         _i2cPort->beginTransmission(_address);
         _i2cPort->write(reg);
         for (uint8_t i = 0; i < nbytes; i++) {
@@ -117,6 +131,8 @@ private:
         _i2cPort->endTransmission();
         return 0;
     }
+    tp_com_fptr_t _read_cb = nullptr;
+    tp_com_fptr_t _write_cb = nullptr;
 
     uint8_t _address;
     uint8_t _data[16];
@@ -126,5 +142,5 @@ private:
     uint8_t _touches = 0;
     bool _init = false;
     TwoWire *_i2cPort;
-    uint8_t _type;
+    uint8_t _type = 0xFF;
 };

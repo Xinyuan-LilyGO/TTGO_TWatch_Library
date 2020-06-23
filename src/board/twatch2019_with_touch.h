@@ -1,6 +1,5 @@
 
-#ifndef __BOARD_DEF_H
-#define __BOARD_DEF_H
+#pragma once
 
 #define TFT_WIDTH           240
 #define TFT_HEIGHT          240
@@ -17,8 +16,8 @@
 #define SD_MOSI             15
 #define SD_SCLK             14
 
-#define I2C_SDA             23
-#define I2C_SCL             32
+#define TP_SDA              23
+#define TP_SCL              32
 
 #define SEN_SDA             21
 #define SEN_SCL             22
@@ -81,8 +80,6 @@
 #define TWATCH_LORA_RST     25
 
 #define TWATCH_2020_IR_PIN      13
-#define TWATCH_2020_MOTOR_PIN   4
-#endif
 
 
 
