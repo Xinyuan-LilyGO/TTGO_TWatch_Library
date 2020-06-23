@@ -16,8 +16,8 @@
 #define SD_MOSI             15
 #define SD_SCLK             14
 
-#define TP_SDA              23
-#define TP_SCL              32
+#define TOUCH_SDA           23
+#define TOUCH_SCL           32
 
 #define SEN_SDA             21
 #define SEN_SCL             22

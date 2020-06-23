@@ -144,7 +144,7 @@ public:
     {
 #if defined(LILYGO_WATCH_HAS_TOUCH) && !defined(LILYGO_EINK_TOUCHSCREEN)
         touch = new FT5206_Class();
-        Wire1.begin(TP_SDA, TP_SCL);
+        Wire1.begin(TOUCH_SDA, TOUCH_SCL);
         if (!touch->begin(Wire1)) {
             DBG("Begin touch FAIL");
         }
