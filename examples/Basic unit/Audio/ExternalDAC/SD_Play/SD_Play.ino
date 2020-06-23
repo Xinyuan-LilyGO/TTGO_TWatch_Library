@@ -5,8 +5,25 @@ git clone https://github.com/earlephilhower/ESP8266Audio
 git clone https://github.com/Gianbacchio/ESP8266_Spiram
 */
 
-#include <TTGO.h>
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH       // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_BLOCK               // To use T-Watch Block , please uncomment this line
+
+//T-Watch2020 NOT SUPPORT ...
+// //#define LILYGO_WATCH_2020_V1
+//T-Watch2020 NOT SUPPORT ...
+
+
+// => Function select
+#define LILYGO_WATCH_HAS_SDCARD         //Use SD card module need to define own SD card
+#define LILYGO_WATCH_LVGL
+
+// This example requires an external IIS decoding module, otherwise it will not work
+
+#include <LilyGoWatch.h>
 #include <WiFi.h>
+#include <HTTPClient.h>         //Remove Audio Lib error
 #include "AudioFileSourceSD.h"
 #include "AudioFileSourceID3.h"
 #include "AudioGeneratorMP3.h"
@@ -46,96 +63,6 @@ void create_gui();
 void pressed()
 {
     ESP.restart();
-}
-
-void setup()
-{
-    WiFi.mode(WIFI_OFF);
-    delay(500);
-
-    Serial.begin(115200);
-    ttgo = TTGOClass::getWatch();
-    ttgo->begin();
-    ttgo->openBL();
-    ttgo->tft->fillScreen(TFT_BLACK);
-    ttgo->tft->setTextFont(2);
-
-    ttgo->tft->setCursor(0, 0);
-    ttgo->tft->fillScreen(TFT_BLACK);
-    ttgo->tft->println("Sample MP3 playback begins");
-
-    ttgo->button->setPressedHandler(pressed);
-
-    tk.attach_ms(30, []() {
-        ttgo->button->loop();
-    });
-
-    //!Turn on the audio power
-    ttgo->enableLDO3();
-
-    file = new AudioFileSourceSD();
-    id3 = new AudioFileSourceID3(file);
-    out = new AudioOutputI2S();
-    //! External DAC decoding
-    out->SetPinout(TWATCH_DAC_IIS_BCK, TWATCH_DAC_IIS_WS, TWATCH_DAC_IIS_DOUT);
-    mp3 = new AudioGeneratorMP3();
-
-    while (1) {
-        if (ttgo->sdcard_begin()) {
-            Serial.println("sd begin pass");
-            break;
-        }
-        Serial.println("sd begin fail,wait 1 sec");
-        delay(1000);
-    }
-
-    ttgo->lvgl_begin();
-
-    lv_theme_set_current(lv_theme_material_init(100, NULL));
-
-    scr = lv_scr_act();
-
-    list_cont = lv_cont_create(scr, NULL);
-
-    lv_obj_set_size(list_cont,  240, 240);
-
-    list = lv_list_create(list_cont, NULL);
-
-    lv_obj_set_size(list,  240, 240);
-
-    lv_obj_align(list, list_cont, LV_ALIGN_CENTER, 0, 0);
-
-    if (searchMusic(SD, "/", 2) == 0) {
-        Serial.println("No Search mp3 file");
-        while (1) {
-            delay(1000);
-        }
-    }
-
-}
-
-void loop()
-{
-    switch (state) {
-    case PLAY:
-        if (mp3->isRunning()) {
-            if (!mp3->loop()) {
-                mp3->stop();
-                state = 255;
-            }
-        }
-        break;
-    case PAUSE:
-        break;
-    case NEXT:
-        break;
-    case PREV:
-        break;
-    default:
-        delay(5);
-        break;
-    }
-    lv_task_handler();
 }
 
 static void list_event_handler(lv_obj_t *obj, lv_event_t event)
@@ -265,3 +192,96 @@ int searchMusic(fs::FS &fs, const char *dirname, uint8_t levels)
     }
     return searchFiles;
 }
+
+
+
+void setup()
+{
+    WiFi.mode(WIFI_OFF);
+    delay(500);
+
+    Serial.begin(115200);
+    ttgo = TTGOClass::getWatch();
+    ttgo->begin();
+    ttgo->openBL();
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextFont(2);
+
+    ttgo->tft->setCursor(0, 0);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->println("Sample MP3 playback begins");
+
+    ttgo->button->setPressedHandler(pressed);
+
+    tk.attach_ms(30, []() {
+        ttgo->button->loop();
+    });
+
+    //!Turn on the audio power
+    ttgo->enableLDO3();
+
+    file = new AudioFileSourceSD();
+    id3 = new AudioFileSourceID3(file);
+    out = new AudioOutputI2S();
+    //! External DAC decoding
+    out->SetPinout(TWATCH_DAC_IIS_BCK, TWATCH_DAC_IIS_WS, TWATCH_DAC_IIS_DOUT);
+    mp3 = new AudioGeneratorMP3();
+
+    while (1) {
+        if (ttgo->sdcard_begin()) {
+            Serial.println("sd begin pass");
+            break;
+        }
+        Serial.println("sd begin fail,wait 1 sec");
+        delay(1000);
+    }
+
+    ttgo->lvgl_begin();
+
+    lv_theme_set_current(lv_theme_material_init(100, NULL));
+
+    scr = lv_scr_act();
+
+    list_cont = lv_cont_create(scr, NULL);
+
+    lv_obj_set_size(list_cont,  240, 240);
+
+    list = lv_list_create(list_cont, NULL);
+
+    lv_obj_set_size(list,  240, 240);
+
+    lv_obj_align(list, list_cont, LV_ALIGN_CENTER, 0, 0);
+
+    if (searchMusic(SD, "/", 2) == 0) {
+        Serial.println("No Search mp3 file");
+        while (1) {
+            delay(1000);
+        }
+    }
+
+}
+
+void loop()
+{
+    switch (state) {
+    case PLAY:
+        if (mp3->isRunning()) {
+            if (!mp3->loop()) {
+                mp3->stop();
+                state = 255;
+            }
+        }
+        break;
+    case PAUSE:
+        break;
+    case NEXT:
+        break;
+    case PREV:
+        break;
+    default:
+        delay(5);
+        break;
+    }
+    lv_task_handler();
+}
+

@@ -5,8 +5,26 @@ git clone https://github.com/earlephilhower/ESP8266Audio
 git clone https://github.com/Gianbacchio/ESP8266_Spiram
 */
 
-#include <TTGO.h>
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH    // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_BLOCK           // To use T-Watch Block , please uncomment this line
+
+
+//T-Watch2020 NOT SUPPORT ...
+// //#define LILYGO_WATCH_2020_V1
+//T-Watch2020 NOT SUPPORT ...
+
+
+// => Function select
+#define LILYGO_WATCH_HAS_SDCARD       //Use SD card module need to define own SD card
+
+
+// This example requires an SD card and speaker module, otherwise it will not work
+
+#include <LilyGoWatch.h>
 #include <WiFi.h>
+#include <HTTPClient.h>         //Remove Audio Lib error
 #include "AudioFileSourceSD.h"
 #include "AudioFileSourceID3.h"
 #include "AudioGeneratorMP3.h"
