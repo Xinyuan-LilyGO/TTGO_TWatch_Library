@@ -7,10 +7,17 @@
  Updated by Bodmer for variable meter size
 */
 
+
+
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH          // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_2020_V1             //To use T-Watch2020, please uncomment this line
+
+#include <LilyGoWatch.h>
+
 // Define meter size
 #define M_SIZE 0.667
-
-#include <TTGO.h>
 
 void plotNeedle(int value, byte ms_delay);
 void analogMeter();
@@ -30,37 +37,6 @@ int value[6] = {0, 0, 0, 0, 0, 0};
 int old_value[6] = { -1, -1, -1, -1, -1, -1};
 int d = 0;
 
-void setup(void)
-{
-    Serial.begin(115200); // For debug
-
-    ttgo = TTGOClass::getWatch();
-    ttgo->begin();
-    ttgo->openBL();
-    ttgo->eTFT->setTextFont(1);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-
-    analogMeter(); // Draw analogue meter
-
-    updateTime = millis(); // Next update time
-}
-
-
-void loop()
-{
-    if (updateTime <= millis()) {
-        updateTime = millis() + 35; // Update meter every 35 milliseconds
-
-        // Create a Sine wave for testing
-        d += 4; if (d >= 360) d = 0;
-        value[0] = 50 + 50 * sin((d + 0) * 0.0174532925);
-        //value[0] = random(0,100);
-        //unsigned long tt = millis();
-        plotNeedle(value[0], 0); // It takes between 2 and 14ms to replot the needle with zero delay
-        //Serial.println(millis()-tt);
-    }
-}
-
 
 // #########################################################################
 //  Draw the analogue meter on the screen
@@ -69,10 +45,10 @@ void analogMeter()
 {
 
     // Meter outline
-    ttgo->eTFT->fillRect(0, 0, M_SIZE * 239, M_SIZE * 131, TFT_GREY);
-    ttgo->eTFT->fillRect(1, M_SIZE * 3, M_SIZE * 234, M_SIZE * 125, TFT_WHITE);
+    ttgo->tft->fillRect(0, 0, M_SIZE * 239, M_SIZE * 131, TFT_GREY);
+    ttgo->tft->fillRect(1, M_SIZE * 3, M_SIZE * 234, M_SIZE * 125, TFT_WHITE);
 
-    ttgo->eTFT->setTextColor(TFT_BLACK);  // Text colour
+    ttgo->tft->setTextColor(TFT_BLACK);  // Text colour
 
     // Draw ticks every 5 degrees from -50 to +50 degrees (100 deg. FSD swing)
     for (int i = -50; i < 51; i += 5) {
@@ -97,20 +73,20 @@ void analogMeter()
 
         // Yellow zone limits
         //if (i >= -50 && i < 0) {
-        //  ttgo->eTFT->fillTriangle(x0, y0, x1, y1, x2, y2, TFT_YELLOW);
-        //  ttgo->eTFT->fillTriangle(x1, y1, x2, y2, x3, y3, TFT_YELLOW);
+        //  ttgo->tft->fillTriangle(x0, y0, x1, y1, x2, y2, TFT_YELLOW);
+        //  ttgo->tft->fillTriangle(x1, y1, x2, y2, x3, y3, TFT_YELLOW);
         //}
 
         // Green zone limits
         if (i >= 0 && i < 25) {
-            ttgo->eTFT->fillTriangle(x0, y0, x1, y1, x2, y2, TFT_GREEN);
-            ttgo->eTFT->fillTriangle(x1, y1, x2, y2, x3, y3, TFT_GREEN);
+            ttgo->tft->fillTriangle(x0, y0, x1, y1, x2, y2, TFT_GREEN);
+            ttgo->tft->fillTriangle(x1, y1, x2, y2, x3, y3, TFT_GREEN);
         }
 
         // Orange zone limits
         if (i >= 25 && i < 50) {
-            ttgo->eTFT->fillTriangle(x0, y0, x1, y1, x2, y2, TFT_ORANGE);
-            ttgo->eTFT->fillTriangle(x1, y1, x2, y2, x3, y3, TFT_ORANGE);
+            ttgo->tft->fillTriangle(x0, y0, x1, y1, x2, y2, TFT_ORANGE);
+            ttgo->tft->fillTriangle(x1, y1, x2, y2, x3, y3, TFT_ORANGE);
         }
 
         // Short scale tick length
@@ -123,7 +99,7 @@ void analogMeter()
         y1 = sy * M_SIZE * 100 + M_SIZE * 150;
 
         // Draw tick
-        ttgo->eTFT->drawLine(x0, y0, x1, y1, TFT_BLACK);
+        ttgo->tft->drawLine(x0, y0, x1, y1, TFT_BLACK);
 
         // Check if labels should be drawn, with position tweaks
         if (i % 25 == 0) {
@@ -131,11 +107,11 @@ void analogMeter()
             x0 = sx * (M_SIZE * 100 + tl + 10) + M_SIZE * 120;
             y0 = sy * (M_SIZE * 100 + tl + 10) + M_SIZE * 150;
             switch (i / 25) {
-            case -2: ttgo->eTFT->drawCentreString("0", x0 + 4, y0 - 4, 1); break;
-            case -1: ttgo->eTFT->drawCentreString("25", x0 + 2, y0, 1); break;
-            case 0: ttgo->eTFT->drawCentreString("50", x0, y0, 1); break;
-            case 1: ttgo->eTFT->drawCentreString("75", x0, y0, 1); break;
-            case 2: ttgo->eTFT->drawCentreString("100", x0 - 2, y0 - 4, 1); break;
+            case -2: ttgo->tft->drawCentreString("0", x0 + 4, y0 - 4, 1); break;
+            case -1: ttgo->tft->drawCentreString("25", x0 + 2, y0, 1); break;
+            case 0: ttgo->tft->drawCentreString("50", x0, y0, 1); break;
+            case 1: ttgo->tft->drawCentreString("75", x0, y0, 1); break;
+            case 2: ttgo->tft->drawCentreString("100", x0 - 2, y0 - 4, 1); break;
             }
         }
 
@@ -145,12 +121,12 @@ void analogMeter()
         x0 = sx * M_SIZE * 100 + M_SIZE * 120;
         y0 = sy * M_SIZE * 100 + M_SIZE * 150;
         // Draw scale arc, don't draw the last part
-        if (i < 50) ttgo->eTFT->drawLine(x0, y0, x1, y1, TFT_BLACK);
+        if (i < 50) ttgo->tft->drawLine(x0, y0, x1, y1, TFT_BLACK);
     }
 
-    ttgo->eTFT->drawString("%RH", M_SIZE * (3 + 230 - 40), M_SIZE * (119 - 20), 2); // Units at bottom right
-    ttgo->eTFT->drawCentreString("%RH", M_SIZE * 120, M_SIZE * 75, 4); // Comment out to avoid font 4
-    ttgo->eTFT->drawRect(1, M_SIZE * 3, M_SIZE * 236, M_SIZE * 126, TFT_BLACK); // Draw bezel line
+    ttgo->tft->drawString("%RH", M_SIZE * (3 + 230 - 40), M_SIZE * (119 - 20), 2); // Units at bottom right
+    ttgo->tft->drawCentreString("%RH", M_SIZE * 120, M_SIZE * 75, 4); // Comment out to avoid font 4
+    ttgo->tft->drawRect(1, M_SIZE * 3, M_SIZE * 236, M_SIZE * 126, TFT_BLACK); // Draw bezel line
 
     plotNeedle(0, 0); // Put meter needle at 0
 }
@@ -164,9 +140,9 @@ void analogMeter()
 // #########################################################################
 void plotNeedle(int value, byte ms_delay)
 {
-    ttgo->eTFT->setTextColor(TFT_BLACK, TFT_WHITE);
+    ttgo->tft->setTextColor(TFT_BLACK, TFT_WHITE);
     char buf[8]; dtostrf(value, 4, 0, buf);
-    ttgo->eTFT->drawRightString(buf, 33, M_SIZE * (119 - 20), 2);
+    ttgo->tft->drawRightString(buf, 33, M_SIZE * (119 - 20), 2);
 
     if (value < -10) value = -10; // Limit value to emulate needle end stops
     if (value > 110) value = 110;
@@ -187,13 +163,13 @@ void plotNeedle(int value, byte ms_delay)
         float tx = tan((sdeg + 90) * 0.0174532925);
 
         // Erase old needle image
-        ttgo->eTFT->drawLine(M_SIZE * (120 + 24 * ltx) - 1, M_SIZE * (150 - 24), osx - 1, osy, TFT_WHITE);
-        ttgo->eTFT->drawLine(M_SIZE * (120 + 24 * ltx), M_SIZE * (150 - 24), osx, osy, TFT_WHITE);
-        ttgo->eTFT->drawLine(M_SIZE * (120 + 24 * ltx) + 1, M_SIZE * (150 - 24), osx + 1, osy, TFT_WHITE);
+        ttgo->tft->drawLine(M_SIZE * (120 + 24 * ltx) - 1, M_SIZE * (150 - 24), osx - 1, osy, TFT_WHITE);
+        ttgo->tft->drawLine(M_SIZE * (120 + 24 * ltx), M_SIZE * (150 - 24), osx, osy, TFT_WHITE);
+        ttgo->tft->drawLine(M_SIZE * (120 + 24 * ltx) + 1, M_SIZE * (150 - 24), osx + 1, osy, TFT_WHITE);
 
         // Re-plot text under needle
-        ttgo->eTFT->setTextColor(TFT_BLACK, TFT_WHITE);
-        ttgo->eTFT->drawCentreString("%RH", M_SIZE * 120, M_SIZE * 75, 4); // // Comment out to avoid font 4
+        ttgo->tft->setTextColor(TFT_BLACK, TFT_WHITE);
+        ttgo->tft->drawCentreString("%RH", M_SIZE * 120, M_SIZE * 75, 4); // // Comment out to avoid font 4
 
         // Store new needle end coords for next erase
         ltx = tx;
@@ -202,15 +178,43 @@ void plotNeedle(int value, byte ms_delay)
 
         // Draw the needle in the new postion, magenta makes needle a bit bolder
         // draws 3 lines to thicken needle
-        ttgo->eTFT->drawLine(M_SIZE * (120 + 24 * ltx) - 1, M_SIZE * (150 - 24), osx - 1, osy, TFT_RED);
-        ttgo->eTFT->drawLine(M_SIZE * (120 + 24 * ltx), M_SIZE * (150 - 24), osx, osy, TFT_MAGENTA);
-        ttgo->eTFT->drawLine(M_SIZE * (120 + 24 * ltx) + 1, M_SIZE * (150 - 24), osx + 1, osy, TFT_RED);
+        ttgo->tft->drawLine(M_SIZE * (120 + 24 * ltx) - 1, M_SIZE * (150 - 24), osx - 1, osy, TFT_RED);
+        ttgo->tft->drawLine(M_SIZE * (120 + 24 * ltx), M_SIZE * (150 - 24), osx, osy, TFT_MAGENTA);
+        ttgo->tft->drawLine(M_SIZE * (120 + 24 * ltx) + 1, M_SIZE * (150 - 24), osx + 1, osy, TFT_RED);
 
         // Slow needle down slightly as it approaches new postion
         if (abs(old_analog - value) < 10) ms_delay += ms_delay / 5;
 
         // Wait before next update
         delay(ms_delay);
+    }
+}
+
+
+void setup(void)
+{
+    Serial.begin(115200); // For debug
+    ttgo = TTGOClass::getWatch();
+    ttgo->begin();
+    ttgo->openBL();
+    ttgo->tft->setTextFont(1);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    analogMeter(); // Draw analogue meter
+    updateTime = millis(); // Next update time
+}
+
+
+void loop()
+{
+    if (updateTime <= millis()) {
+        updateTime = millis() + 35; // Update meter every 35 milliseconds
+        // Create a Sine wave for testing
+        d += 4; if (d >= 360) d = 0;
+        value[0] = 50 + 50 * sin((d + 0) * 0.0174532925);
+        //value[0] = random(0,100);
+        //unsigned long tt = millis();
+        plotNeedle(value[0], 0); // It takes between 2 and 14ms to replot the needle with zero delay
+        //Serial.println(millis()-tt);
     }
 }
 

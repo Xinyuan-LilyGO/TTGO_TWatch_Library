@@ -28,7 +28,12 @@ code    color
 
  */
 
-#include <TTGO.h>
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH          // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_2020_V1             //To use T-Watch2020, please uncomment this line
+
+#include <LilyGoWatch.h>
 
 TTGOClass *ttgo;
 
@@ -55,11 +60,9 @@ void setup(void)
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
-    
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-
-    ttgo->eTFT->setTextColor(TFT_YELLOW, TFT_BLACK); // Note: the new fonts do not draw the background colour
-
+    ttgo->tft->setTextFont(1);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_YELLOW, TFT_BLACK); // Note: the new fonts do not draw the background colour
     targetTime = millis() + 1000;
 }
 
@@ -83,15 +86,15 @@ void loop()
 
         if (ss == 0 || initial) {
             initial = 0;
-            ttgo->eTFT->setTextColor(TFT_GREEN, TFT_BLACK);
-            ttgo->eTFT->setCursor (8, 52);
-            ttgo->eTFT->print(__DATE__); // This uses the standard ADAFruit small font
+            ttgo->tft->setTextColor(TFT_GREEN, TFT_BLACK);
+            ttgo->tft->setCursor (8, 52);
+            ttgo->tft->print(__DATE__); // This uses the standard ADAFruit small font
 
-            ttgo->eTFT->setTextColor(TFT_BLUE, TFT_BLACK);
-            ttgo->eTFT->drawCentreString("It is windy", 120, 48, 2); // Next size up font 2
+            ttgo->tft->setTextColor(TFT_BLUE, TFT_BLACK);
+            ttgo->tft->drawCentreString("It is windy", 120, 48, 2); // Next size up font 2
 
-            //ttgo->eTFT->setTextColor(0xF81F, TFT_BLACK); // Pink
-            //ttgo->eTFT->drawCentreString("12.34",80,100,6); // Large font 6 only contains characters [space] 0 1 2 3 4 5 6 7 8 9 . : a p m
+            //ttgo->tft->setTextColor(0xF81F, TFT_BLACK); // Pink
+            //ttgo->tft->drawCentreString("12.34",80,100,6); // Large font 6 only contains characters [space] 0 1 2 3 4 5 6 7 8 9 . : a p m
         }
 
         // Update digital time
@@ -99,38 +102,38 @@ void loop()
         byte ypos = 0;
         if (omm != mm) { // Only redraw every minute to minimise flicker
             // Uncomment ONE of the next 2 lines, using the ghost image demonstrates text overlay as time is drawn over it
-            ttgo->eTFT->setTextColor(0x39C4, TFT_BLACK);  // Leave a 7 segment ghost image, comment out next line!
-            //ttgo->eTFT->setTextColor(TFT_BLACK, TFT_BLACK); // Set font colour to black to wipe image
+            ttgo->tft->setTextColor(0x39C4, TFT_BLACK);  // Leave a 7 segment ghost image, comment out next line!
+            //ttgo->tft->setTextColor(TFT_BLACK, TFT_BLACK); // Set font colour to black to wipe image
             // Font 7 is to show a pseudo 7 segment display.
             // Font 7 only contains characters [space] 0 1 2 3 4 5 6 7 8 9 0 : .
-            ttgo->eTFT->drawString("88:88", xpos, ypos, 7); // Overwrite the text to clear it
-            ttgo->eTFT->setTextColor(0xFBE0, TFT_BLACK); // Orange
+            ttgo->tft->drawString("88:88", xpos, ypos, 7); // Overwrite the text to clear it
+            ttgo->tft->setTextColor(0xFBE0, TFT_BLACK); // Orange
             omm = mm;
 
-            if (hh < 10) xpos += ttgo->eTFT->drawChar('0', xpos, ypos, 7);
-            xpos += ttgo->eTFT->drawNumber(hh, xpos, ypos, 7);
+            if (hh < 10) xpos += ttgo->tft->drawChar('0', xpos, ypos, 7);
+            xpos += ttgo->tft->drawNumber(hh, xpos, ypos, 7);
             xcolon = xpos;
-            xpos += ttgo->eTFT->drawChar(':', xpos, ypos, 7);
-            if (mm < 10) xpos += ttgo->eTFT->drawChar('0', xpos, ypos, 7);
-            ttgo->eTFT->drawNumber(mm, xpos, ypos, 7);
+            xpos += ttgo->tft->drawChar(':', xpos, ypos, 7);
+            if (mm < 10) xpos += ttgo->tft->drawChar('0', xpos, ypos, 7);
+            ttgo->tft->drawNumber(mm, xpos, ypos, 7);
         }
 
         if (ss % 2) { // Flash the colon
-            ttgo->eTFT->setTextColor(0x39C4, TFT_BLACK);
-            xpos += ttgo->eTFT->drawChar(':', xcolon, ypos, 7);
-            ttgo->eTFT->setTextColor(0xFBE0, TFT_BLACK);
+            ttgo->tft->setTextColor(0x39C4, TFT_BLACK);
+            xpos += ttgo->tft->drawChar(':', xcolon, ypos, 7);
+            ttgo->tft->setTextColor(0xFBE0, TFT_BLACK);
         } else {
-            ttgo->eTFT->drawChar(':', xcolon, ypos, 7);
+            ttgo->tft->drawChar(':', xcolon, ypos, 7);
             colour = random(0xFFFF);
             // Erase the old text with a rectangle, the disadvantage of this method is increased display flicker
-            ttgo->eTFT->fillRect (0, 64, 160, 20, TFT_BLACK);
-            ttgo->eTFT->setTextColor(colour);
-            ttgo->eTFT->drawRightString("Colour", 75, 64, 4); // Right justified string drawing to x position 75
+            ttgo->tft->fillRect (0, 64, 160, 20, TFT_BLACK);
+            ttgo->tft->setTextColor(colour);
+            ttgo->tft->drawRightString("Colour", 75, 64, 4); // Right justified string drawing to x position 75
             String scolour = String(colour, HEX);
             scolour.toUpperCase();
             char buffer[20];
             scolour.toCharArray(buffer, 20);
-            ttgo->eTFT->drawString(buffer, 82, 64, 4);
+            ttgo->tft->drawString(buffer, 82, 64, 4);
         }
     }
 }

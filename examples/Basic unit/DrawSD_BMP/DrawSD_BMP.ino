@@ -15,7 +15,7 @@ void setup()
     Serial.begin(115200);
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
-    tft = ttgo->eTFT;
+    tft = ttgo->tft;
     tft->fillScreen(TFT_BLACK);
     ttgo->openBL();
 

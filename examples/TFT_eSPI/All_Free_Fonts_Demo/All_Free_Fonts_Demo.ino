@@ -38,14 +38,18 @@
   #########################################################################
 */
 
-#define TEXT "aA MWyz~12" // Text that will be printed on screen in any font
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH          // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_2020_V1             //To use T-Watch2020, please uncomment this line
 
+
+#include <LilyGoWatch.h>
 #include "Free_Fonts.h" // Include the header file attached to this sketch
-
-#include <TTGO.h>
 
 TTGOClass *ttgo;
 
+#define TEXT "aA MWyz~12" // Text that will be printed on screen in any font
 
 unsigned long drawTime = 0;
 
@@ -67,309 +71,309 @@ void loop()
     // the smaller one with the background colour.
 
     // Set text datum to middle centre
-    ttgo->eTFT->setTextDatum(MC_DATUM);
+    ttgo->tft->setTextDatum(MC_DATUM);
 
     // Set text colour to orange with black background
-    ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);            // Clear screen
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF1, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF1);                 // Select the font
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);// Print the string name of the font
+    ttgo->tft->fillScreen(TFT_BLACK);            // Clear screen
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF1, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF1);                 // Select the font
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);// Print the string name of the font
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF2, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF2);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF2, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF2);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF3, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF3);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF3, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF3);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF4, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF4);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF5, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF5);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF6, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF6);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF7, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF7);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF8, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF8);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF4, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF4);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF9, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF9);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF5, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF5);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF10, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF10);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF6, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF6);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF11, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF11);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF7, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF7);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF12, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF12);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF13, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF13);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF14, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF14);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF15, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF15);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF16, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF16);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF8, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF8);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF17, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF17);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF9, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF9);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF18, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF18);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF10, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF10);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF19, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF19);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF11, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF11);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF20, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF20);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF21, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF21);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF22, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF22);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF23, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF23);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF24, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF24);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF12, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF12);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF25, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF25);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF13, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF13);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF26, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF26);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF14, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF14);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF27, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF27);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF15, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF15);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF28, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF28);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF29, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF29);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF30, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF30);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF31, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF31);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF32, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF32);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF16, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF16);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF33, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF33);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF17, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF17);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF34, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF34);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF18, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF18);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF35, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF35);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF19, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF19);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF36, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF36);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF37, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF37);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF38, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF38);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF39, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF39);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
-    delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF40, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF40);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF20, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF20);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF41, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF41);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF21, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF21);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF42, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF42);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF22, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF22);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF43, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF43);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF23, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF23);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF44, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF44);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF24, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF24);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF45, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF45);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF25, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF25);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF46, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF46);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF26, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF26);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF47, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF47);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF27, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF27);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
-    //ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setFreeFont(FF18);                 // Select the font
-    ttgo->eTFT->drawString(sFF48, 160, 60, GFXFF);// Print the string name of the font
-    ttgo->eTFT->setFreeFont(FF48);
-    ttgo->eTFT->drawString(TEXT, 160, 120, GFXFF);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF28, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF28);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF29, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF29);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF30, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF30);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF31, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF31);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF32, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF32);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF33, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF33);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF34, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF34);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF35, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF35);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF36, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF36);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF37, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF37);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF38, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF38);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF39, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF39);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF40, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF40);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF41, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF41);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF42, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF42);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF43, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF43);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF44, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF44);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF45, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF45);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF46, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF46);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF47, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF47);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
+    delay(1000);
+    //ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setFreeFont(FF18);                 // Select the font
+    ttgo->tft->drawString(sFF48, 160, 60, GFXFF);// Print the string name of the font
+    ttgo->tft->setFreeFont(FF48);
+    ttgo->tft->drawString(TEXT, 160, 120, GFXFF);
     delay(1000);
 
 }

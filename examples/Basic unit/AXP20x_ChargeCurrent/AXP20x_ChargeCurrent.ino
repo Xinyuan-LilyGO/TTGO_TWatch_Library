@@ -9,7 +9,7 @@ void setup()
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
-    tft = ttgo->eTFT;
+    tft = ttgo->tft;
 
     tft->fillScreen(TFT_BLACK);
     tft->drawString("T-Watch AXP202",  0, 50, 2);

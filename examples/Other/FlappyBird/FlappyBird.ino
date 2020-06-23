@@ -92,7 +92,7 @@ static short tmpx, tmpy;
 // ---------------
 // faster drawPixel method by inlining calls and using setAddrWindow and pushColor
 // using macro to force inlining
-#define drawPixel(a, b, c) ttgo->eTFT->setAddrWindow(a, b, a, b); ttgo->eTFT->pushColor(c)
+#define drawPixel(a, b, c) ttgo->tft->setAddrWindow(a, b, a, b); ttgo->tft->pushColor(c)
 
 
 void setup()
@@ -126,14 +126,14 @@ void game_loop()
     unsigned char GAMEH = TFTH - FLOORH;
     // draw the floor once, we will not overwrite on this area in-game
     // black line
-    ttgo->eTFT->drawFastHLine(0, GAMEH, TFTW, TFT_BLACK);
+    ttgo->tft->drawFastHLine(0, GAMEH, TFTW, TFT_BLACK);
     // grass and stripe
-    ttgo->eTFT->fillRect(0, GAMEH + 1, TFTW2, GRASSH, GRASSCOL);
-    ttgo->eTFT->fillRect(TFTW2, GAMEH + 1, TFTW2, GRASSH, GRASSCOL2);
+    ttgo->tft->fillRect(0, GAMEH + 1, TFTW2, GRASSH, GRASSCOL);
+    ttgo->tft->fillRect(TFTW2, GAMEH + 1, TFTW2, GRASSH, GRASSCOL2);
     // black line
-    ttgo->eTFT->drawFastHLine(0, GAMEH + GRASSH, TFTW, TFT_BLACK);
+    ttgo->tft->drawFastHLine(0, GAMEH + GRASSH, TFTW, TFT_BLACK);
     // mud
-    ttgo->eTFT->fillRect(0, GAMEH + GRASSH + 1, TFTW, FLOORH - GRASSH, FLOORCOL);
+    ttgo->tft->fillRect(0, GAMEH + GRASSH + 1, TFTW, FLOORH - GRASSH, FLOORCOL);
     // grass x position (for stripe animation)
     long grassx = TFTW;
     // game loop time variables
@@ -193,11 +193,11 @@ void game_loop()
         // we save cycles if we avoid drawing the pipe when outside the screen
         if (pipes.x >= 0 && pipes.x < TFTW) {
             // pipe color
-            ttgo->eTFT->drawFastVLine(pipes.x + 3, 0, pipes.gap_y, PIPECOL);
-            ttgo->eTFT->drawFastVLine(pipes.x + 3, pipes.gap_y + GAPHEIGHT + 1, GAMEH - (pipes.gap_y + GAPHEIGHT + 1), PIPECOL);
+            ttgo->tft->drawFastVLine(pipes.x + 3, 0, pipes.gap_y, PIPECOL);
+            ttgo->tft->drawFastVLine(pipes.x + 3, pipes.gap_y + GAPHEIGHT + 1, GAMEH - (pipes.gap_y + GAPHEIGHT + 1), PIPECOL);
             // highlight
-            ttgo->eTFT->drawFastVLine(pipes.x, 0, pipes.gap_y, PIPEHIGHCOL);
-            ttgo->eTFT->drawFastVLine(pipes.x, pipes.gap_y + GAPHEIGHT + 1, GAMEH - (pipes.gap_y + GAPHEIGHT + 1), PIPEHIGHCOL);
+            ttgo->tft->drawFastVLine(pipes.x, 0, pipes.gap_y, PIPEHIGHCOL);
+            ttgo->tft->drawFastVLine(pipes.x, pipes.gap_y + GAPHEIGHT + 1, GAMEH - (pipes.gap_y + GAPHEIGHT + 1), PIPEHIGHCOL);
             // bottom and top border of pipe
             drawPixel(pipes.x, pipes.gap_y, PIPESEAMCOL);
             drawPixel(pipes.x, pipes.gap_y + GAPHEIGHT, PIPESEAMCOL);
@@ -208,7 +208,7 @@ void game_loop()
             drawPixel(pipes.x + 3, pipes.gap_y + GAPHEIGHT + 6, PIPESEAMCOL);
         }
         // erase behind pipe
-        if (pipes.x <= TFTW) ttgo->eTFT->drawFastVLine(pipes.x + PIPEW, 0, GAMEH, BCKGRDCOL);
+        if (pipes.x <= TFTW) ttgo->tft->drawFastVLine(pipes.x + PIPEW, 0, GAMEH, BCKGRDCOL);
 
         // bird
         // ---------------
@@ -235,8 +235,8 @@ void game_loop()
         // ---------------
         grassx -= SPEED;
         if (grassx < 0) grassx = TFTW;
-        ttgo->eTFT->drawFastVLine( grassx    % TFTW, GAMEH + 1, GRASSH - 1, GRASSCOL);
-        ttgo->eTFT->drawFastVLine((grassx + 64) % TFTW, GAMEH + 1, GRASSH - 1, GRASSCOL2);
+        ttgo->tft->drawFastVLine( grassx    % TFTW, GAMEH + 1, GRASSH - 1, GRASSCOL);
+        ttgo->tft->drawFastVLine((grassx + 64) % TFTW, GAMEH + 1, GRASSH - 1, GRASSCOL2);
 
         // ===============
         // collision
@@ -253,19 +253,19 @@ void game_loop()
         else if (bird.x > pipes.x + PIPEW - BIRDW && passed_pipe) {
             passed_pipe = false;
             // erase score with background color
-            ttgo->eTFT->setTextColor(BCKGRDCOL);
-            ttgo->eTFT->setCursor( TFTW2, 4);
-            ttgo->eTFT->print(score);
+            ttgo->tft->setTextColor(BCKGRDCOL);
+            ttgo->tft->setCursor( TFTW2, 4);
+            ttgo->tft->print(score);
             // set text color back to white for new score
-            ttgo->eTFT->setTextColor(TFT_WHITE);
+            ttgo->tft->setTextColor(TFT_WHITE);
             // increase score since we successfully passed a pipe
             score++;
         }
 
         // update score
         // ---------------
-        ttgo->eTFT->setCursor( TFTW2, 4);
-        ttgo->eTFT->print(score);
+        ttgo->tft->setCursor( TFTW2, 4);
+        ttgo->tft->print(score);
     }
 
     // add a small delay to show how the player lost
@@ -278,23 +278,23 @@ void game_loop()
 // ---------------
 void game_start()
 {
-    ttgo->eTFT->setTextFont(1);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->fillRect(10, TFTH2 - 20, TFTW - 20, 1, TFT_WHITE);
-    ttgo->eTFT->fillRect(10, TFTH2 + 32, TFTW - 20, 1, TFT_WHITE);
-    ttgo->eTFT->setTextColor(TFT_WHITE);
-    ttgo->eTFT->setTextSize(3);
+    ttgo->tft->setTextFont(1);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->fillRect(10, TFTH2 - 20, TFTW - 20, 1, TFT_WHITE);
+    ttgo->tft->fillRect(10, TFTH2 + 32, TFTW - 20, 1, TFT_WHITE);
+    ttgo->tft->setTextColor(TFT_WHITE);
+    ttgo->tft->setTextSize(3);
     // half width - num char * char width in pixels
-    ttgo->eTFT->setCursor( TFTW2 - (6 * 9), TFTH2 - 16);
-    ttgo->eTFT->println("FLAPPY");
-    ttgo->eTFT->setTextSize(3);
-    ttgo->eTFT->setCursor( TFTW2 - (6 * 9), TFTH2 + 8);
-    ttgo->eTFT->println("-BIRD-");
-    ttgo->eTFT->setTextSize(2);
-    ttgo->eTFT->setCursor( 10, TFTH2 - 36);
-    ttgo->eTFT->println("T-Watch");
-    ttgo->eTFT->setCursor( TFTW2 - (17 * 9), TFTH2 + 36);
-    ttgo->eTFT->println("Premi il bottone centrale");
+    ttgo->tft->setCursor( TFTW2 - (6 * 9), TFTH2 - 16);
+    ttgo->tft->println("FLAPPY");
+    ttgo->tft->setTextSize(3);
+    ttgo->tft->setCursor( TFTW2 - (6 * 9), TFTH2 + 8);
+    ttgo->tft->println("-BIRD-");
+    ttgo->tft->setTextSize(2);
+    ttgo->tft->setCursor( 10, TFTH2 - 36);
+    ttgo->tft->println("T-Watch");
+    ttgo->tft->setCursor( TFTW2 - (17 * 9), TFTH2 + 36);
+    ttgo->tft->println("Premi il bottone centrale");
     while (1) {
         delay(1000);
         // wait for push button
@@ -311,7 +311,7 @@ void game_start()
 void game_init()
 {
     // clear screen
-    ttgo->eTFT->fillScreen(BCKGRDCOL);
+    ttgo->tft->fillScreen(BCKGRDCOL);
     // reset score
     score = 0;
     // init bird
@@ -332,32 +332,32 @@ void game_init()
 // ---------------
 void game_over()
 {
-    ttgo->eTFT->fillScreen(TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
     EEPROM_Read(&maxScore, 0);
 
     if (score > maxScore) {
         EEPROM_Write(&score, 0);
         maxScore = score;
-        ttgo->eTFT->setTextColor(TFT_RED);
-        ttgo->eTFT->setTextSize(2);
-        ttgo->eTFT->setCursor( TFTW2 - (13 * 6), TFTH2 - 26);
-        ttgo->eTFT->println("NEW HIGHSCORE");
+        ttgo->tft->setTextColor(TFT_RED);
+        ttgo->tft->setTextSize(2);
+        ttgo->tft->setCursor( TFTW2 - (13 * 6), TFTH2 - 26);
+        ttgo->tft->println("NEW HIGHSCORE");
     }
 
-    ttgo->eTFT->setTextColor(TFT_WHITE);
-    ttgo->eTFT->setTextSize(3);
+    ttgo->tft->setTextColor(TFT_WHITE);
+    ttgo->tft->setTextSize(3);
     // half width - num char * char width in pixels
-    ttgo->eTFT->setCursor( TFTW2 - (9 * 9), TFTH2 - 6);
-    ttgo->eTFT->println("GAME OVER");
-    ttgo->eTFT->setTextSize(2);
-    ttgo->eTFT->setCursor( 10, 10);
-    ttgo->eTFT->print("score: ");
-    ttgo->eTFT->print(score);
-    ttgo->eTFT->setCursor( TFTW2 - (12 * 6), TFTH2 + 18);
-    ttgo->eTFT->println("press button");
-    ttgo->eTFT->setCursor( 10, 28);
-    ttgo->eTFT->print("Max Score:");
-    ttgo->eTFT->print(maxScore);
+    ttgo->tft->setCursor( TFTW2 - (9 * 9), TFTH2 - 6);
+    ttgo->tft->println("GAME OVER");
+    ttgo->tft->setTextSize(2);
+    ttgo->tft->setCursor( 10, 10);
+    ttgo->tft->print("score: ");
+    ttgo->tft->print(score);
+    ttgo->tft->setCursor( TFTW2 - (12 * 6), TFTH2 + 18);
+    ttgo->tft->println("press button");
+    ttgo->tft->setCursor( 10, 28);
+    ttgo->tft->print("Max Score:");
+    ttgo->tft->print(maxScore);
     while (1) {
         // wait for push button
         if (ttgo->button->isPressed()) {

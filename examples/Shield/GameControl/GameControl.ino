@@ -3,12 +3,12 @@
 
 TTGOClass *ttgo;
 
-void pressed(const char * str)
+void pressed(const char *str)
 {
     uint16_t color = random(0xFFFF);
-    ttgo->eTFT->fillScreen(color);
-    ttgo->eTFT->setTextColor(color, TFT_WHITE);
-    ttgo->eTFT->drawString(str,  80, 100, 4);
+    ttgo->tft->fillScreen(color);
+    ttgo->tft->setTextColor(color, TFT_WHITE);
+    ttgo->tft->drawString(str,  80, 100, 4);
 }
 
 void setup()
@@ -18,9 +18,9 @@ void setup()
     ttgo->begin();
     ttgo->openBL();
     ttgo->gameControlBegin();
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);
-    ttgo->eTFT->setTextFont(4);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
+    ttgo->tft->setTextFont(4);
 }
 
 void loop()

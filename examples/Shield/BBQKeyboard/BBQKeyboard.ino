@@ -34,7 +34,7 @@ void setup()
 
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
-    tft = ttgo->eTFT;
+    tft = ttgo->tft;
     tft->fillScreen(TFT_BLACK);
     ttgo->openBL();
     tft->setTextFont(2);

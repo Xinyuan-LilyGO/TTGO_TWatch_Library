@@ -6,21 +6,21 @@
 
 // Adapted by Bodmer
 
-#include <TTGO.h>
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH          // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_2020_V1             //To use T-Watch2020, please uncomment this line
+
+
+#include <LilyGoWatch.h>
 
 TTGOClass *ttgo;
 
 // Maximum number of generations until the screen is refreshed
 #define MAX_GEN_COUNT 500
 
-// The ESP8266 has plenty of memory so we can create a large array
-// 2 x 2 pixel cells, array size = 5120 bytes per array, runs fast
-// #define GRIDX 80
-// #define GRIDY 80
-// #define CELLXY 2
-
 // 1 x 1 pixel cells, array size = 20480 bytes per array
-#define GRIDX 160
+#define GRIDX 240
 #define GRIDY 128
 #define CELLXY 1
 
@@ -36,61 +36,6 @@ uint8_t newgrid[GRIDX][GRIDY];
 uint16_t genCount = 0;
 
 
-
-
-void setup()
-{
-    //Set up the display
-    ttgo = TTGOClass::getWatch();
-    ttgo->begin();
-    ttgo->openBL();
-
-    // ttgo->eTFT->setRotation(3);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextFont(2);
-    ttgo->eTFT->setTextSize(1);
-    ttgo->eTFT->setTextColor(TFT_WHITE);
-    ttgo->eTFT->setCursor(0, 0);
-}
-
-void loop()
-{
-
-    //Display a simple splash screen
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextSize(2);
-    ttgo->eTFT->setTextColor(TFT_WHITE);
-    ttgo->eTFT->setCursor(40, 5);
-    ttgo->eTFT->println(F("Arduino"));
-    ttgo->eTFT->setCursor(35, 25);
-    ttgo->eTFT->println(F("Cellular"));
-    ttgo->eTFT->setCursor(35, 45);
-    ttgo->eTFT->println(F("Automata"));
-
-    delay(1000);
-
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-
-    initGrid();
-
-    genCount = MAX_GEN_COUNT;
-
-    drawGrid();
-
-    //Compute generations
-    for (int gen = 0; gen < genCount; gen++) {
-        computeCA();
-        drawGrid();
-        delay(GEN_DELAY);
-        for (int16_t x = 1; x < GRIDX - 1; x++) {
-            for (int16_t y = 1; y < GRIDY - 1; y++) {
-                grid[x][y] = newgrid[x][y];
-            }
-        }
-
-    }
-}
-
 //Draws the grid on the display
 void drawGrid(void)
 {
@@ -101,7 +46,7 @@ void drawGrid(void)
             if ((grid[x][y]) != (newgrid[x][y])) {
                 if (newgrid[x][y] == 1) color = 0xFFFF; //random(0xFFFF);
                 else color = 0;
-                ttgo->eTFT->fillRect(CELLXY * x, CELLXY * y, CELLXY, CELLXY, color);
+                ttgo->tft->fillRect(CELLXY * x, CELLXY * y, CELLXY, CELLXY, color);
             }
         }
     }
@@ -127,6 +72,14 @@ void initGrid(void)
     }
 }
 
+
+// Check the Moore neighborhood
+int getNumberOfNeighbors(int x, int y)
+{
+    return grid[x - 1][y] + grid[x - 1][y - 1] + grid[x][y - 1] + grid[x + 1][y - 1] + grid[x + 1][y] + grid[x + 1][y + 1] + grid[x][y + 1] + grid[x - 1][y + 1];
+}
+
+
 //Compute the CA. Basically everything related to CA starts here
 void computeCA()
 {
@@ -143,11 +96,59 @@ void computeCA()
     }
 }
 
-// Check the Moore neighborhood
-int getNumberOfNeighbors(int x, int y)
+void setup()
 {
-    return grid[x - 1][y] + grid[x - 1][y - 1] + grid[x][y - 1] + grid[x + 1][y - 1] + grid[x + 1][y] + grid[x + 1][y + 1] + grid[x][y + 1] + grid[x - 1][y + 1];
+    //Set up the display
+    ttgo = TTGOClass::getWatch();
+    ttgo->begin();
+    ttgo->openBL();
+
+    // ttgo->tft->setRotation(3);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextFont(2);
+    ttgo->tft->setTextSize(1);
+    ttgo->tft->setTextColor(TFT_WHITE);
+    ttgo->tft->setCursor(0, 0);
 }
+
+void loop()
+{
+
+    //Display a simple splash screen
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextSize(2);
+    ttgo->tft->setTextColor(TFT_WHITE);
+    ttgo->tft->setCursor(40, 5);
+    ttgo->tft->println(F("Arduino"));
+    ttgo->tft->setCursor(35, 25);
+    ttgo->tft->println(F("Cellular"));
+    ttgo->tft->setCursor(35, 45);
+    ttgo->tft->println(F("Automata"));
+
+    delay(1000);
+
+    ttgo->tft->fillScreen(TFT_BLACK);
+
+    initGrid();
+
+    genCount = MAX_GEN_COUNT;
+
+    drawGrid();
+
+    //Compute generations
+    for (int gen = 0; gen < genCount; gen++) {
+        computeCA();
+        drawGrid();
+        delay(GEN_DELAY);
+        for (int16_t x = 1; x < GRIDX - 1; x++) {
+            for (int16_t y = 1; y < GRIDY - 1; y++) {
+                grid[x][y] = newgrid[x][y];
+            }
+        }
+
+    }
+}
+
 
 /*
    The MIT License (MIT)

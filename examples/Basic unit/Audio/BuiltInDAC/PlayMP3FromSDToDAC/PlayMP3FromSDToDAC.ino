@@ -27,23 +27,23 @@ void setup()
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextFont(2);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextFont(2);
 
     while (1) {
         if (ttgo->sdcard_begin()) {
             Serial.println("sd begin pass");
             break;
         }
-        ttgo->eTFT->println("SD begin fail,wait 1 sec");
+        ttgo->tft->println("SD begin fail,wait 1 sec");
         Serial.println("sd begin fail,wait 1 sec");
         delay(1000);
     }
-    
-    ttgo->eTFT->setCursor(0, 0);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->println("Sample MP3 playback begins");
-    
+
+    ttgo->tft->setCursor(0, 0);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->println("Sample MP3 playback begins");
+
     // pno_cs from https://ccrma.stanford.edu/~jos/pasp/Sound_Examples.html
     //!Turn on the audio power
     ttgo->enableLDO3();

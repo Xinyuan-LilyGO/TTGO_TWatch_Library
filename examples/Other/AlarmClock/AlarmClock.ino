@@ -31,12 +31,12 @@ void setup(void)
     ttgo->begin();
     ttgo->openBL();
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextFont(2);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextFont(2);
 
-    ttgo->eTFT->setCursor(0, 0);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->println("Sample alarm clock begins");
+    ttgo->tft->setCursor(0, 0);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->println("Sample alarm clock begins");
 
     file = new AudioFileSourcePROGMEM(pika, sizeof(pika));
     id3 = new AudioFileSourceID3(file);
@@ -62,8 +62,8 @@ void loop(void)
         if (!mp3->loop()) mp3->stop();
     } else {
 
-        ttgo->eTFT->fillScreen(TFT_BLACK);
-        ttgo->eTFT->println("alarm clock play done , sleep now ..");
+        ttgo->tft->fillScreen(TFT_BLACK);
+        ttgo->tft->println("alarm clock play done , sleep now ..");
 
         delay(1000);
 

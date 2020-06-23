@@ -11,10 +11,10 @@ void setup()
     ttgo->begin();
     ttgo->openBL();
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->drawString("T-Watch AXP202",  25, 50, 4);
-    ttgo->eTFT->setTextFont(4);
-    ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->drawString("T-Watch AXP202",  25, 50, 4);
+    ttgo->tft->setTextFont(4);
+    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
 
     pinMode(AXP202_INT, INPUT_PULLUP);
     attachInterrupt(AXP202_INT, [] {
@@ -32,16 +32,16 @@ void loop()
         irq = false;
         ttgo->power->readIRQ();
         if (ttgo->power->isVbusPlugInIRQ()) {
-            ttgo->eTFT->fillRect(20, 100, 200, 85, TFT_BLACK);
-            ttgo->eTFT->drawString("Power Plug In", 25, 100);
+            ttgo->tft->fillRect(20, 100, 200, 85, TFT_BLACK);
+            ttgo->tft->drawString("Power Plug In", 25, 100);
         }
         if (ttgo->power->isVbusRemoveIRQ()) {
-            ttgo->eTFT->fillRect(20, 100, 200, 85, TFT_BLACK);
-            ttgo->eTFT->drawString("Power Remove", 25, 100);
+            ttgo->tft->fillRect(20, 100, 200, 85, TFT_BLACK);
+            ttgo->tft->drawString("Power Remove", 25, 100);
         }
         if (ttgo->power->isPEKShortPressIRQ()) {
-            ttgo->eTFT->fillRect(20, 100, 200, 85, TFT_BLACK);
-            ttgo->eTFT->drawString("PowerKey Press", 25, 100);
+            ttgo->tft->fillRect(20, 100, 200, 85, TFT_BLACK);
+            ttgo->tft->drawString("PowerKey Press", 25, 100);
         }
         ttgo->power->clearIRQ();
     }

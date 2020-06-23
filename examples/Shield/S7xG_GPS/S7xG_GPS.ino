@@ -13,7 +13,7 @@ void setup(void)
     ttgo->begin();
     ttgo->openBL();
     //! Create a new pointer to save the display object
-    tft = ttgo->eTFT;
+    tft = ttgo->tft;
 
     tft->fillScreen(TFT_BLACK);
     tft->setTextFont(2);
@@ -49,7 +49,7 @@ void setup(void)
     s7xg->gpsSetPortUplink(20);
     s7xg->gpsSetFormatUplink(1);
     s7xg->gpsSetMode(1);
-    
+
     tft->setCursor(0, 0);
     tft->fillScreen(TFT_BLACK);
     tft->println("Positioning...");

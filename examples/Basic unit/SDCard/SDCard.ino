@@ -7,36 +7,36 @@ TTGOClass *ttgo;
 
 void listDir(fs::FS &fs, const char *dirname, uint8_t levels)
 {
-    ttgo->eTFT->setTextColor(TFT_GREEN, TFT_BLACK);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextDatum(TL_DATUM);
-    ttgo->eTFT->setCursor(0, 0);
+    ttgo->tft->setTextColor(TFT_GREEN, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextDatum(TL_DATUM);
+    ttgo->tft->setCursor(0, 0);
 
-    ttgo->eTFT->println("Listing directory:" + String(dirname));
+    ttgo->tft->println("Listing directory:" + String(dirname));
 
     File root = fs.open(dirname);
     if (!root) {
-        ttgo->eTFT->println("- failed to open directory");
+        ttgo->tft->println("- failed to open directory");
         return;
     }
     if (!root.isDirectory()) {
-        ttgo->eTFT->println(" - not a directory");
+        ttgo->tft->println(" - not a directory");
         return;
     }
 
     File file = root.openNextFile();
     while (file) {
         if (file.isDirectory()) {
-            ttgo->eTFT->print("  DIR : ");
-            ttgo->eTFT->println(file.name());
+            ttgo->tft->print("  DIR : ");
+            ttgo->tft->println(file.name());
             if (levels) {
                 listDir(fs, file.name(), levels - 1);
             }
         } else {
-            ttgo->eTFT->print("  FILE: ");
-            ttgo->eTFT->print(file.name());
-            ttgo->eTFT->print("  SIZE: ");
-            ttgo->eTFT->println(file.size());
+            ttgo->tft->print("  FILE: ");
+            ttgo->tft->print(file.name());
+            ttgo->tft->print("  SIZE: ");
+            ttgo->tft->println(file.size());
         }
         file = root.openNextFile();
     }
@@ -76,7 +76,7 @@ void setup()
     uint64_t cardSize = SD.cardSize() / (1024 * 1024);
     Serial.printf("SD Card Size: %lluMB\n", cardSize);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
     listDir(SD, "/", 2);
 }
 

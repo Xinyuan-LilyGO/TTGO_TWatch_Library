@@ -17,7 +17,12 @@
  Based on a sketch by Gilchrist 6/2/2014 1.0
  */
 
-#include <TTGO.h>
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH          // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_2020_V1             //To use T-Watch2020, please uncomment this line
+
+#include <LilyGoWatch.h>
 
 TTGOClass *ttgo;
 
@@ -34,6 +39,16 @@ uint8_t hh = conv2d(__TIME__), mm = conv2d(__TIME__ + 3), ss = conv2d(__TIME__ +
 
 boolean initial = 1;
 
+
+static uint8_t conv2d(const char *p)
+{
+    uint8_t v = 0;
+    if ('0' <= *p && *p <= '9')
+        v = *p - '0';
+    return 10 * v + *++p - '0';
+}
+
+
 void setup(void)
 {
     Serial.begin(115200);
@@ -42,12 +57,12 @@ void setup(void)
     ttgo->begin();
     ttgo->openBL();
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);  // Adding a background colour erases previous text automatically
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);  // Adding a background colour erases previous text automatically
 
     // Draw clock face
-    ttgo->eTFT->fillCircle(120, 120, 118, TFT_WHITE);
-    ttgo->eTFT->fillCircle(120, 120, 110, TFT_BLACK);
+    ttgo->tft->fillCircle(120, 120, 118, TFT_WHITE);
+    ttgo->tft->fillCircle(120, 120, 110, TFT_BLACK);
 
     // Draw 12 lines
     for (int i = 0; i < 360; i += 30) {
@@ -58,7 +73,7 @@ void setup(void)
         x1 = sx * 100 + 120;
         yy1 = sy * 100 + 120;
 
-        ttgo->eTFT->drawLine(x0, yy0, x1, yy1, TFT_RED);
+        ttgo->tft->drawLine(x0, yy0, x1, yy1, TFT_RED);
     }
 
     // Draw 60 dots
@@ -68,19 +83,19 @@ void setup(void)
         x0 = sx * 102 + 120;
         yy0 = sy * 102 + 120;
         // Draw minute markers
-        ttgo->eTFT->drawPixel(x0, yy0, TFT_WHITE);
+        ttgo->tft->drawPixel(x0, yy0, TFT_WHITE);
 
         // Draw main quadrant dots
-        if (i == 0 || i == 180) ttgo->eTFT->fillCircle(x0, yy0, 2, TFT_WHITE);
-        if (i == 90 || i == 270) ttgo->eTFT->fillCircle(x0, yy0, 2, TFT_WHITE);
+        if (i == 0 || i == 180) ttgo->tft->fillCircle(x0, yy0, 2, TFT_WHITE);
+        if (i == 90 || i == 270) ttgo->tft->fillCircle(x0, yy0, 2, TFT_WHITE);
     }
 
-    ttgo->eTFT->fillCircle(120, 121, 3, TFT_WHITE);
+    ttgo->tft->fillCircle(120, 121, 3, TFT_WHITE);
 
     // Draw text at position 120,260 using fonts 4
     // Only font numbers 2,4,6,7 are valid. Font 6 only contains characters [space] 0 1 2 3 4 5 6 7 8 9 : . - a p m
     // Font 7 is a 7 segment font and only contains characters [space] 0 1 2 3 4 5 6 7 8 9 : .
-    // ttgo->eTFT->drawCentreString("Time flies", 120, 260, 4);
+    // ttgo->tft->drawCentreString("Time flies", 120, 260, 4);
     targetTime = millis() + 1000;
 }
 
@@ -115,31 +130,22 @@ void loop()
         if (ss == 0 || initial) {
             initial = 0;
             // Erase hour and minute hand positions every minute
-            ttgo->eTFT->drawLine(ohx, ohy, 120, 121, TFT_BLACK);
+            ttgo->tft->drawLine(ohx, ohy, 120, 121, TFT_BLACK);
             ohx = hx * 62 + 121;
             ohy = hy * 62 + 121;
-            ttgo->eTFT->drawLine(omx, omy, 120, 121, TFT_BLACK);
+            ttgo->tft->drawLine(omx, omy, 120, 121, TFT_BLACK);
             omx = mx * 84 + 120;
             omy = my * 84 + 121;
         }
 
         // Redraw new hand positions, hour and minute hands not erased here to avoid flicker
-        ttgo->eTFT->drawLine(osx, osy, 120, 121, TFT_BLACK);
+        ttgo->tft->drawLine(osx, osy, 120, 121, TFT_BLACK);
         osx = sx * 90 + 121;
         osy = sy * 90 + 121;
-        ttgo->eTFT->drawLine(osx, osy, 120, 121, TFT_RED);
-        ttgo->eTFT->drawLine(ohx, ohy, 120, 121, TFT_WHITE);
-        ttgo->eTFT->drawLine(omx, omy, 120, 121, TFT_WHITE);
-        ttgo->eTFT->drawLine(osx, osy, 120, 121, TFT_RED);
-        ttgo->eTFT->fillCircle(120, 121, 3, TFT_RED);
+        ttgo->tft->drawLine(osx, osy, 120, 121, TFT_RED);
+        ttgo->tft->drawLine(ohx, ohy, 120, 121, TFT_WHITE);
+        ttgo->tft->drawLine(omx, omy, 120, 121, TFT_WHITE);
+        ttgo->tft->drawLine(osx, osy, 120, 121, TFT_RED);
+        ttgo->tft->fillCircle(120, 121, 3, TFT_RED);
     }
 }
-
-static uint8_t conv2d(const char *p)
-{
-    uint8_t v = 0;
-    if ('0' <= *p && *p <= '9')
-        v = *p - '0';
-    return 10 * v + *++p - '0';
-}
-

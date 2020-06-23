@@ -173,7 +173,7 @@ void setup(void)
 
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
-    ttgo->eTFT->fillScreen(TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
     ttgo->openBL();
 
     ttgo->lvgl_begin();

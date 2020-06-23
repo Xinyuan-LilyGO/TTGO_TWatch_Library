@@ -17,8 +17,13 @@
  #########################################################################
  */
 
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH          // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_2020_V1             //To use T-Watch2020, please uncomment this line
 
-#include <TTGO.h>
+
+#include <LilyGoWatch.h>
 
 TTGOClass *ttgo;
 
@@ -29,101 +34,101 @@ void setup(void)
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
-    ttgo->eTFT->setTextFont(2);
+    ttgo->tft->setTextFont(2);
 }
 
 void loop()
 {
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
 
     drawTime = millis();
 
     for (int i = 0; i < 1000; i++) {
-        ttgo->eTFT->drawNumber(i, 0, 0, 1);
+        ttgo->tft->drawNumber(i, 0, 0, 1);
     }
 
     drawTime = millis() - drawTime;
 
-    ttgo->eTFT->setTextColor(TFT_RED, TFT_BLACK);
-    ttgo->eTFT->drawFloat(drawTime / 2890.0, 3, 0, 80, 4);
-    if (drawTime < 100) ttgo->eTFT->drawString("Font 1 not loaded!", 0, 108, 2);
+    ttgo->tft->setTextColor(TFT_RED, TFT_BLACK);
+    ttgo->tft->drawFloat(drawTime / 2890.0, 3, 0, 80, 4);
+    if (drawTime < 100) ttgo->tft->drawString("Font 1 not loaded!", 0, 108, 2);
 
     delay(4000);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
     drawTime = millis();
 
     for (int i = 0; i < 1000; i++) {
-        ttgo->eTFT->drawNumber(i, 0, 0, 2);
+        ttgo->tft->drawNumber(i, 0, 0, 2);
     }
 
     drawTime = millis() - drawTime;
 
-    ttgo->eTFT->setTextColor(TFT_RED, TFT_BLACK);
-    ttgo->eTFT->drawFloat(drawTime / 2890.0, 3, 0, 80, 4);
-    if (drawTime < 200) ttgo->eTFT->drawString("Font 2 not loaded!", 0, 108, 2);
+    ttgo->tft->setTextColor(TFT_RED, TFT_BLACK);
+    ttgo->tft->drawFloat(drawTime / 2890.0, 3, 0, 80, 4);
+    if (drawTime < 200) ttgo->tft->drawString("Font 2 not loaded!", 0, 108, 2);
 
     delay(4000);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
     drawTime = millis();
 
     for (int i = 0; i < 1000; i++) {
-        ttgo->eTFT->drawNumber(i, 0, 0, 4);
+        ttgo->tft->drawNumber(i, 0, 0, 4);
     }
 
     drawTime = millis() - drawTime;
 
-    ttgo->eTFT->setTextColor(TFT_RED, TFT_BLACK);
-    ttgo->eTFT->drawFloat(drawTime / 2890.0, 3, 0, 80, 4);
-    if (drawTime < 200) ttgo->eTFT->drawString("Font 4 not loaded!", 0, 108, 2);
+    ttgo->tft->setTextColor(TFT_RED, TFT_BLACK);
+    ttgo->tft->drawFloat(drawTime / 2890.0, 3, 0, 80, 4);
+    if (drawTime < 200) ttgo->tft->drawString("Font 4 not loaded!", 0, 108, 2);
 
     delay(4000);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
     drawTime = millis();
 
     for (int i = 0; i < 1000; i++) {
-        yield(); ttgo->eTFT->drawNumber(i, 0, 0, 6);
+        yield(); ttgo->tft->drawNumber(i, 0, 0, 6);
     }
 
     drawTime = millis() - drawTime;
 
-    ttgo->eTFT->setTextColor(TFT_RED, TFT_BLACK);
-    ttgo->eTFT->drawFloat(drawTime / 2890.0, 3, 0, 80, 4);
-    if (drawTime < 200) ttgo->eTFT->drawString("Font 6 not loaded!", 0, 108, 2);
+    ttgo->tft->setTextColor(TFT_RED, TFT_BLACK);
+    ttgo->tft->drawFloat(drawTime / 2890.0, 3, 0, 80, 4);
+    if (drawTime < 200) ttgo->tft->drawString("Font 6 not loaded!", 0, 108, 2);
 
     delay(4000);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
     drawTime = millis();
 
     for (int i = 0; i < 1000; i++) {
-        yield(); ttgo->eTFT->drawNumber(i, 0, 0, 7);
+        yield(); ttgo->tft->drawNumber(i, 0, 0, 7);
     }
 
     drawTime = millis() - drawTime;
 
-    ttgo->eTFT->setTextColor(TFT_RED, TFT_BLACK);
-    ttgo->eTFT->drawFloat(drawTime / 2890.0, 3, 0, 80, 4);
-    if (drawTime < 200) ttgo->eTFT->drawString("Font 7 not loaded!", 0, 108, 2);
+    ttgo->tft->setTextColor(TFT_RED, TFT_BLACK);
+    ttgo->tft->drawFloat(drawTime / 2890.0, 3, 0, 80, 4);
+    if (drawTime < 200) ttgo->tft->drawString("Font 7 not loaded!", 0, 108, 2);
 
     delay(4000);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
     drawTime = millis();
 
     for (int i = 0; i < 100; i++) {
-        yield(); ttgo->eTFT->drawNumber(i, 0, 0, 8);
+        yield(); ttgo->tft->drawNumber(i, 0, 0, 8);
     }
 
     drawTime = millis() - drawTime;
 
-    ttgo->eTFT->setTextColor(TFT_RED, TFT_BLACK);
-    ttgo->eTFT->drawFloat(drawTime / 190.0, 3, 0, 80, 4);
-    if (drawTime < 200) ttgo->eTFT->drawString("Font 8 not loaded!", 0, 108, 2);
+    ttgo->tft->setTextColor(TFT_RED, TFT_BLACK);
+    ttgo->tft->drawFloat(drawTime / 190.0, 3, 0, 80, 4);
+    if (drawTime < 200) ttgo->tft->drawString("Font 8 not loaded!", 0, 108, 2);
 
     delay(4000);
 }

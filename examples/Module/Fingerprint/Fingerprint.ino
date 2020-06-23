@@ -44,7 +44,7 @@ void setup()
 
     watch->begin();
 
-    tft = watch->eTFT;
+    tft = watch->tft;
 
     tft->setTextFont(2);
 

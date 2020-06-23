@@ -49,7 +49,7 @@ void setup()
     ttgo->begin();
     ttgo->openBL();
     ttgo->lvgl_begin();
-    tft = ttgo->eTFT;
+    tft = ttgo->tft;
 
     uint16_t time = millis();
     time = millis() - time;

@@ -27,7 +27,7 @@ void setup(void)
 
     ttgo->begin();
 
-    tft = ttgo->eTFT;
+    tft = ttgo->tft;
 
     tft->fillScreen(TFT_BLACK);
 

@@ -8,19 +8,19 @@ void setup()
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(random(0xFFFF));
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(random(0xFFFF));
     if (!ttgo->bma->begin()) {
-        ttgo->eTFT->drawString("BMA423 Init FAIL",  25, 50, 4);
+        ttgo->tft->drawString("BMA423 Init FAIL",  25, 50, 4);
         while (1);
     }
 
     ttgo->bma->enableAccel();
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->drawString("T-Watch BMA423",  25, 50, 4);
-    ttgo->eTFT->setTextFont(4);
-    ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->drawString("T-Watch BMA423",  25, 50, 4);
+    ttgo->tft->setTextFont(4);
+    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
 }
 
 void loop()
@@ -30,13 +30,13 @@ void loop()
     if (res == false) {
         Serial.println("getAccel FAIL");
     } else {
-        ttgo->eTFT->fillRect(98, 100, 70, 85, TFT_BLACK);
-        ttgo->eTFT->setCursor(80, 100);
-        ttgo->eTFT->print("X:"); ttgo->eTFT->println(acc.x);
-        ttgo->eTFT->setCursor(80, 130);
-        ttgo->eTFT->print("Y:"); ttgo->eTFT->println(acc.y);
-        ttgo->eTFT->setCursor(80, 160);
-        ttgo->eTFT->print("Z:"); ttgo->eTFT->println(acc.z);
+        ttgo->tft->fillRect(98, 100, 70, 85, TFT_BLACK);
+        ttgo->tft->setCursor(80, 100);
+        ttgo->tft->print("X:"); ttgo->tft->println(acc.x);
+        ttgo->tft->setCursor(80, 130);
+        ttgo->tft->print("Y:"); ttgo->tft->println(acc.y);
+        ttgo->tft->setCursor(80, 160);
+        ttgo->tft->print("Z:"); ttgo->tft->println(acc.z);
     }
     delay(100);
 }

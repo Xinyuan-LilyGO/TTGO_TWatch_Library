@@ -1,5 +1,10 @@
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH          // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_2020_V1             //To use T-Watch2020, please uncomment this line
 
-#include <TTGO.h>
+
+#include <LilyGoWatch.h>
 
 TTGOClass *ttgo;
 
@@ -14,12 +19,12 @@ void setup()
 void loop()
 {
     Serial.println("R");
-    ttgo->eTFT->fillScreen(TFT_RED);
+    ttgo->tft->fillScreen(TFT_RED);
     delay(1000);
     Serial.println("G");
-    ttgo->eTFT->fillScreen(TFT_GREEN);
+    ttgo->tft->fillScreen(TFT_GREEN);
     delay(1000);
     Serial.println("B");
-    ttgo->eTFT->fillScreen(TFT_BLUE);
+    ttgo->tft->fillScreen(TFT_BLUE);
     delay(1000);
 }

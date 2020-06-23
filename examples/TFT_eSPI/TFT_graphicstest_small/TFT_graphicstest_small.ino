@@ -15,31 +15,231 @@
  #########################################################################
  */
 
-#include <TTGO.h>
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH          // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_2020_V1             //To use T-Watch2020, please uncomment this line
+
+#include <LilyGoWatch.h>
 
 TTGOClass *ttgo;
 
 float p = 3.1415926;
 
+
+void testlines(uint16_t color)
+{
+    ttgo->tft->fillScreen(TFT_BLACK);
+    for (int16_t x = 0; x < ttgo->tft->width(); x += 6) {
+        ttgo->tft->drawLine(0, 0, x, ttgo->tft->height() - 1, color);
+    }
+    for (int16_t y = 0; y < ttgo->tft->height(); y += 6) {
+        ttgo->tft->drawLine(0, 0, ttgo->tft->width() - 1, y, color);
+    }
+
+    ttgo->tft->fillScreen(TFT_BLACK);
+    for (int16_t x = 0; x < ttgo->tft->width(); x += 6) {
+        ttgo->tft->drawLine(ttgo->tft->width() - 1, 0, x, ttgo->tft->height() - 1, color);
+    }
+    for (int16_t y = 0; y < ttgo->tft->height(); y += 6) {
+        ttgo->tft->drawLine(ttgo->tft->width() - 1, 0, 0, y, color);
+    }
+
+    ttgo->tft->fillScreen(TFT_BLACK);
+    for (int16_t x = 0; x < ttgo->tft->width(); x += 6) {
+        ttgo->tft->drawLine(0, ttgo->tft->height() - 1, x, 0, color);
+    }
+    for (int16_t y = 0; y < ttgo->tft->height(); y += 6) {
+        ttgo->tft->drawLine(0, ttgo->tft->height() - 1, ttgo->tft->width() - 1, y, color);
+    }
+
+    ttgo->tft->fillScreen(TFT_BLACK);
+    for (int16_t x = 0; x < ttgo->tft->width(); x += 6) {
+        ttgo->tft->drawLine(ttgo->tft->width() - 1, ttgo->tft->height() - 1, x, 0, color);
+    }
+    for (int16_t y = 0; y < ttgo->tft->height(); y += 6) {
+        ttgo->tft->drawLine(ttgo->tft->width() - 1, ttgo->tft->height() - 1, 0, y, color);
+    }
+}
+
+void testdrawtext(char *text, uint16_t color)
+{
+    ttgo->tft->setCursor(0, 0);
+    ttgo->tft->setTextColor(color);
+    ttgo->tft->setTextWrap(true);
+    ttgo->tft->print(text);
+}
+
+void testfastlines(uint16_t color1, uint16_t color2)
+{
+    ttgo->tft->fillScreen(TFT_BLACK);
+    for (int16_t y = 0; y < ttgo->tft->height(); y += 5) {
+        ttgo->tft->drawFastHLine(0, y, ttgo->tft->width(), color1);
+    }
+    for (int16_t x = 0; x < ttgo->tft->width(); x += 5) {
+        ttgo->tft->drawFastVLine(x, 0, ttgo->tft->height(), color2);
+    }
+}
+
+void testdrawrects(uint16_t color)
+{
+    ttgo->tft->fillScreen(TFT_BLACK);
+    for (int16_t x = 0; x < ttgo->tft->width(); x += 6) {
+        ttgo->tft->drawRect(ttgo->tft->width() / 2 - x / 2, ttgo->tft->height() / 2 - x / 2, x, x, color);
+    }
+}
+
+void testfillrects(uint16_t color1, uint16_t color2)
+{
+    ttgo->tft->fillScreen(TFT_BLACK);
+    for (int16_t x = ttgo->tft->width() - 1; x > 6; x -= 6) {
+        ttgo->tft->fillRect(ttgo->tft->width() / 2 - x / 2, ttgo->tft->height() / 2 - x / 2, x, x, color1);
+        ttgo->tft->drawRect(ttgo->tft->width() / 2 - x / 2, ttgo->tft->height() / 2 - x / 2, x, x, color2);
+    }
+}
+
+void testfillcircles(uint8_t radius, uint16_t color)
+{
+    for (int16_t x = radius; x < ttgo->tft->width(); x += radius * 2) {
+        for (int16_t y = radius; y < ttgo->tft->height(); y += radius * 2) {
+            ttgo->tft->fillCircle(x, y, radius, color);
+        }
+    }
+}
+
+void testdrawcircles(uint8_t radius, uint16_t color)
+{
+    for (int16_t x = 0; x < ttgo->tft->width() + radius; x += radius * 2) {
+        for (int16_t y = 0; y < ttgo->tft->height() + radius; y += radius * 2) {
+            ttgo->tft->drawCircle(x, y, radius, color);
+        }
+    }
+}
+
+void testtriangles()
+{
+    ttgo->tft->fillScreen(TFT_BLACK);
+    int color = 0xF800;
+    int t;
+    int w = ttgo->tft->width() / 2;
+    int x = ttgo->tft->height() - 1;
+    int y = 0;
+    int z = ttgo->tft->width();
+    for (t = 0 ; t <= 15; t += 1) {
+        ttgo->tft->drawTriangle(w, y, y, x, z, x, color);
+        x -= 4;
+        y += 4;
+        z -= 4;
+        color += 100;
+    }
+}
+
+void testroundrects()
+{
+    ttgo->tft->fillScreen(TFT_BLACK);
+    int color = 100;
+    int i;
+    int t;
+    for (t = 0 ; t <= 4; t += 1) {
+        int x = 0;
+        int y = 0;
+        int w = ttgo->tft->width() - 2;
+        int h = ttgo->tft->height() - 2;
+        for (i = 0 ; i <= 16; i += 1) {
+            ttgo->tft->drawRoundRect(x, y, w, h, 5, color);
+            x += 2;
+            y += 3;
+            w -= 4;
+            h -= 6;
+            color += 1100;
+        }
+        color += 100;
+    }
+}
+
+void tftPrintTest()
+{
+    ttgo->tft->setTextWrap(false);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setCursor(0, 30);
+    ttgo->tft->setTextColor(TFT_RED);
+    ttgo->tft->setTextSize(1);
+    ttgo->tft->println("Hello World!");
+    ttgo->tft->setTextColor(TFT_YELLOW);
+    ttgo->tft->setTextSize(2);
+    ttgo->tft->println("Hello World!");
+    ttgo->tft->setTextColor(TFT_GREEN);
+    ttgo->tft->setTextSize(3);
+    ttgo->tft->println("Hello World!");
+    ttgo->tft->setTextColor(TFT_BLUE);
+    ttgo->tft->setTextSize(4);
+    ttgo->tft->print(1234.567);
+    delay(1500);
+    ttgo->tft->setCursor(0, 0);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_WHITE);
+    ttgo->tft->setTextSize(0);
+    ttgo->tft->println("Hello World!");
+    ttgo->tft->setTextSize(1);
+    ttgo->tft->setTextColor(TFT_GREEN);
+    ttgo->tft->print(p, 6);
+    ttgo->tft->println(" Want pi?");
+    ttgo->tft->println(" ");
+    ttgo->tft->print(8675309, HEX); // print 8,675,309 out in HEX!
+    ttgo->tft->println(" Print HEX!");
+    ttgo->tft->println(" ");
+    ttgo->tft->setTextColor(TFT_WHITE);
+    ttgo->tft->println("Sketch has been");
+    ttgo->tft->println("running for: ");
+    ttgo->tft->setTextColor(TFT_MAGENTA);
+    ttgo->tft->print(millis() / 1000);
+    ttgo->tft->setTextColor(TFT_WHITE);
+    ttgo->tft->print(" seconds.");
+}
+
+void mediabuttons()
+{
+    // play
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->fillRoundRect(25, 10, 78, 60, 8, TFT_WHITE);
+    ttgo->tft->fillTriangle(42, 20, 42, 60, 90, 40, TFT_RED);
+    delay(500);
+    // pause
+    ttgo->tft->fillRoundRect(25, 90, 78, 60, 8, TFT_WHITE);
+    ttgo->tft->fillRoundRect(39, 98, 20, 45, 5, TFT_GREEN);
+    ttgo->tft->fillRoundRect(69, 98, 20, 45, 5, TFT_GREEN);
+    delay(500);
+    // play color
+    ttgo->tft->fillTriangle(42, 20, 42, 60, 90, 40, TFT_BLUE);
+    delay(50);
+    // pause color
+    ttgo->tft->fillRoundRect(39, 98, 20, 45, 5, TFT_RED);
+    ttgo->tft->fillRoundRect(69, 98, 20, 45, 5, TFT_RED);
+    // play color
+    ttgo->tft->fillTriangle(42, 20, 42, 60, 90, 40, TFT_GREEN);
+}
+
+
 void setup(void)
 {
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
+    ttgo->tft->setTextFont(1);
 
     Serial.println("Initialized");
 
     uint16_t time = millis();
-    ttgo->eTFT->fillScreen(TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
     time = millis() - time;
 
     Serial.println(time, DEC);
     delay(500);
 
     // large block of text
-    ttgo->eTFT->fillScreen(TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
     testdrawtext("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur adipiscing ante sed nibh tincidunt feugiat. Maecenas enim massa, fringilla sed malesuada et, malesuada sit amet turpis. Sed porttitor neque ut ante pretium vitae malesuada nunc bibendum. Nullam aliquet ultrices massa eu hendrerit. Ut sed nisi lorem. In vestibulum purus a tortor imperdiet posuere. ", TFT_WHITE);
     delay(1000);
 
@@ -48,7 +248,7 @@ void setup(void)
     delay(4000);
 
     // a single pixel
-    ttgo->eTFT->drawPixel(ttgo->eTFT->width() / 2, ttgo->eTFT->height() / 2, TFT_GREEN);
+    ttgo->tft->drawPixel(ttgo->tft->width() / 2, ttgo->tft->height() / 2, TFT_GREEN);
     delay(500);
 
     // line draw test
@@ -65,7 +265,7 @@ void setup(void)
     testfillrects(TFT_YELLOW, TFT_MAGENTA);
     delay(500);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
     testfillcircles(10, TFT_BLUE);
     testdrawcircles(10, TFT_WHITE);
     delay(500);
@@ -85,201 +285,8 @@ void setup(void)
 
 void loop()
 {
-    ttgo->eTFT->invertDisplay(true);
+    ttgo->tft->invertDisplay(true);
     delay(500);
-    ttgo->eTFT->invertDisplay(false);
+    ttgo->tft->invertDisplay(false);
     delay(500);
 }
-
-void testlines(uint16_t color)
-{
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    for (int16_t x = 0; x < ttgo->eTFT->width(); x += 6) {
-        ttgo->eTFT->drawLine(0, 0, x, ttgo->eTFT->height() - 1, color);
-    }
-    for (int16_t y = 0; y < ttgo->eTFT->height(); y += 6) {
-        ttgo->eTFT->drawLine(0, 0, ttgo->eTFT->width() - 1, y, color);
-    }
-
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    for (int16_t x = 0; x < ttgo->eTFT->width(); x += 6) {
-        ttgo->eTFT->drawLine(ttgo->eTFT->width() - 1, 0, x, ttgo->eTFT->height() - 1, color);
-    }
-    for (int16_t y = 0; y < ttgo->eTFT->height(); y += 6) {
-        ttgo->eTFT->drawLine(ttgo->eTFT->width() - 1, 0, 0, y, color);
-    }
-
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    for (int16_t x = 0; x < ttgo->eTFT->width(); x += 6) {
-        ttgo->eTFT->drawLine(0, ttgo->eTFT->height() - 1, x, 0, color);
-    }
-    for (int16_t y = 0; y < ttgo->eTFT->height(); y += 6) {
-        ttgo->eTFT->drawLine(0, ttgo->eTFT->height() - 1, ttgo->eTFT->width() - 1, y, color);
-    }
-
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    for (int16_t x = 0; x < ttgo->eTFT->width(); x += 6) {
-        ttgo->eTFT->drawLine(ttgo->eTFT->width() - 1, ttgo->eTFT->height() - 1, x, 0, color);
-    }
-    for (int16_t y = 0; y < ttgo->eTFT->height(); y += 6) {
-        ttgo->eTFT->drawLine(ttgo->eTFT->width() - 1, ttgo->eTFT->height() - 1, 0, y, color);
-    }
-}
-
-void testdrawtext(char *text, uint16_t color)
-{
-    ttgo->eTFT->setCursor(0, 0);
-    ttgo->eTFT->setTextColor(color);
-    ttgo->eTFT->setTextWrap(true);
-    ttgo->eTFT->print(text);
-}
-
-void testfastlines(uint16_t color1, uint16_t color2)
-{
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    for (int16_t y = 0; y < ttgo->eTFT->height(); y += 5) {
-        ttgo->eTFT->drawFastHLine(0, y, ttgo->eTFT->width(), color1);
-    }
-    for (int16_t x = 0; x < ttgo->eTFT->width(); x += 5) {
-        ttgo->eTFT->drawFastVLine(x, 0, ttgo->eTFT->height(), color2);
-    }
-}
-
-void testdrawrects(uint16_t color)
-{
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    for (int16_t x = 0; x < ttgo->eTFT->width(); x += 6) {
-        ttgo->eTFT->drawRect(ttgo->eTFT->width() / 2 - x / 2, ttgo->eTFT->height() / 2 - x / 2, x, x, color);
-    }
-}
-
-void testfillrects(uint16_t color1, uint16_t color2)
-{
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    for (int16_t x = ttgo->eTFT->width() - 1; x > 6; x -= 6) {
-        ttgo->eTFT->fillRect(ttgo->eTFT->width() / 2 - x / 2, ttgo->eTFT->height() / 2 - x / 2, x, x, color1);
-        ttgo->eTFT->drawRect(ttgo->eTFT->width() / 2 - x / 2, ttgo->eTFT->height() / 2 - x / 2, x, x, color2);
-    }
-}
-
-void testfillcircles(uint8_t radius, uint16_t color)
-{
-    for (int16_t x = radius; x < ttgo->eTFT->width(); x += radius * 2) {
-        for (int16_t y = radius; y < ttgo->eTFT->height(); y += radius * 2) {
-            ttgo->eTFT->fillCircle(x, y, radius, color);
-        }
-    }
-}
-
-void testdrawcircles(uint8_t radius, uint16_t color)
-{
-    for (int16_t x = 0; x < ttgo->eTFT->width() + radius; x += radius * 2) {
-        for (int16_t y = 0; y < ttgo->eTFT->height() + radius; y += radius * 2) {
-            ttgo->eTFT->drawCircle(x, y, radius, color);
-        }
-    }
-}
-
-void testtriangles()
-{
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    int color = 0xF800;
-    int t;
-    int w = ttgo->eTFT->width() / 2;
-    int x = ttgo->eTFT->height() - 1;
-    int y = 0;
-    int z = ttgo->eTFT->width();
-    for (t = 0 ; t <= 15; t += 1) {
-        ttgo->eTFT->drawTriangle(w, y, y, x, z, x, color);
-        x -= 4;
-        y += 4;
-        z -= 4;
-        color += 100;
-    }
-}
-
-void testroundrects()
-{
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    int color = 100;
-    int i;
-    int t;
-    for (t = 0 ; t <= 4; t += 1) {
-        int x = 0;
-        int y = 0;
-        int w = ttgo->eTFT->width() - 2;
-        int h = ttgo->eTFT->height() - 2;
-        for (i = 0 ; i <= 16; i += 1) {
-            ttgo->eTFT->drawRoundRect(x, y, w, h, 5, color);
-            x += 2;
-            y += 3;
-            w -= 4;
-            h -= 6;
-            color += 1100;
-        }
-        color += 100;
-    }
-}
-
-void tftPrintTest()
-{
-    ttgo->eTFT->setTextWrap(false);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setCursor(0, 30);
-    ttgo->eTFT->setTextColor(TFT_RED);
-    ttgo->eTFT->setTextSize(1);
-    ttgo->eTFT->println("Hello World!");
-    ttgo->eTFT->setTextColor(TFT_YELLOW);
-    ttgo->eTFT->setTextSize(2);
-    ttgo->eTFT->println("Hello World!");
-    ttgo->eTFT->setTextColor(TFT_GREEN);
-    ttgo->eTFT->setTextSize(3);
-    ttgo->eTFT->println("Hello World!");
-    ttgo->eTFT->setTextColor(TFT_BLUE);
-    ttgo->eTFT->setTextSize(4);
-    ttgo->eTFT->print(1234.567);
-    delay(1500);
-    ttgo->eTFT->setCursor(0, 0);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_WHITE);
-    ttgo->eTFT->setTextSize(0);
-    ttgo->eTFT->println("Hello World!");
-    ttgo->eTFT->setTextSize(1);
-    ttgo->eTFT->setTextColor(TFT_GREEN);
-    ttgo->eTFT->print(p, 6);
-    ttgo->eTFT->println(" Want pi?");
-    ttgo->eTFT->println(" ");
-    ttgo->eTFT->print(8675309, HEX); // print 8,675,309 out in HEX!
-    ttgo->eTFT->println(" Print HEX!");
-    ttgo->eTFT->println(" ");
-    ttgo->eTFT->setTextColor(TFT_WHITE);
-    ttgo->eTFT->println("Sketch has been");
-    ttgo->eTFT->println("running for: ");
-    ttgo->eTFT->setTextColor(TFT_MAGENTA);
-    ttgo->eTFT->print(millis() / 1000);
-    ttgo->eTFT->setTextColor(TFT_WHITE);
-    ttgo->eTFT->print(" seconds.");
-}
-
-void mediabuttons()
-{
-    // play
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->fillRoundRect(25, 10, 78, 60, 8, TFT_WHITE);
-    ttgo->eTFT->fillTriangle(42, 20, 42, 60, 90, 40, TFT_RED);
-    delay(500);
-    // pause
-    ttgo->eTFT->fillRoundRect(25, 90, 78, 60, 8, TFT_WHITE);
-    ttgo->eTFT->fillRoundRect(39, 98, 20, 45, 5, TFT_GREEN);
-    ttgo->eTFT->fillRoundRect(69, 98, 20, 45, 5, TFT_GREEN);
-    delay(500);
-    // play color
-    ttgo->eTFT->fillTriangle(42, 20, 42, 60, 90, 40, TFT_BLUE);
-    delay(50);
-    // pause color
-    ttgo->eTFT->fillRoundRect(39, 98, 20, 45, 5, TFT_RED);
-    ttgo->eTFT->fillRoundRect(69, 98, 20, 45, 5, TFT_RED);
-    // play color
-    ttgo->eTFT->fillTriangle(42, 20, 42, 60, 90, 40, TFT_GREEN);
-}
-

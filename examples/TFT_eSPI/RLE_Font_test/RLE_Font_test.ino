@@ -11,13 +11,19 @@
  #########################################################################
 */
 
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH          // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_2020_V1             //To use T-Watch2020, please uncomment this line
+
+
+#include <LilyGoWatch.h>
+
 // New background colour
 #define TFT_BROWN 0x38E0
 
 // Pause in milliseconds between screens, change to 0 to time font rendering
 #define WAIT 500
-
-#include <TTGO.h>
 
 TTGOClass *ttgo;
 
@@ -36,155 +42,155 @@ void loop()
     targetTime = millis();
 
     // First we test them with a background colour set
-    ttgo->eTFT->setTextSize(1);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_GREEN, TFT_BLACK);
+    ttgo->tft->setTextSize(1);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_GREEN, TFT_BLACK);
 
-    ttgo->eTFT->drawString(" !\"#$%&'()*+,-./0123456", 0, 0, 2);
-    ttgo->eTFT->drawString("789:;<=>?@ABCDEFGHIJKL", 0, 16, 2);
-    ttgo->eTFT->drawString("MNOPQRSTUVWXYZ[\\]^_`", 0, 32, 2);
-    ttgo->eTFT->drawString("abcdefghijklmnopqrstuvw", 0, 48, 2);
+    ttgo->tft->drawString(" !\"#$%&'()*+,-./0123456", 0, 0, 2);
+    ttgo->tft->drawString("789:;<=>?@ABCDEFGHIJKL", 0, 16, 2);
+    ttgo->tft->drawString("MNOPQRSTUVWXYZ[\\]^_`", 0, 32, 2);
+    ttgo->tft->drawString("abcdefghijklmnopqrstuvw", 0, 48, 2);
     int xpos = 0;
-    xpos += ttgo->eTFT->drawString("xyz{|}~", 0, 64, 2);
-    ttgo->eTFT->drawChar(127, xpos, 64, 2);
+    xpos += ttgo->tft->drawString("xyz{|}~", 0, 64, 2);
+    ttgo->tft->drawChar(127, xpos, 64, 2);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_GREEN, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_GREEN, TFT_BLACK);
 
-    ttgo->eTFT->drawString(" !\"#$%&'()*+,-.", 0, 0, 4);
-    ttgo->eTFT->drawString("/0123456789:;", 0, 26, 4);
-    ttgo->eTFT->drawString("<=>?@ABCDE", 0, 52, 4);
-    ttgo->eTFT->drawString("FGHIJKLMNO", 0, 78, 4);
-    ttgo->eTFT->drawString("PQRSTUVWX", 0, 104, 4);
+    ttgo->tft->drawString(" !\"#$%&'()*+,-.", 0, 0, 4);
+    ttgo->tft->drawString("/0123456789:;", 0, 26, 4);
+    ttgo->tft->drawString("<=>?@ABCDE", 0, 52, 4);
+    ttgo->tft->drawString("FGHIJKLMNO", 0, 78, 4);
+    ttgo->tft->drawString("PQRSTUVWX", 0, 104, 4);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->drawString("YZ[\\]^_`abc", 0, 0, 4);
-    ttgo->eTFT->drawString("defghijklmno", 0, 26, 4);
-    ttgo->eTFT->drawString("pqrstuvwxyz", 0, 52, 4);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->drawString("YZ[\\]^_`abc", 0, 0, 4);
+    ttgo->tft->drawString("defghijklmno", 0, 26, 4);
+    ttgo->tft->drawString("pqrstuvwxyz", 0, 52, 4);
     xpos = 0;
-    xpos += ttgo->eTFT->drawString("{|}~", 0, 78, 4);
-    ttgo->eTFT->drawChar(127, xpos, 78, 4);
+    xpos += ttgo->tft->drawString("{|}~", 0, 78, 4);
+    ttgo->tft->drawChar(127, xpos, 78, 4);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_BLUE, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_BLUE, TFT_BLACK);
 
-    ttgo->eTFT->drawString("012345", 0, 0, 6);
-    ttgo->eTFT->drawString("6789", 0, 40, 6);
-    ttgo->eTFT->drawString("apm-:.", 0, 80, 6);
+    ttgo->tft->drawString("012345", 0, 0, 6);
+    ttgo->tft->drawString("6789", 0, 40, 6);
+    ttgo->tft->drawString("apm-:.", 0, 80, 6);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_RED, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_RED, TFT_BLACK);
 
-    ttgo->eTFT->drawString("0123", 0, 0, 7);
-    ttgo->eTFT->drawString("4567", 0, 60, 7);
+    ttgo->tft->drawString("0123", 0, 0, 7);
+    ttgo->tft->drawString("4567", 0, 60, 7);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->drawString("890:.", 0, 0, 7);
-    ttgo->eTFT->drawString("", 0, 60, 7);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->drawString("890:.", 0, 0, 7);
+    ttgo->tft->drawString("", 0, 60, 7);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_YELLOW, TFT_BLACK);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_YELLOW, TFT_BLACK);
 
-    ttgo->eTFT->drawString("01", 0, 0, 8);
+    ttgo->tft->drawString("01", 0, 0, 8);
     delay(WAIT);
 
-    ttgo->eTFT->drawString("23", 0, 0, 8);
+    ttgo->tft->drawString("23", 0, 0, 8);
     delay(WAIT);
 
-    ttgo->eTFT->drawString("45", 0, 0, 8);
+    ttgo->tft->drawString("45", 0, 0, 8);
     delay(WAIT);
 
-    ttgo->eTFT->drawString("67", 0, 0, 8);
+    ttgo->tft->drawString("67", 0, 0, 8);
     delay(WAIT);
 
-    ttgo->eTFT->drawString("89", 0, 0, 8);
+    ttgo->tft->drawString("89", 0, 0, 8);
     delay(WAIT);
 
-    ttgo->eTFT->drawString("0:.", 0, 0, 8);
+    ttgo->tft->drawString("0:.", 0, 0, 8);
     delay(WAIT);
 
-    ttgo->eTFT->setTextColor(TFT_MAGENTA);
-    ttgo->eTFT->drawNumber(millis() - targetTime, 0, 100, 4);
+    ttgo->tft->setTextColor(TFT_MAGENTA);
+    ttgo->tft->drawNumber(millis() - targetTime, 0, 100, 4);
     delay(4000);
 
     // Now test them with transparent background
     targetTime = millis();
 
-    ttgo->eTFT->setTextSize(1);
-    ttgo->eTFT->fillScreen(TFT_BROWN);
-    ttgo->eTFT->setTextColor(TFT_GREEN);
+    ttgo->tft->setTextSize(1);
+    ttgo->tft->fillScreen(TFT_BROWN);
+    ttgo->tft->setTextColor(TFT_GREEN);
 
-    ttgo->eTFT->drawString(" !\"#$%&'()*+,-./0123456", 0, 0, 2);
-    ttgo->eTFT->drawString("789:;<=>?@ABCDEFGHIJKL", 0, 16, 2);
-    ttgo->eTFT->drawString("MNOPQRSTUVWXYZ[\\]^_`", 0, 32, 2);
-    ttgo->eTFT->drawString("abcdefghijklmnopqrstuvw", 0, 48, 2);
+    ttgo->tft->drawString(" !\"#$%&'()*+,-./0123456", 0, 0, 2);
+    ttgo->tft->drawString("789:;<=>?@ABCDEFGHIJKL", 0, 16, 2);
+    ttgo->tft->drawString("MNOPQRSTUVWXYZ[\\]^_`", 0, 32, 2);
+    ttgo->tft->drawString("abcdefghijklmnopqrstuvw", 0, 48, 2);
     xpos = 0;
-    xpos += ttgo->eTFT->drawString("xyz{|}~", 0, 64, 2);
-    ttgo->eTFT->drawChar(127, xpos, 64, 2);
+    xpos += ttgo->tft->drawString("xyz{|}~", 0, 64, 2);
+    ttgo->tft->drawChar(127, xpos, 64, 2);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BROWN);
-    ttgo->eTFT->setTextColor(TFT_GREEN);
+    ttgo->tft->fillScreen(TFT_BROWN);
+    ttgo->tft->setTextColor(TFT_GREEN);
 
-    ttgo->eTFT->drawString(" !\"#$%&'()*+,-.", 0, 0, 4);
-    ttgo->eTFT->drawString("/0123456789:;", 0, 26, 4);
-    ttgo->eTFT->drawString("<=>?@ABCDE", 0, 52, 4);
-    ttgo->eTFT->drawString("FGHIJKLMNO", 0, 78, 4);
-    ttgo->eTFT->drawString("PQRSTUVWX", 0, 104, 4);
+    ttgo->tft->drawString(" !\"#$%&'()*+,-.", 0, 0, 4);
+    ttgo->tft->drawString("/0123456789:;", 0, 26, 4);
+    ttgo->tft->drawString("<=>?@ABCDE", 0, 52, 4);
+    ttgo->tft->drawString("FGHIJKLMNO", 0, 78, 4);
+    ttgo->tft->drawString("PQRSTUVWX", 0, 104, 4);
 
     delay(WAIT);
-    ttgo->eTFT->fillScreen(TFT_BROWN);
-    ttgo->eTFT->drawString("YZ[\\]^_`abc", 0, 0, 4);
-    ttgo->eTFT->drawString("defghijklmno", 0, 26, 4);
-    ttgo->eTFT->drawString("pqrstuvwxyz", 0, 52, 4);
+    ttgo->tft->fillScreen(TFT_BROWN);
+    ttgo->tft->drawString("YZ[\\]^_`abc", 0, 0, 4);
+    ttgo->tft->drawString("defghijklmno", 0, 26, 4);
+    ttgo->tft->drawString("pqrstuvwxyz", 0, 52, 4);
     xpos = 0;
-    xpos += ttgo->eTFT->drawString("{|}~", 0, 78, 4);
-    ttgo->eTFT->drawChar(127, xpos, 78, 4);
+    xpos += ttgo->tft->drawString("{|}~", 0, 78, 4);
+    ttgo->tft->drawChar(127, xpos, 78, 4);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BROWN);
-    ttgo->eTFT->setTextColor(TFT_BLUE);
+    ttgo->tft->fillScreen(TFT_BROWN);
+    ttgo->tft->setTextColor(TFT_BLUE);
 
-    ttgo->eTFT->drawString("012345", 0, 0, 6);
-    ttgo->eTFT->drawString("6789", 0, 40, 6);
-    ttgo->eTFT->drawString("apm-:.", 0, 80, 6);
+    ttgo->tft->drawString("012345", 0, 0, 6);
+    ttgo->tft->drawString("6789", 0, 40, 6);
+    ttgo->tft->drawString("apm-:.", 0, 80, 6);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BROWN);
-    ttgo->eTFT->setTextColor(TFT_RED);
+    ttgo->tft->fillScreen(TFT_BROWN);
+    ttgo->tft->setTextColor(TFT_RED);
 
-    ttgo->eTFT->drawString("0123", 0, 0, 7);
-    ttgo->eTFT->drawString("4567", 0, 60, 7);
+    ttgo->tft->drawString("0123", 0, 0, 7);
+    ttgo->tft->drawString("4567", 0, 60, 7);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BROWN);
-    ttgo->eTFT->drawString("890:.", 0, 0, 7);
-    ttgo->eTFT->drawString("", 0, 60, 7);
+    ttgo->tft->fillScreen(TFT_BROWN);
+    ttgo->tft->drawString("890:.", 0, 0, 7);
+    ttgo->tft->drawString("", 0, 60, 7);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BROWN);
-    ttgo->eTFT->setTextColor(TFT_YELLOW);
+    ttgo->tft->fillScreen(TFT_BROWN);
+    ttgo->tft->setTextColor(TFT_YELLOW);
 
-    ttgo->eTFT->drawString("0123", 0, 0, 8);
+    ttgo->tft->drawString("0123", 0, 0, 8);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BROWN);
-    ttgo->eTFT->drawString("4567", 0, 0, 8);
+    ttgo->tft->fillScreen(TFT_BROWN);
+    ttgo->tft->drawString("4567", 0, 0, 8);
     delay(WAIT);
 
-    ttgo->eTFT->fillScreen(TFT_BROWN);
-    ttgo->eTFT->drawString("890:.", 0, 0, 8);
+    ttgo->tft->fillScreen(TFT_BROWN);
+    ttgo->tft->drawString("890:.", 0, 0, 8);
     delay(WAIT);
 
-    ttgo->eTFT->setTextColor(TFT_MAGENTA);
+    ttgo->tft->setTextColor(TFT_MAGENTA);
 
-    ttgo->eTFT->drawNumber(millis() - targetTime, 0, 100, 4);
+    ttgo->tft->drawNumber(millis() - targetTime, 0, 100, 4);
     delay(4000);;
 }
 

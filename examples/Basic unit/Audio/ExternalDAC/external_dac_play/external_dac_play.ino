@@ -28,13 +28,13 @@ void setup()
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextFont(2);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextFont(2);
 
-    ttgo->eTFT->setCursor(0, 0);
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->println("Sample MP3 playback begins");
-    
+    ttgo->tft->setCursor(0, 0);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->println("Sample MP3 playback begins");
+
     //!Turn on the audio power
     ttgo->enableLDO3();
 

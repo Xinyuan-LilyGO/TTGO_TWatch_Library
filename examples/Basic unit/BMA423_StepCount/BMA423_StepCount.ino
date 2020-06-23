@@ -19,9 +19,9 @@ void setup()
     ttgo->bma->begin();
     ttgo->bma->attachInterrupt();
 
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(random(0xFF10));
-    ttgo->eTFT->drawString("T-Watch BMA423",  25, 50, 4);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(random(0xFF10));
+    ttgo->tft->drawString("T-Watch BMA423",  25, 50, 4);
 
 
 }
@@ -37,9 +37,9 @@ void loop()
 
         if (ttgo->bma->isStepCounter()) {
             Serial.println(ttgo->bma->getCounter());
-            ttgo->eTFT->setTextColor(random(0xFFFF), TFT_BLACK);
+            ttgo->tft->setTextColor(random(0xFFFF), TFT_BLACK);
             snprintf(buf, sizeof(buf), "StepCount: %u", ttgo->bma->getCounter());
-            ttgo->eTFT->drawString(buf, 45, 118, 4);
+            ttgo->tft->drawString(buf, 45, 118, 4);
         }
     }
     delay(20);

@@ -14,7 +14,7 @@ git clone https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
 TTGOClass *ttgo;
 MAX30105 particleSensor;
 
-const uint8_t RATE_SIZE = 20; //Increase this for more averaging. 
+const uint8_t RATE_SIZE = 20; //Increase this for more averaging.
 uint8_t rates[RATE_SIZE]; //Array of heart rates
 uint8_t rateSpot = 0;
 long lastBeat = 0; //Time at which the last beat occurred
@@ -31,10 +31,10 @@ void setup()
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
-    ttgo->eTFT->fillScreen(TFT_BLACK);
-    ttgo->eTFT->setTextColor(TFT_WHITE, TFT_BLACK);
-    ttgo->eTFT->setTextFont(4);
-    ttgo->eTFT->drawCentreString("T-Watch HeartRate",  120, 60, 2);
+    ttgo->tft->fillScreen(TFT_BLACK);
+    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
+    ttgo->tft->setTextFont(4);
+    ttgo->tft->drawCentreString("T-Watch HeartRate",  120, 60, 2);
 
     // Initialize sensor
     if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) { //Use default I2C port, 400kHz speed
@@ -80,11 +80,11 @@ void loop()
 
         if (prevBPM != beatAvg) {
             prevBPM = beatAvg;
-            ttgo->eTFT->setTextColor(TFT_GREEN);
+            ttgo->tft->setTextColor(TFT_GREEN);
             static char buffer[256];
-            ttgo->eTFT->fillRect(0, 120, 240, 30, TFT_RED);
+            ttgo->tft->fillRect(0, 120, 240, 30, TFT_RED);
             snprintf(buffer, sizeof(buffer), "Avg BPM:%d", beatAvg);
-            ttgo->eTFT->drawCentreString(buffer, 240 / 2, 120, 2);
+            ttgo->tft->drawCentreString(buffer, 240 / 2, 120, 2);
         }
         particleSensor.nextSample(); //We're finished with this sample so move to next sample
     }

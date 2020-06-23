@@ -12,7 +12,7 @@ void setup()
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
-    ttgo->eTFT->fillScreen(rand() % 0xFFFF);
+    ttgo->tft->fillScreen(rand() % 0xFFFF);
     delay(3000);
     ttgo->power->setPowerOutPut(0xFF, false);
     ttgo->displaySleep();
