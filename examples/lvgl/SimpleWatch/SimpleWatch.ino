@@ -1,15 +1,15 @@
 /*
 Copyright (c) 2019 lewis he
 This is just a demonstration. Most of the functions are not implemented.
-The main implementation is low-power standby. 
+The main implementation is low-power standby.
 The off-screen standby (not deep sleep) current is about 4mA.
 Select standard motherboard and standard backplane for testing.
 Created by Lewis he on October 10, 2019.
 */
 
-// #define LILYGO_TWATCH_2020_V1        // If you are using T-Watch-2020 version, please open this macro definition
+// Please select the model you want to use in config.h
+#include "config.h"
 
-#include <TTGO.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/timers.h"
@@ -83,7 +83,8 @@ void low_energy()
         if (!WiFi.isConnected()) {
             lenergy = true;
             WiFi.mode(WIFI_OFF);
-            rtc_clk_cpu_freq_set(RTC_CPU_FREQ_2M);
+            // rtc_clk_cpu_freq_set(RTC_CPU_FREQ_2M);
+            setCpuFrequencyMhz(20);
         }
     } else {
         ttgo->startLvglTick();
@@ -180,6 +181,8 @@ void setup()
     //Synchronize time to system time
     ttgo->rtc->syncToSystem();
 
+#ifdef LILYGO_WATCH_HAS_BUTTON
+
     /*
         ttgo->button->setClickHandler([]() {
             Serial.println("Button2 Pressed");
@@ -192,6 +195,7 @@ void setup()
         delay(1000);
         esp_restart();
     });
+#endif
 
     //Setting up the network
     setupNetwork();
@@ -202,10 +206,12 @@ void setup()
     //Clear lvgl counter
     lv_disp_trig_activity(NULL);
 
+#ifdef LILYGO_WATCH_HAS_BUTTON
     //In lvgl we call the button processing regularly
     lv_task_create([](lv_task_t *args) {
         ttgo->button->loop();
     }, 30, 1, nullptr);
+#endif
 
     //When the initialization is complete, turn on the backlight
     ttgo->openBL();
@@ -215,14 +221,13 @@ void loop()
 {
     bool  rlst;
     uint8_t data;
-    static uint32_t start = 0;
-
     //! Fast response wake-up interrupt
     EventBits_t  bits = xEventGroupGetBits(isr_group);
     if (bits & WATCH_FLAG_SLEEP_EXIT) {
         if (lenergy) {
             lenergy = false;
-            rtc_clk_cpu_freq_set(RTC_CPU_FREQ_160M);
+            // rtc_clk_cpu_freq_set(RTC_CPU_FREQ_160M);
+            setCpuFrequencyMhz(160);
         }
 
         low_energy();

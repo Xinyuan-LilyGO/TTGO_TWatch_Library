@@ -584,8 +584,8 @@ private:
 
 
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_DISPLAY)
-    static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p);
-    static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
+    // static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p);
+    // static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
 #endif  /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_DISPLAY*/
 
 
@@ -597,40 +597,40 @@ private:
 #if  defined(LILYGO_WATCH_LVGL)
     Ticker *tickTicker = nullptr;
 #endif  /*LILYGO_WATCH_LVGL*/
-};
 
 
-
-TTGOClass *TTGOClass::_ttgo = nullptr;
-
+protected:
 
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_DISPLAY)
-
-void TTGOClass::disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
-{
-    uint32_t size = (area->x2 - area->x1 + 1) * (area->y2 - area->y1 + 1) ;
-    _ttgo->tft->setAddrWindow(area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1)); /* set the working window */
-    _ttgo->tft->pushColors(( uint16_t *)color_p, size, false);
-    lv_disp_flush_ready(disp_drv);
-}
+    static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
+    {
+        uint32_t size = (area->x2 - area->x1 + 1) * (area->y2 - area->y1 + 1) ;
+        _ttgo->tft->setAddrWindow(area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1)); /* set the working window */
+        _ttgo->tft->pushColors(( uint16_t *)color_p, size, false);
+        lv_disp_flush_ready(disp_drv);
+    }
 
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_TOUCH)
-bool TTGOClass::touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
-{
-    static TP_Point p;
-    uint8_t rotation = _ttgo->tft->getRotation();
-    data->state = _ttgo->touch->touched() ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
-    if (data->state == LV_INDEV_STATE_PR) {
-        p = _ttgo->touch->getPoint(0, rotation);
+    static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
+    {
+        static TP_Point p;
+        uint8_t rotation = _ttgo->tft->getRotation();
+        data->state = _ttgo->touch->touched() ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+        if (data->state == LV_INDEV_STATE_PR) {
+            p = _ttgo->touch->getPoint(0, rotation);
+        }
+        /*Set the coordinates (if released use the last pressed coordinates)*/
+        data->point.x = p.x;
+        data->point.y = p.y;
+        return false; /*Return false because no moare to be read*/
     }
-    /*Set the coordinates (if released use the last pressed coordinates)*/
-    data->point.x = p.x;
-    data->point.y = p.y;
-    return false; /*Return false because no moare to be read*/
-}
 #endif /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_TOUCH*/
 
 #endif /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_DISPLAY*/
+
+
+};
+
 
 
 

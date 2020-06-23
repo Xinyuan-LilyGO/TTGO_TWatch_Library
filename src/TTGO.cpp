@@ -12,3 +12,6 @@ Written by Lewis he //https://github.com/lewisxhe
 */
 
 #include "TTGO.h"
+
+TTGOClass *TTGOClass::_ttgo = nullptr;
+
