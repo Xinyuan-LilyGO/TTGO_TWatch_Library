@@ -137,6 +137,8 @@ public:
 #endif  /*LILYGO_WATCH_2020_V1*/
 
         tft->fillScreen(TFT_BLACK);
+
+        tft->setTextFont(1);
 #endif
     }
 
