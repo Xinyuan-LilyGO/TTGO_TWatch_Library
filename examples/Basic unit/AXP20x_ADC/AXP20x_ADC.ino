@@ -1,5 +1,12 @@
 
-#include <TTGO.h>
+
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH        // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH       // To use T-Watch2019 Not touchscreen , please uncomment this line
+// #define LILYGO_WATCH_BLOCK               // To use T-Watch Block , please uncomment this line
+//#define LILYGO_WATCH_2020_V1              // To use T-Watch2020 , please uncomment this line
+
+#include <LilyGoWatch.h>
 
 TTGOClass *ttgo;
 
@@ -9,7 +16,6 @@ void setup()
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
-
     ttgo->tft->fillScreen(TFT_BLACK);
     ttgo->tft->drawString("T-Watch AXP202",  25, 50, 4);
     ttgo->tft->setTextFont(4);
@@ -33,6 +39,5 @@ void loop()
     ttgo->tft->print("BATT: "); ttgo->tft->print(batt_v); ttgo->tft->println(" mV");
     ttgo->tft->setCursor(20, 190);
     ttgo->tft->print("Per: "); ttgo->tft->print(per); ttgo->tft->println(" %");
-
     delay(1000);
 }

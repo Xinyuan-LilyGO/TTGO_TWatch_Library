@@ -1,4 +1,14 @@
-#include <TTGO.h>
+// => Hardware select
+// #define LILYGO_WATCH_2019_WITH_TOUCH        // To use T-Watch2019 with touchscreen, please uncomment this line
+// #define LILYGO_WATCH_2019_NO_TOUCH       // To use T-Watch2019 Not touchscreen , please uncomment this line
+//#define LILYGO_WATCH_2020_V1              // To use T-Watch2020 , please uncomment this line
+
+
+// Hardware NOT SUPPORT
+//// #define LILYGO_WATCH_BLOCK
+// Hardware NOT SUPPORT
+
+#include <LilyGoWatch.h>
 
 TTGOClass *ttgo;
 
@@ -14,9 +24,7 @@ void setup()
         ttgo->tft->drawString("BMA423 Init FAIL",  25, 50, 4);
         while (1);
     }
-
     ttgo->bma->enableAccel();
-
     ttgo->tft->fillScreen(TFT_BLACK);
     ttgo->tft->drawString("T-Watch BMA423",  25, 50, 4);
     ttgo->tft->setTextFont(4);
