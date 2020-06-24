@@ -15,7 +15,7 @@ The code bin will demonstrate the basic functionality of T-Watch, including all 
 1. The library already contains all the hardware drivers for `T-Watch`
 2. Using **TFT_eSPI** as the display driver, you can directly call **TFT_eSPI** through the construction object.
 3. Using **lvgl 6.1.2** as the display graphics framework, the driver method has been implemented, you only need to call lvgl api according to your own needs.
-4. For the use of lvgl please refer to **[lvgl docs](https://docs.littlevgl.com/en/html/index.html)**
+4. For the use of lvgl please refer to **[lvgl docs](https://docs.lvgl.io/v6/en/html/)**
 
 
 <h2 align = "left">🔷 Install</h2>
@@ -51,7 +51,8 @@ For more info, see https://www.arduino.cc/en/Guide/Libraries
 
 - [Click for details of power consumption](docs/power.md)
 - [Pin Map Click to View](docs/pinmap.md)
-- [3D Shell](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/images/shell.png)
+- [3D Shell](https://github.com/Xinyuan-LilyGO/LilyGo-TWatch-DataSheet/tree/master/3DSHELL)
+- [Hardware Resource](https://github.com/Xinyuan-LilyGO/LilyGo-TWatch-DataSheet)
 - [Acsip S76/78 Library&Examples](https://github.com/lewisxhe/Acsip-S7xG-Library)
 
  <h2 align = "left">🔶 More interesting projects</h2>

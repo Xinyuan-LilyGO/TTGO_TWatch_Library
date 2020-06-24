@@ -15,7 +15,7 @@
 1. 该库已经包含`T-Watch`所有硬件驱动
 2. 使用**TFT_eSPI** 作为显示屏驱动，可直接通过通过构造对象调用**TFT_eSPI**的方法
 3. 使用**lvgl 6.1.2**作为显示图形框架,驱动方法已经实现，只需要按自己的需求调用lvgl api即可
-4. 关于lvgl的使用请参考 **[lvgl 文档](https://docs.littlevgl.com/en/html/index.html)**
+4. 关于lvgl的使用请参考 **[lvgl 文档](https://docs.lvgl.io/v6/en/html/)**
   
 
 <h2 align = "left">安装</h2>
@@ -48,6 +48,7 @@
 
 - [功耗详情点击查看](../docs/power.md)
 - [引脚映射点击查看](../docs/pinmap.md)
-- [3D Shell](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/images/shell.png)
+- [3D外壳](https://github.com/Xinyuan-LilyGO/LilyGo-TWatch-DataSheet/tree/master/3DSHELL)
+- [硬件手册](https://github.com/Xinyuan-LilyGO/LilyGo-TWatch-DataSheet)
 - [Acsip S76/78 Library&Examples](https://github.com/lewisxhe/Acsip-S7xG-Library)
 
