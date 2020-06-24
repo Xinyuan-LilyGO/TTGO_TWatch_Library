@@ -4,6 +4,7 @@
 // #define LILYGO_WATCH_2020_V1
 // #define LILYGO_WATCH_BLOCK
 // #define LILYGO_WATCH_2019_WITH_TOUCH
+// #define LILYGO_WATCH_2019_NO_TOUCH
 
 // => Options
 // #define LILYGO_WATCH_HAS_SIM800L

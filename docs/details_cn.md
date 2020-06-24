@@ -7,8 +7,11 @@
 
 <h2 align = "left">新闻</h2>
 
-1. 当前T-Watch有多种版本,如果使用**T-Watch-2020**版本T-Watch,请在草图`#include <TTGO.h>` 上方定义**LILYGO_TWATCH_2020_V1**宏,以预设程序运行在`T-Watch-2020版本硬件`中.
-2. 有些示例程序无法运行在特殊版本的硬件中,比如`UserButton`示例程序,在**T-Watch-2020**版本中就无法运行,因为该版本硬件没有物理按键
+1. 为了兼容多种版本的T-Watch，所以示例中都包含一个`config.h`文件,初次使用需要在`config.h`文件中定义你使用的**T-Watch**型号
+2. 在`config.h`文件中,你还能看到类似的定义,如**LILYGO_WATCH_LVGL**,  **LILYGO_WATCH_HAS_MOTOR**，这类型的定义，它将负责开启所定义的模块功能,所有定义将在这里可以[查看](./defined_cn.md)
+3. 大多数示例只是作为硬件功能演示,这个库只是帮你完成了一些初始化工作和一些演示,更高级的玩法，请查看[TTGO.h](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/src/TTGO.h)，了解如何初始化, 熟悉了之后,完全可以脱离本库，进行更高级的玩法
+4. 关于API，请查看源码
+
 
 <h2 align = "left">特性</h2>
 

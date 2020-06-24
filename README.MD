@@ -7,8 +7,10 @@ The code bin will demonstrate the basic functionality of T-Watch, including all 
 
 <h2 align = "left">⭐ News </h2>
 
-1. Currently there are multiple versions of T-Watch, if you use **T-Watch-2020** version T-Watch, please define the **LILYGO_TWATCH_2020_V1** macro above the sketch `#include <TTGO.h>` to preset the program Run in `T-Watch-2020 version hardware`.
-2. Some sample programs cannot be run on special versions of hardware, such as the `UserButton` sample program, which cannot be run in the **T-Watch-2020** version, because this version of the hardware does not have physical buttons
+1. In order to be compatible with multiple versions of T-Watch, the example includes a `config.h` file. For the first use, you need to define the **T-Watch** model you use in the `config.h` file
+2. In the `config.h` file, you can also see similar definitions, such as **LILYGO_WATCH_LVGL**, **LILYGO_WATCH_HAS_MOTOR**, this type of definition, it will be responsible for opening the defined module function, all definitions Will be available here [View](./defined_cn.md)
+3. Most of the examples are only used as hardware function demonstrations. This library just helps you complete some initialization work and some demonstrations. For more advanced gameplay, please check [TTGO.h](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/src/TTGO.h) for how to initialize. After you are familiar with it, you can completely leave this library and make more changes Advanced gameplay
+- About API, please check the source code
 
 <h2 align = "left">🚀 Characteristics</h2>
 
