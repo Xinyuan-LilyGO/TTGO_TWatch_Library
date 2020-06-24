@@ -30,7 +30,7 @@ Written by Lewis he //https://github.com/lewisxhe
 #include "drive/fx50xx/FT5206.h"
 #endif
 
-#if defined(LILYGO_WATCH_HAS_DISPLAY)   || defined(LILYGO_EINK_TOUCHSCREEN)
+#if defined(LILYGO_WATCH_HAS_DISPLAY)   || defined(LILYGO_EINK_TOUCHSCREEN) || defined(LILYGO_WATCH_HAS_EINK)
 #include "TFT_eSPI/TFT_eSPI.h"
 #endif
 
@@ -389,17 +389,6 @@ public:
     }
 #endif
 
-#ifdef LILYGO_WATCH_HAS_GPS
-    TinyGPSPlus *gps = nullptr;
-    HardwareSerial *hwSerial = nullptr;
-    void enableLDO4()
-    {
-        power->setLDO4Voltage(AXP202_LDO4_1800MV);
-        power->setPowerOutPut(AXP202_LDO4, AXP202_ON);
-    }
-#endif
-
-
 #ifdef LILYGO_WATCH_HAS_SDCARD
     SPIClass *sdhander = nullptr;
 
@@ -417,8 +406,12 @@ public:
     }
 #endif  /*LILYGO_WATCH_HAS_SDCARD*/
 
+#if defined(LILYGO_WATCH_HAS_GPS) || defined(LILYGO_WATCH_HAS_S76_S78G)
+    HardwareSerial *hwSerial = nullptr;
+#endif
 
 #ifdef LILYGO_WATCH_HAS_GPS
+    TinyGPSPlus *gps = nullptr;
     void gps_begin()
     {
         if (gps == nullptr) {
@@ -446,6 +439,12 @@ public:
 
 #ifdef LILYGO_WATCH_HAS_S76_S78G
     S7XG_Class *s7xg = nullptr;
+
+    void enableLDO4()
+    {
+        power->setLDO4Voltage(AXP202_LDO4_1800MV);
+        power->setPowerOutPut(AXP202_LDO4, AXP202_ON);
+    }
 
     void s7xg_begin()
     {

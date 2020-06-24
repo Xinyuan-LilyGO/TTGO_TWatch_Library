@@ -1,4 +1,4 @@
-#include <TTGO.h>
+#include "config.h"
 #include <Esp.h>
 
 //! buzzer port to be controlled

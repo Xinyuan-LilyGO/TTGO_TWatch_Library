@@ -1,4 +1,4 @@
-#include <TTGO.h>
+#include "config.h"
 #include <BBQ10Keyboard.h>      //Base on arturo182 arduino_bbq10kbd library https://github.com/arturo182/arduino_bbq10kbd
 #include <WiFi.h>
 

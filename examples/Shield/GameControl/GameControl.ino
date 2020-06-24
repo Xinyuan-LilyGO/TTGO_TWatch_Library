@@ -1,5 +1,4 @@
-
-#include <TTGO.h>
+#include "config.h"
 
 TTGOClass *ttgo;
 
@@ -21,6 +20,7 @@ void setup()
     ttgo->tft->fillScreen(TFT_BLACK);
     ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
     ttgo->tft->setTextFont(4);
+    ttgo->tft->drawString("Gamepad Start",  0, 0, 4);
 }
 
 void loop()

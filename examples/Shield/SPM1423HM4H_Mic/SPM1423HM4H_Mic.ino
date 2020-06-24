@@ -1,4 +1,4 @@
-#include <TTGO.h>
+#include "config.h"
 #include <driver/i2s.h>
 
 

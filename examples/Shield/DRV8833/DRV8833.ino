@@ -1,5 +1,5 @@
 
-#include <TTGO.h>
+#include "config.h"
 
 TTGOClass *ttgo;
 

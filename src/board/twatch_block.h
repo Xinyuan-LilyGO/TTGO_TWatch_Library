@@ -1,6 +1,8 @@
 
 #pragma once
 
+#define TWATCH_TFT_BL              (gpio_num_t)12
+
 #define SD_CS               13
 #define SD_MISO             2
 #define SD_MOSI             15

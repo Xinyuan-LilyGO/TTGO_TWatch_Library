@@ -4,10 +4,10 @@ cd ~/Arduino/libraries
 git clone https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
 */
 
+#include "config.h"
 #include <Wire.h>
 #include "MAX30105.h"
 #include "heartRate.h"
-#include <TTGO.h>
 #include "spo2_algorithm.h"
 
 
@@ -31,23 +31,24 @@ void setup()
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
-    ttgo->tft->fillScreen(TFT_BLACK);
     ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
     ttgo->tft->setTextFont(4);
-    ttgo->tft->drawCentreString("T-Watch HeartRate",  120, 60, 2);
+    ttgo->tft->setCursor(0, 0);
 
     // Initialize sensor
     if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) { //Use default I2C port, 400kHz speed
+        ttgo->tft->setCursor(0, 0);
+        ttgo->tft->setTextColor(TFT_RED, TFT_BLACK);
+        ttgo->tft->println("Sensor was not found.");
         Serial.println("Sensor was not found. Please check wiring/power. ");
         while (1);
     }
+    ttgo->tft->drawCentreString("T-Watch HeartRate",  120, 60, 2);
     particleSensor.setup();
     particleSensor.setPulseAmplitudeRed(0xFF);
     particleSensor.setPulseAmplitudeGreen(0);
     Serial.println("Place your index finger on the sensor with steady pressure.");
 }
-
-
 
 void loop()
 {

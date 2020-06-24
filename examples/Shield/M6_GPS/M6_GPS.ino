@@ -1,6 +1,6 @@
 //! This example is an M8/M6 GPS backplane, not an S7XG backplane.
 
-#include <TTGO.h>
+#include "config.h"
 
 TTGOClass *ttgo;
 TFT_eSPI *tft ;
@@ -35,6 +35,7 @@ void loop(void)
 {
     if (ttgo->gpsHandler()) {
         displayInfo();
+        delay(1000);
     }
     if (millis() > 5000 && gps->charsProcessed() < 10) {
         Serial.println(F("No GPS detected: check wiring."));

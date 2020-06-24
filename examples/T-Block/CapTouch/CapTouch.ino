@@ -1,4 +1,4 @@
-#include <TTGO.h>
+#include "config.h"
 #include <MPR121.h>
 
 #define MPR121_SDA_PIN      19
@@ -31,7 +31,7 @@ void setup()
 {
     Serial.begin(115200);
     ttgo = TTGOClass::getWatch();
-    ttgo->begin(false, false);
+    ttgo->begin();
 
     Wire1.begin(MPR121_SDA_PIN, MPR121_SCL_PIN);
     ttgo->openBL();

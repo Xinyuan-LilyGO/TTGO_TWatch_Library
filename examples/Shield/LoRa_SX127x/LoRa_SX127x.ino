@@ -4,7 +4,7 @@ cd ~/Arduino/libraries
 git clone https://github.com/sandeepmistry/arduino-LoRa.git
 */
 
-#include <TTGO.h>
+#include "config.h"
 #include <LoRa.h>
 
 

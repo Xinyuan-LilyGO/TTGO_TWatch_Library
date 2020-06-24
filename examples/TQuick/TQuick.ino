@@ -4,7 +4,7 @@ cd ~/Arduino/libraries
 git clone https://github.com/Xinyuan-LilyGO/DabbleESP32.git
 */
 
-#include <TTGO.h>
+#include "config.h"
 #include <DabbleESP32.h>
 #include <esp32PWMUtilities.h>
 

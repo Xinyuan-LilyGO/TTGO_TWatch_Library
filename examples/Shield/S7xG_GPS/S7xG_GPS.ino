@@ -1,4 +1,4 @@
-#include <TTGO.h>
+#include "config.h"
 
 TTGOClass *ttgo;
 TFT_eSPI *tft ;
@@ -17,7 +17,7 @@ void setup(void)
 
     tft->fillScreen(TFT_BLACK);
     tft->setTextFont(2);
-    tft->println("Begin ublox M8M/GPS Module...");
+    tft->println("Begin S7XG Module...");
 
     //! Open s7xg power
     ttgo->enableLDO4();

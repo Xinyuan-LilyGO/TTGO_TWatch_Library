@@ -18,7 +18,7 @@ rm -rf ./Adafruit-GFX-Library/Fonts
 * * */
 
 
-#include <TTGO.h>
+#include "config.h"
 
 extern const unsigned char logoIcon[280];
 
@@ -203,10 +203,7 @@ void setup()
     // Get watch object
     twatch = TTGOClass::getWatch();
 
-    // The default initialization is the basic watch,
-    // given two parameters to skip initializing the touch screen and TFT
-    // void begin(bool tft = true, bool touchScreen = true)
-    twatch->begin(false, false);
+    twatch->begin();
 
     // Turn on the backlight
     twatch->openBL();
