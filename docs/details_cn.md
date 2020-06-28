@@ -7,7 +7,7 @@
 
 <h2 align = "left">新闻</h2>
 
-1. 为了兼容多种版本的T-Watch，所以示例中都包含一个`config.h`文件,初次使用需要在`config.h`文件中定义你使用的**T-Watch**型号
+1. 为了兼容多种版本的T-Watch，所有示例中都包含一个`config.h`文件,初次使用需要在`config.h`文件中定义你使用的**T-Watch**型号
 2. 在`config.h`文件中,你还能看到类似的定义,如**LILYGO_WATCH_LVGL**,  **LILYGO_WATCH_HAS_MOTOR**，这类型的定义，它将负责开启所定义的模块功能,所有定义将在这里可以[查看](./defined_cn.md)
 3. 大多数示例只是作为硬件功能演示,这个库只是帮你完成了一些初始化工作和一些演示,更高级的玩法，请查看[TTGO.h](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/src/TTGO.h)，了解如何初始化, 熟悉了之后,完全可以脱离本库，进行更高级的玩法
 4. 关于API，请查看源码
@@ -45,7 +45,7 @@
   
 <h2 align = "left">注意事项</h2>
 
-- 由于Twatch使用了特殊IO作为SD接口，下载程序时候请移除SD卡
+- T-Watch-2019 : 由于Twatch使用了特殊IO作为SD接口，下载程序时候请移除SD卡
 
 <h2 align = "left">其他</h2>
 
