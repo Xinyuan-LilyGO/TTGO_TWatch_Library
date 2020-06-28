@@ -15,11 +15,11 @@
  *      DEFINES
  *********************/
 #ifndef LV_DEBUG_STR_MAX_LENGTH
-#define LV_DEBUG_STR_MAX_LENGTH  (1024 * 8)
+    #define LV_DEBUG_STR_MAX_LENGTH  (1024 * 8)
 #endif
 
 #ifndef LV_DEBUG_STR_MAX_REPEAT
-#define LV_DEBUG_STR_MAX_REPEAT  8
+    #define LV_DEBUG_STR_MAX_REPEAT  8
 #endif
 /**********************
  *      TYPEDEFS
@@ -49,6 +49,11 @@ bool lv_debug_check_null(const void * p)
     return false;
 }
 
+bool lv_debug_check_mem_integrity(void)
+{
+    return lv_mem_test() == LV_RES_OK ? true : false;
+}
+
 bool lv_debug_check_obj_type(const lv_obj_t * obj, const char * obj_type)
 {
     if(obj_type[0] == '\0') return true;
@@ -58,6 +63,7 @@ bool lv_debug_check_obj_type(const lv_obj_t * obj, const char * obj_type)
 
     uint8_t i;
     for(i = 0; i < LV_MAX_ANCESTOR_NUM; i++) {
+        if(types.type[i] == NULL) break;
         if(strcmp(types.type[i], obj_type) == 0) return true;
     }
 
@@ -69,7 +75,7 @@ bool lv_debug_check_obj_valid(const lv_obj_t * obj)
     lv_disp_t * disp = lv_disp_get_next(NULL);
     while(disp) {
         lv_obj_t * scr;
-        LV_LL_READ(disp->scr_ll, scr) {
+        _LV_LL_READ(disp->scr_ll, scr) {
 
             if(scr == obj) return true;
             bool found = obj_valid_child(scr, obj);
@@ -87,7 +93,21 @@ bool lv_debug_check_style(const lv_style_t * style)
     if(style == NULL) return true;  /*NULL style is still valid*/
 
 #if LV_USE_ASSERT_STYLE
-    if(style->debug_sentinel != LV_STYLE_DEGUG_SENTINEL_VALUE) {
+    if(style->sentinel != LV_DEBUG_STYLE_SENTINEL_VALUE) {
+        LV_LOG_WARN("Invalid style (local variable or not initialized?)");
+        return false;
+    }
+#endif
+
+    return true;
+}
+
+bool lv_debug_check_style_list(const lv_style_list_t * list)
+{
+    if(list == NULL) return true;  /*NULL list is still valid*/
+
+#if LV_USE_ASSERT_STYLE
+    if(list->sentinel != LV_DEBUG_STYLE_LIST_SENTINEL_VALUE) {
         LV_LOG_WARN("Invalid style (local variable or not initialized?)");
         return false;
     }
@@ -103,11 +123,12 @@ bool lv_debug_check_str(const void * str)
     uint32_t rep = 0;
     uint32_t i;
 
-    for(i = 0; s[i] != '\0' && i < LV_DEBUG_STR_MAX_LENGTH; i++) {
+    for(i = 0; i < LV_DEBUG_STR_MAX_LENGTH && s[i] != '\0'; i++) {
         if(s[i] != last_byte) {
             last_byte = s[i];
             rep = 1;
-        } else if(s[i] > 0x7F){
+        }
+        else if(s[i] > 0x7F) {
             rep++;
             if(rep > LV_DEBUG_STR_MAX_REPEAT) {
                 LV_LOG_WARN("lv_debug_check_str: a non-ASCII char has repeated more than LV_DEBUG_STR_MAX_REPEAT times)");
@@ -139,7 +160,7 @@ void lv_debug_log_error(const char * msg, uint64_t value)
         char * bufp = buf;
 
         /*Add the function name*/
-        memcpy(bufp, msg, msg_len);
+        _lv_memcpy(bufp, msg, msg_len);
         bufp += msg_len;
 
         /*Add value in hey*/
@@ -165,7 +186,8 @@ void lv_debug_log_error(const char * msg, uint64_t value)
 
         *bufp = '\0';
         LV_LOG_ERROR(buf);
-    } else {
+    }
+    else {
         LV_LOG_ERROR(msg);
     }
 }
@@ -178,7 +200,7 @@ static bool obj_valid_child(const lv_obj_t * parent, const lv_obj_t * obj_to_fin
 {
     /*Check all children of `parent`*/
     lv_obj_t * child;
-    LV_LL_READ(parent->child_ll, child) {
+    _LV_LL_READ(parent->child_ll, child) {
         if(child == obj_to_find) return true;
 
         /*Check the children*/

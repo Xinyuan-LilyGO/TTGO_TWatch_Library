@@ -30,11 +30,15 @@ extern "C" {
  **********************/
 bool lv_debug_check_null(const void * p);
 
+bool lv_debug_check_mem_integrity(void);
+
 bool lv_debug_check_obj_type(const lv_obj_t * obj, const char * obj_type);
 
 bool lv_debug_check_obj_valid(const lv_obj_t * obj);
 
 bool lv_debug_check_style(const lv_style_t * style);
+
+bool lv_debug_check_style_list(const lv_style_list_t * list);
 
 bool lv_debug_check_str(const void * str);
 
@@ -46,13 +50,13 @@ void lv_debug_log_error(const char * msg, uint64_t value);
 
 #ifndef LV_DEBUG_ASSERT
 #define LV_DEBUG_ASSERT(expr, msg, value)       \
-{                                               \
-    if(!(expr)) {                               \
-        LV_LOG_ERROR(__func__);                 \
-        lv_debug_log_error(msg, (uint64_t)((uintptr_t)value));         \
-        while(1);                               \
-    }                                           \
-}
+    do {                                            \
+        if(!(expr)) {                               \
+            LV_LOG_ERROR(__func__);                 \
+            lv_debug_log_error(msg, (uint64_t)((uintptr_t)value));         \
+            while(1);                               \
+        }                                           \
+    } while(0)
 #endif
 
 /*----------------
@@ -61,6 +65,11 @@ void lv_debug_log_error(const char * msg, uint64_t value);
 
 #ifndef LV_DEBUG_IS_NULL
 #define LV_DEBUG_IS_NULL(p)    (lv_debug_check_null(p))
+#endif
+
+
+#ifndef LV_DEBUG_CHECK_MEM_INTEGRITY
+#define LV_DEBUG_CHECK_MEM_INTEGRITY()    (lv_debug_check_mem_integrity())
 #endif
 
 #ifndef LV_DEBUG_IS_STR
@@ -76,6 +85,10 @@ void lv_debug_log_error(const char * msg, uint64_t value);
 
 #ifndef LV_DEBUG_IS_STYLE
 #define LV_DEBUG_IS_STYLE(style_p) (lv_debug_check_style(style_p))
+#endif
+
+#ifndef LV_DEBUG_IS_STYLE_LIST
+#define LV_DEBUG_IS_STYLE_LIST(list_p) (lv_debug_check_style_list(list_p))
 #endif
 
 /*-----------------
@@ -100,6 +113,14 @@ void lv_debug_log_error(const char * msg, uint64_t value);
 # define LV_ASSERT_MEM(p) true
 #endif
 
+#if LV_USE_ASSERT_MEM_INTEGRITY
+# ifndef LV_ASSERT_MEM_INTEGRITY
+#  define LV_ASSERT_MEM_INTEGRITY() LV_DEBUG_ASSERT(LV_DEBUG_CHECK_MEM_INTEGRITY(), "Memory integrity error", 0);
+# endif
+#else
+# define LV_ASSERT_MEM_INTEGRITY() true
+#endif
+
 #if LV_USE_ASSERT_STR
 # ifndef LV_ASSERT_STR
 #  define LV_ASSERT_STR(str) LV_DEBUG_ASSERT(LV_DEBUG_IS_STR(str), "Strange or invalid string", str);
@@ -111,7 +132,6 @@ void lv_debug_log_error(const char * msg, uint64_t value);
 #   define LV_ASSERT_STR(str) true
 # endif
 #endif
-
 
 #if LV_USE_ASSERT_OBJ
 # ifndef LV_ASSERT_OBJ
@@ -130,8 +150,12 @@ void lv_debug_log_error(const char * msg, uint64_t value);
 # ifndef LV_ASSERT_STYLE
 #  define LV_ASSERT_STYLE(style_p) LV_DEBUG_ASSERT(LV_DEBUG_IS_STYLE(style_p), "Invalid style", style_p);
 # endif
+# ifndef LV_ASSERT_STYLE_LIST
+#  define LV_ASSERT_STYLE_LIST(list_p) LV_DEBUG_ASSERT(LV_DEBUG_IS_STYLE_LIST(list_p), "Invalid style list", list_p);
+# endif
 #else
-#  define LV_ASSERT_STYLE(style) true
+#  define LV_ASSERT_STYLE(style_p) true
+#  define LV_ASSERT_STYLE_LIST(list_p) true
 #endif
 
 #else /* LV_USE_DEBUG == 0 */
@@ -140,9 +164,11 @@ void lv_debug_log_error(const char * msg, uint64_t value);
 
 #define LV_ASSERT_NULL(p) true
 #define LV_ASSERT_MEM(p) true
+#define LV_ASSERT_MEM_INTEGRITY() true
 #define LV_ASSERT_STR(p) true
 #define LV_ASSERT_OBJ(obj, obj_type) true
 #define LV_ASSERT_STYLE(p) true
+#define LV_ASSERT_STYLE_LIST(p) true
 
 #endif /* LV_USE_DEBUG */
 /*clang-format on*/
