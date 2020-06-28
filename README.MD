@@ -3,13 +3,11 @@
 **English | [中文](docs/details_cn.md)**
 
 
-The code bin will demonstrate the basic functionality of T-Watch, including all on-board chips from T-Watch, using the **lvgl 6.1.2** as the display graphics framework.
-
 <h2 align = "left">⭐ News </h2>
 
 1. In order to be compatible with multiple versions of T-Watch, all examples include a `config.h` file. For the first use, you need to define the **T-Watch** model you use in the `config.h` file
 2. In the `config.h` file, you can also see similar definitions, such as **LILYGO_WATCH_LVGL**, **LILYGO_WATCH_HAS_MOTOR**, this type of definition, it will be responsible for opening the defined module function, all definitions Will be available here [View](./docs/defined_en.md)
-3. Most of the examples are only used as hardware function demonstrations. This library just helps you complete some initialization work and some demonstrations. For more advanced gameplay, please check [TTGO.h](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/src/TTGO.h) for how to initialize. After you are familiar with it, you can completely leave this library and make more changes Advanced gameplay
+3. Most of the examples are only used as hardware function demonstrations. This library only completes some initialization work and some demonstrations. For more advanced gameplay, please see [TTGO.h](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/src/TTGO.h), to understand how to initialize, after being familiar with it, you can completely leave this library for more advanced gameplay
 - About API, please check the source code
 
 <h2 align = "left">🚀 Characteristics</h2>

@@ -2,14 +2,12 @@
 
 [English](../README.MD) | 中文
 
-该代码仓将演示**T-Watch**的基础功能，包含T-Watch所有板载芯片,该项目使用**lvgl 6.1.2**作为显示图形框架
-
 
 <h2 align = "left">新闻</h2>
 
 1. 为了兼容多种版本的T-Watch，所有示例中都包含一个`config.h`文件,初次使用需要在`config.h`文件中定义你使用的**T-Watch**型号
 2. 在`config.h`文件中,你还能看到类似的定义,如**LILYGO_WATCH_LVGL**,  **LILYGO_WATCH_HAS_MOTOR**，这类型的定义，它将负责开启所定义的模块功能,所有定义将在这里可以[查看](./defined_cn.md)
-3. 大多数示例只是作为硬件功能演示,这个库只是帮你完成了一些初始化工作和一些演示,更高级的玩法，请查看[TTGO.h](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/src/TTGO.h)，了解如何初始化, 熟悉了之后,完全可以脱离本库，进行更高级的玩法
+3. 大多数示例只是作为硬件功能演示,这个库只是完成了一些初始化工作和一些演示,更高级的玩法，请查看[TTGO.h](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/src/TTGO.h)，了解如何初始化, 熟悉了之后,完全可以脱离本库，进行更高级的玩法
 4. 关于API，请查看源码
 
 
@@ -17,7 +15,7 @@
 
 1. 该库已经包含`T-Watch`所有硬件驱动
 2. 使用**TFT_eSPI** 作为显示屏驱动，可直接通过通过构造对象调用**TFT_eSPI**的方法
-3. 使用**lvgl 6.1.2**作为显示图形框架,驱动方法已经实现，只需要按自己的需求调用lvgl api即可
+3. 使用**lvgl 7.0.0**作为显示图形框架,驱动方法已经实现，只需要按自己的需求调用lvgl api即可
 4. 关于lvgl的使用请参考 **[lvgl 文档](https://docs.lvgl.io/v6/en/html/)**
   
 
