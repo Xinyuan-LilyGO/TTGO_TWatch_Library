@@ -77,13 +77,12 @@ int FT5206_Class::dev_probe()
     if (_read_cb == nullptr || _write_cb == nullptr) {
         _i2cPort->beginTransmission(_address);
         if (0 != _i2cPort->endTransmission()) {
-            Serial.println("Not find device");
+            // Serial.println("Not find device");
             return false;
         }
     }
-    Serial.println("dev_probe==>");
     _readByte(FT5206_VENDID_REG, 1, &val);
-    Serial.print("FT5206_VENDID_REG "); Serial.println(val, HEX);
+    // Serial.print("FT5206_VENDID_REG "); Serial.println(val, HEX);
     if (_type == 0xFF) {
         if (val == FT5206_VENDID || val == FT5206_VENDID1) {
             _type = val;
@@ -103,6 +102,19 @@ void FT5206_Class::adjustTheshold(uint8_t thresh)
     _writeByte(FT5206_THRESHHOLD_REG, 1, &thresh);
 }
 
+
+TP_Point FT5206_Class::getPoint(uint8_t num)
+{
+    if (!_init) return TP_Point(0, 0);
+    _readRegister();
+    if ((_touches == 0) || (num > 1)) {
+        return TP_Point(0, 0);
+    } else {
+        return TP_Point(_x[num], _y[num]);
+    }
+}
+
+#if 0
 TP_Point FT5206_Class::getPoint(uint8_t num, uint8_t rotation)
 {
     if (!_init) return TP_Point(0, 0);
@@ -151,6 +163,8 @@ TP_Point FT5206_Class::getPoint(uint8_t num, uint8_t rotation)
         return TP_Point(_x[num], _y[num]);
     }
 }
+#endif
+
 
 uint8_t FT5206_Class::touched()
 {

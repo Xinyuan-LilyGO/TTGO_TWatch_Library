@@ -96,7 +96,10 @@ public:
     int dev_probe();
     // valid touching detect threshold.
     void adjustTheshold(uint8_t thresh);
-    TP_Point getPoint(uint8_t num = 0, uint8_t rotation = 0);
+
+    // TP_Point getPoint(uint8_t num, uint8_t rotation );
+    TP_Point getPoint(uint8_t num = 0);
+
     uint8_t touched();
     void enterSleepMode();
     void enterMonitorMode();

@@ -117,77 +117,6 @@ public:
     }
 
 
-    void initTFT()
-    {
-#ifdef LILYGO_WATCH_HAS_DISPLAY
-
-#ifdef LILYGO_WATCH_2020_V1
-        //In the 2020V1 version, the ST7789 chip power supply
-        //is shared with the backlight, so LDO2 cannot be turned off
-        power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
-#endif
-
-        tft = new TFT_eSPI();
-
-        tft->init();
-
-#ifdef  LILYGO_WATCH_2020_V1
-        // Set default initial orientation
-        tft->setRotation(2);
-#endif  /*LILYGO_WATCH_2020_V1*/
-
-        tft->fillScreen(TFT_BLACK);
-
-        tft->setTextFont(1);
-#endif
-    }
-
-    void initTouch()
-    {
-#if defined(LILYGO_WATCH_HAS_TOUCH) && !defined(LILYGO_EINK_TOUCHSCREEN)
-        touch = new FT5206_Class();
-        Wire1.begin(TOUCH_SDA, TOUCH_SCL);
-        if (!touch->begin(Wire1)) {
-            DBG("Begin touch FAIL");
-        }
-#elif defined(LILYGO_EINK_TOUCHSCREEN)
-        touch = new FT5206_Class();
-        // This is just a sign
-        touch->setType(FT5X0X_VENDID);
-        if (!touch->begin(axpReadBytes, axpWriteBytes)) {
-            DBG("Begin touch FAIL");
-        } else {
-            DBG("Begin touch PASS");
-        }
-#endif
-    }
-
-    void initPower()
-    {
-#ifdef LILYGO_WATCH_HAS_AXP202
-        int ret = power->begin(axpReadBytes, axpWriteBytes);
-        if (ret == AXP_FAIL) {
-            DBG("AXP Power begin failed");
-        } else {
-            //Change the button boot time to 4 seconds
-            power->setShutdownTime(AXP_POWER_OFF_TIME_4S);
-            // Turn off the charging instructions, there should be no
-            power->setChgLEDMode(AXP20X_LED_OFF);
-            // Turn off external enable
-            power->setPowerOutPut(AXP202_EXTEN, false);
-            //axp202 allows maximum charging current of 1800mA, minimum 300mA
-            power->setChargeControlCur(300);
-        }
-#endif /*LILYGO_WATCH_HAS_AXP202*/
-    }
-
-    void initBlacklight()
-    {
-#ifdef LILYGO_WATCH_HAS_BLACKLIGHT
-        bl->begin();
-#endif /*LILYGO_WATCH_HAS_BLACKLIGHT*/
-    }
-
 
 
 #ifdef LILYGO_WATCH_HAS_AXP202
@@ -287,8 +216,8 @@ public:
 #endif  /*TWATCH_USE_PSRAM_ALLOC_LVGL*/
 
         lv_disp_buf_init(&disp_buf, buf1, NULL, LV_HOR_RES_MAX * 100);
-        disp_drv.hor_res = 240;
-        disp_drv.ver_res = 240;
+        disp_drv.hor_res = TFT_WIDTH;
+        disp_drv.ver_res = TFT_HEIGHT;
         disp_drv.flush_cb = disp_flush;
         /*Set a display buffer*/
         disp_drv.buffer = &disp_buf;
@@ -332,9 +261,6 @@ public:
         attachInterrupt(RTC_INT, rtc_cb, FALLING);
     }
 #endif  /*LILYGO_WATCH_HAS_PCF8563*/
-
-
-
 
 
 #ifdef LILYGO_WATCH_HAS_BLACKLIGHT
@@ -556,6 +482,81 @@ private:
     ~TTGOClass()
     {
     };
+
+
+    void initTFT()
+    {
+#ifdef LILYGO_WATCH_HAS_DISPLAY
+
+#ifdef LILYGO_WATCH_2020_V1
+        //In the 2020V1 version, the ST7789 chip power supply
+        //is shared with the backlight, so LDO2 cannot be turned off
+        power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
+#endif
+
+        tft = new TFT_eSPI();
+
+        tft->init();
+
+#ifdef  LILYGO_WATCH_2020_V1
+        // Set default initial orientation
+        tft->setRotation(2);
+#endif  /*LILYGO_WATCH_2020_V1*/
+
+        tft->fillScreen(TFT_BLACK);
+
+        tft->setTextFont(1);
+#endif
+    }
+
+
+
+    void initTouch()
+    {
+#if defined(LILYGO_WATCH_HAS_TOUCH) && !defined(LILYGO_EINK_TOUCHSCREEN)
+        touch = new FT5206_Class();
+        Wire1.begin(TOUCH_SDA, TOUCH_SCL);
+        if (!touch->begin(Wire1)) {
+            DBG("Begin touch FAIL");
+        }
+#elif defined(LILYGO_EINK_TOUCHSCREEN)
+        touch = new FT5206_Class();
+        // This is just a sign
+        touch->setType(FT5X0X_VENDID);
+        if (!touch->begin(axpReadBytes, axpWriteBytes)) {
+            DBG("Begin touch FAIL");
+        } else {
+            DBG("Begin touch PASS");
+        }
+#endif
+    }
+
+    void initPower()
+    {
+#ifdef LILYGO_WATCH_HAS_AXP202
+        int ret = power->begin(axpReadBytes, axpWriteBytes);
+        if (ret == AXP_FAIL) {
+            DBG("AXP Power begin failed");
+        } else {
+            //Change the button boot time to 4 seconds
+            power->setShutdownTime(AXP_POWER_OFF_TIME_4S);
+            // Turn off the charging instructions, there should be no
+            power->setChgLEDMode(AXP20X_LED_OFF);
+            // Turn off external enable
+            power->setPowerOutPut(AXP202_EXTEN, false);
+            //axp202 allows maximum charging current of 1800mA, minimum 300mA
+            power->setChargeControlCur(300);
+        }
+#endif /*LILYGO_WATCH_HAS_AXP202*/
+    }
+
+    void initBlacklight()
+    {
+#ifdef LILYGO_WATCH_HAS_BLACKLIGHT
+        bl->begin();
+#endif /*LILYGO_WATCH_HAS_BLACKLIGHT*/
+    }
+
 #ifdef LILYGO_WATCH_HAS_AXP202
     static uint8_t axpWriteBytes(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint8_t len)
     {
@@ -590,7 +591,6 @@ private:
 #endif  /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_DISPLAY*/
 
 
-
     I2CBus *i2c = nullptr;
 
     static TTGOClass *_ttgo;
@@ -601,6 +601,63 @@ private:
 
 
 protected:
+
+
+#if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_TOUCH)
+    static bool getTouchXY(int16_t &x, int16_t &y)
+    {
+        TP_Point p;
+        if (_ttgo->touch == nullptr) {
+            return false;
+        }
+        if (!_ttgo->touch->touched()) {
+            return false;
+        }
+        p = _ttgo->touch->getPoint();
+
+#if     0 //defined(LILYGO_WATCH_BLOCK) &&defined(LILYGO_EINK_TOUCHSCREEN)
+        // x = p.x;
+        // y = p.y;
+#elif   defined(LILYGO_WATCH_2019_WITH_TOUCH)
+        uint8_t rotation = _ttgo->tft->getRotation();
+        int16_t _x = map(p.x, 0, 320, 0, 240);
+        int16_t _y = map(p.y, 0, 320, 0, 240);
+        switch (rotation) {
+        case 1:
+            x = _y;
+            y = TFT_HEIGHT - _x;
+        case 2:
+            x = TFT_WIDTH - _x;
+            y = TFT_HEIGHT - _y;
+        case 3:
+            x = TFT_WIDTH - _y;
+            y = _x;
+        case 0:
+        default:
+            x = _x;
+            y = _y;
+        }
+#elif   defined(LILYGO_WATCH_2020_V1)
+        uint8_t rotation = _ttgo->tft->getRotation();
+        switch (rotation) {
+        case 0:
+            x = TFT_WIDTH - p.x;
+            y = TFT_HEIGHT - p.y;
+        case 1:
+            x = TFT_WIDTH - p.y;
+            y = TFT_HEIGHT - p.x;
+        case 3:
+            x = p.y;
+            y = TFT_HEIGHT - p.x;
+        case 2:
+        default:
+            x = p.x;
+            y = p.y;
+        }
+#endif
+        return true;
+    }
+#endif
 
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_DISPLAY)
     static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
@@ -614,15 +671,16 @@ protected:
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_TOUCH)
     static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     {
-        static TP_Point p;
-        uint8_t rotation = _ttgo->tft->getRotation();
-        data->state = _ttgo->touch->touched() ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
-        if (data->state == LV_INDEV_STATE_PR) {
-            p = _ttgo->touch->getPoint(0, rotation);
-        }
-        /*Set the coordinates (if released use the last pressed coordinates)*/
-        data->point.x = p.x;
-        data->point.y = p.y;
+//         static TP_Point p;
+//         uint8_t rotation = _ttgo->tft->getRotation();
+//         data->state = _ttgo->touch->touched() ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+//         if (data->state == LV_INDEV_STATE_PR) {
+//             p = _ttgo->touch->getPoint(0, rotation);
+//         }
+//         /*Set the coordinates (if released use the last pressed coordinates)*/
+//         data->point.x = p.x;
+//         data->point.y = p.y;
+        data->state = _ttgo->getTouchXY(data->point.x, data->point.y) ?  LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
         return false; /*Return false because no moare to be read*/
     }
 #endif /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_TOUCH*/
