@@ -8,6 +8,10 @@ git clone https://github.com/Xinyuan-LilyGO/DabbleESP32.git
 #include <DabbleESP32.h>
 #include <esp32PWMUtilities.h>
 
+// Adapt to DRV8833 backplane
+// Adapt to DRV8833 backplane
+// Adapt to DRV8833 backplane
+
 TTGOClass *ttgo;
 TMotor Motor1;
 TMotor Motor2;

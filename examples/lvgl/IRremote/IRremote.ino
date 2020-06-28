@@ -68,7 +68,7 @@ void ir_send_to_air(int level)
     irsend.sendRaw(airArray[level - sizeof(airArray) / sizeof(airArray[0]) - 1], 211, 38);
 }
 
-static lv_obj_t *text, *gContainer, *imgbtn1, *imgbtn2, *imgbtn3;
+static lv_obj_t *text, *gContainer, *imgbtn1, *imgbtn2;
 static int level = 24;
 
 
@@ -95,43 +95,44 @@ void setup()
     irsend.enableIROut(38);
 
     static lv_style_t style1;
-    lv_style_copy(&style1, &lv_style_plain);
-    style1.text.font = &Number_128;
-    style1.text.color = LV_COLOR_WHITE;
+    lv_style_init(&style1);
+    lv_style_set_text_color(&style1, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_style_set_text_font(&style1, LV_STATE_DEFAULT, &Number_128);
+
+    static lv_style_t cont_style;
+    lv_style_init(&cont_style);
+    lv_style_set_border_width(&cont_style, LV_OBJ_PART_MAIN, 0);
 
     gContainer = lv_cont_create(lv_scr_act(), NULL);
     lv_obj_set_size(gContainer,  LV_HOR_RES, LV_VER_RES);
-    lv_obj_set_style(gContainer, &lv_style_transp_fit);
+    lv_obj_add_style(gContainer, LV_OBJ_PART_MAIN, &cont_style);
 
     lv_obj_t *wp = lv_img_create(gContainer, NULL);
-    lv_obj_set_protect(wp, LV_PROTECT_PARENT);          /*Don't let to move the wallpaper by the layout */
     lv_img_set_src(wp, &BGPNG);
     lv_obj_set_size(wp, LV_HOR_RES, LV_VER_RES);
 
     text = lv_label_create(gContainer, NULL);
     lv_label_set_text(text, "24");
-    lv_label_set_style(text, LV_LABEL_STYLE_MAIN, &style1);
+    lv_obj_add_style(text, LV_OBJ_PART_MAIN, &style1);
     lv_obj_align(text, gContainer, LV_ALIGN_IN_TOP_MID, 0, 20);
 
     imgbtn1 = lv_imgbtn_create(gContainer, NULL);
-    lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_REL, &Add1PNG);
-    lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_PR, &Add2PNG);
-    lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_TGL_REL, &Add1PNG);
-    lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_TGL_PR, &Add2PNG);
-    lv_imgbtn_set_style(imgbtn1, LV_BTN_STATE_PR, &lv_style_plain);        /*Use the darker style in the pressed state*/
-    lv_imgbtn_set_style(imgbtn1, LV_BTN_STATE_TGL_PR, &lv_style_plain);
-    lv_imgbtn_set_toggle(imgbtn1, true);
+    lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_ACTIVE, &Add2PNG);
+    lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_RELEASED, &Add1PNG);
+    lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_PRESSED, &Add2PNG);
+    lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_CHECKED_RELEASED, &Add2PNG);
+    lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_CHECKED_PRESSED, &Add1PNG);
+
     lv_obj_align(imgbtn1, NULL, LV_ALIGN_IN_RIGHT_MID, -30, 45);
     lv_obj_set_event_cb(imgbtn1, click_event);
 
     imgbtn2 = lv_imgbtn_create(gContainer, NULL);
-    lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_REL, &Less1PNG);
-    lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_PR, &Less2PNG);
-    lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_TGL_REL, &Less1PNG);
-    lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_TGL_PR, &Less2PNG);
-    lv_imgbtn_set_style(imgbtn2, LV_BTN_STATE_PR, &lv_style_plain);        /*Use the darker style in the pressed state*/
-    lv_imgbtn_set_style(imgbtn2, LV_BTN_STATE_TGL_PR, &lv_style_plain);
-    lv_imgbtn_set_toggle(imgbtn2, true);
+    lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_ACTIVE, &Less2PNG);
+    lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_RELEASED, &Less1PNG);
+    lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_PRESSED, &Less2PNG);
+    lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_CHECKED_RELEASED, &Less2PNG);
+    lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_CHECKED_PRESSED, &Less1PNG);
+
     lv_obj_align(imgbtn2, NULL, LV_ALIGN_IN_LEFT_MID, 30, 45);
     lv_obj_set_event_cb(imgbtn2, click_event);
 }

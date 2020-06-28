@@ -20,6 +20,7 @@ char buf[256];
 
 
 void createWin();
+void add_message(const char *txt);
 
 #define LORA_PERIOD 470
 
@@ -74,34 +75,28 @@ static void  createGui()
     label = lv_label_create(btn2, NULL);
     lv_label_set_text(label, "Receiver");
 
-    // btn3 = lv_btn_create(gContainer, btn1);
-    // lv_obj_align(btn3, btn2, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
-    // lv_obj_set_event_cb(btn3, event_handler);
-
-    // label = lv_label_create(btn3, NULL);
-    // lv_label_set_text(label, "GPS");
-
 }
 
 void createWin()
 {
     lv_obj_clean(gContainer);
-    ta1 = lv_ta_create(gContainer, NULL);
+    ta1 = lv_textarea_create(gContainer, NULL);
     lv_obj_set_size(ta1, LV_HOR_RES, LV_VER_RES);
     lv_obj_align(ta1, NULL, LV_ALIGN_CENTER, 0, 0);
-    lv_ta_set_style(ta1, LV_TA_STYLE_BG, &lv_style_transp_fit);                    /*Apply the scroll bar style*/
-    lv_ta_set_cursor_type(ta1, LV_CURSOR_NONE);
-    lv_ta_set_text(ta1, "");    /*Set an initial text*/
-    lv_ta_set_max_length(ta1, 128);
+    lv_textarea_set_text(ta1, "");    /*Set an initial text*/
+    lv_textarea_set_max_length(ta1, 128);
 }
 
 void add_message(const char *txt)
 {
     if (!txt || !ta1)return;
-    if (lv_txt_get_encoded_length(lv_ta_get_text(ta1)) >= lv_ta_get_max_length(ta1)) {
-        lv_ta_set_text(ta1, "");
+    if (strlen(lv_textarea_get_text(ta1)) >= lv_textarea_get_max_length(ta1)) {
+        lv_textarea_set_text(ta1, "");
     }
-    lv_ta_add_text(ta1, txt);
+    String str = txt;
+    str.trim();
+    str += "\n";
+    lv_textarea_add_text(ta1, str.c_str());
 }
 
 
@@ -131,7 +126,6 @@ void setup(void)
 
     gContainer = lv_cont_create(lv_scr_act(), NULL);
     lv_obj_set_size(gContainer,  LV_HOR_RES, LV_VER_RES);
-    lv_obj_set_style(gContainer, &lv_style_transp_fit);
 
     lv_obj_t *label = lv_label_create(gContainer, NULL);
     lv_label_set_text(label, "Begin Lora Module");

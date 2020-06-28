@@ -12,6 +12,10 @@
 #define LILYGO_WATCH_LVGL                   //To use LVGL, you need to enable the macro LVGL
 
 
+// Adapt to DRV8833 backplane
+// Adapt to DRV8833 backplane
+// Adapt to DRV8833 backplane
+
 #include <LilyGoWatch.h>
 
 

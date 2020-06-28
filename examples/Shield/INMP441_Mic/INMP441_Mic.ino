@@ -26,10 +26,7 @@ void setup()
     chart = lv_chart_create(lv_scr_act(), NULL);
     lv_obj_set_size(chart, 200, 150);
     lv_obj_align(chart, NULL, LV_ALIGN_CENTER, 0, 0);
-    lv_chart_set_type(chart, LV_CHART_TYPE_POINT | LV_CHART_TYPE_LINE);   /*Show lines and points too*/
-    lv_chart_set_series_opa(chart, LV_OPA_70);                            /*Opacity of the data series*/
-    lv_chart_set_series_width(chart, 4);                                  /*Line width and point radious*/
-
+    lv_chart_set_type(chart,  LV_CHART_TYPE_LINE);   /*Show lines and points too*/
     lv_chart_set_range(chart, 0, 800);
 
     /*Add data series*/

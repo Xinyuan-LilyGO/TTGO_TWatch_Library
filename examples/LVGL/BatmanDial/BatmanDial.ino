@@ -2,9 +2,6 @@
  * Simple clock display interface, power consumption is about 20mA
  * Written by lewishe
  * */
-
-
-
 #include "config.h"
 
 typedef struct {
@@ -41,22 +38,23 @@ void setup()
     lv_obj_align(img1, NULL, LV_ALIGN_CENTER, 0, 0);
 
     static lv_style_t style;
-    lv_style_copy(&style, &lv_style_pretty_color);
-    style.text.font  = &morgnite_bold_64;
-    style.text.color = LV_COLOR_WHITE;
+    lv_style_init(&style);
+    lv_style_set_text_color(&style, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_style_set_text_font(&style, LV_STATE_DEFAULT, &morgnite_bold_64);
 
     g_data.hour = lv_label_create(img1, nullptr);
-    lv_label_set_style(g_data.hour, LV_LABEL_STYLE_MAIN, &style);
+    lv_obj_add_style(g_data.hour, LV_OBJ_PART_MAIN, &style);
+
     lv_label_set_text(g_data.hour, "00");
     lv_obj_align(g_data.hour, img1, LV_ALIGN_IN_TOP_MID, 10, 30);
 
     g_data.minute = lv_label_create(img1, nullptr);
-    lv_label_set_style(g_data.minute, LV_LABEL_STYLE_MAIN, &style);
+    lv_obj_add_style(g_data.minute, LV_OBJ_PART_MAIN, &style);
     lv_label_set_text(g_data.minute, "00");
     lv_obj_align(g_data.minute, g_data.hour, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
     g_data.second = lv_label_create(img1, nullptr);
-    lv_label_set_style(g_data.second, LV_LABEL_STYLE_MAIN, &style);
+    lv_obj_add_style(g_data.second, LV_OBJ_PART_MAIN, &style);
     lv_label_set_text(g_data.second, "00");
     lv_obj_align(g_data.second, g_data.minute, LV_ALIGN_OUT_RIGHT_MID, 9, 0);
 
