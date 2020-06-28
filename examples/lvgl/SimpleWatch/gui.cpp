@@ -66,7 +66,6 @@ static void wifi_event_cb();
 static void sd_event_cb();
 static void setting_event_cb();
 static void light_event_cb();
-static void bluetooth_event_cb();
 static void modules_event_cb();
 static void camera_event_cb();
 static void wifi_destory();
@@ -87,19 +86,18 @@ public:
         _par = par;
 
         static lv_style_t barStyle;
-        lv_style_copy(&barStyle, &lv_style_plain);    /*Copy a built-in style to initialize the new style*/
-        barStyle.body.main_color = LV_COLOR_GRAY;
-        barStyle.body.grad_color = LV_COLOR_GRAY;
-        barStyle.body.opa = LV_OPA_20;
-        barStyle.body.radius = 0;
-        barStyle.body.border.color = LV_COLOR_GRAY;
-        barStyle.body.border.width = 0;
-        barStyle.body.border.opa = LV_OPA_50;
-        barStyle.text.color = LV_COLOR_WHITE;
-        barStyle.image.color = LV_COLOR_WHITE;
+
+        lv_style_init(&barStyle);
+        lv_style_set_radius(&barStyle, LV_OBJ_PART_MAIN, 0);
+        lv_style_set_bg_color(&barStyle, LV_OBJ_PART_MAIN, LV_COLOR_GRAY);
+        lv_style_set_bg_opa(&barStyle, LV_OBJ_PART_MAIN, LV_OPA_20);
+        lv_style_set_border_width(&barStyle, LV_OBJ_PART_MAIN, 0);
+        lv_style_set_text_color(&barStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+        lv_style_set_image_recolor(&barStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+
         _bar = lv_cont_create(_par, NULL);
         lv_obj_set_size(_bar,  LV_HOR_RES, _barHeight);
-        lv_obj_set_style(_bar, &barStyle);
+        lv_obj_add_style(_bar, LV_OBJ_PART_MAIN, &barStyle);
 
         _array[0].icon = lv_label_create(_bar, NULL);
         lv_label_set_text(_array[0].icon, "100%");
@@ -211,16 +209,13 @@ public:
     void createMenu(lv_menu_config_t *config, int count, lv_event_cb_t event_cb, int direction = 1)
     {
         static lv_style_t menuStyle;
-        lv_style_copy(&menuStyle, &lv_style_plain);    /*Copy a built-in style to initialize the new style*/
-        menuStyle.body.main_color = LV_COLOR_GRAY;
-        menuStyle.body.grad_color = LV_COLOR_GRAY;
-        menuStyle.body.opa = LV_OPA_0;
-        menuStyle.body.radius = 0;
-        menuStyle.body.border.color = LV_COLOR_GRAY;
-        menuStyle.body.border.width = 0;
-        menuStyle.body.border.opa = LV_OPA_50;
-        menuStyle.text.color = LV_COLOR_WHITE;
-        menuStyle.image.color = LV_COLOR_WHITE;
+        lv_style_init(&menuStyle);
+        lv_style_set_radius(&menuStyle, LV_OBJ_PART_MAIN, 0);
+        lv_style_set_bg_color(&menuStyle, LV_OBJ_PART_MAIN, LV_COLOR_GRAY);
+        lv_style_set_bg_opa(&menuStyle, LV_OBJ_PART_MAIN, LV_OPA_0);
+        lv_style_set_border_width(&menuStyle, LV_OBJ_PART_MAIN, 0);
+        lv_style_set_text_color(&menuStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+        lv_style_set_image_recolor(&menuStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
 
 
         _count = count;
@@ -242,14 +237,14 @@ public:
         _cont = lv_cont_create(lv_scr_act(), NULL);
         lv_obj_set_size(_cont, LV_HOR_RES, LV_VER_RES - 30);
         lv_obj_align(_cont, NULL, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
-        lv_obj_set_style(_cont, &menuStyle);
+        lv_obj_add_style(_cont, LV_OBJ_PART_MAIN, &menuStyle);
 
         _view = lv_tileview_create(_cont, NULL);
         lv_tileview_set_valid_positions(_view, _vp, count );
         lv_tileview_set_edge_flash(_view, false);
         lv_obj_align(_view, NULL, LV_ALIGN_CENTER, 0, 0);
-        lv_tileview_set_style(_view, LV_TILEVIEW_STYLE_MAIN, &menuStyle);
-        lv_page_set_sb_mode(_view, LV_SB_MODE_OFF);
+        lv_page_set_scrlbar_mode(_view, LV_SCRLBAR_MODE_OFF);
+        lv_obj_add_style(_view, LV_OBJ_PART_MAIN, &menuStyle);
 
         lv_coord_t _w = lv_obj_get_width(_view) ;
         lv_coord_t _h = lv_obj_get_height(_view);
@@ -275,10 +270,10 @@ public:
         }
 
         _exit  = lv_imgbtn_create(lv_scr_act(), NULL);
-        lv_imgbtn_set_src(_exit, LV_BTN_STATE_REL, &menu);
-        lv_imgbtn_set_src(_exit, LV_BTN_STATE_PR, &menu);
-        lv_imgbtn_set_src(_exit, LV_BTN_STATE_TGL_REL, &menu);
-        lv_imgbtn_set_src(_exit, LV_BTN_STATE_TGL_PR, &menu);
+        lv_imgbtn_set_src(_exit, LV_BTN_STATE_RELEASED, &menu);
+        lv_imgbtn_set_src(_exit, LV_BTN_STATE_PRESSED, &menu);
+        lv_imgbtn_set_src(_exit, LV_BTN_STATE_CHECKED_PRESSED, &menu);
+        lv_imgbtn_set_src(_exit, LV_BTN_STATE_CHECKED_RELEASED, &menu);
         lv_obj_align(_exit, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -20, -20);
         lv_obj_set_event_cb(_exit, event_cb);
         lv_obj_set_top(_exit, true);
@@ -340,16 +335,14 @@ static void event_handler(lv_obj_t *obj, lv_event_t event)
 
 void setupGui()
 {
-    lv_style_copy(&settingStyle, &lv_style_plain);    /*Copy a built-in style to initialize the new style*/
-    settingStyle.body.main_color = LV_COLOR_GRAY;
-    settingStyle.body.grad_color = LV_COLOR_GRAY;
-    settingStyle.body.opa = LV_OPA_0;
-    settingStyle.body.radius = 0;
-    settingStyle.body.border.color = LV_COLOR_GRAY;
-    settingStyle.body.border.width = 0;
-    settingStyle.body.border.opa = LV_OPA_50;
-    settingStyle.text.color = LV_COLOR_WHITE;
-    settingStyle.image.color = LV_COLOR_WHITE;
+    lv_style_init(&settingStyle);
+    lv_style_set_radius(&settingStyle, LV_OBJ_PART_MAIN, 0);
+    lv_style_set_bg_color(&settingStyle, LV_OBJ_PART_MAIN, LV_COLOR_GRAY);
+    lv_style_set_bg_opa(&settingStyle, LV_OBJ_PART_MAIN, LV_OPA_0);
+    lv_style_set_border_width(&settingStyle, LV_OBJ_PART_MAIN, 0);
+    lv_style_set_text_color(&settingStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+    lv_style_set_image_recolor(&settingStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+
 
     //Create wallpaper
     void *images[] = {(void *) &bg, (void *) &bg1, (void *) &bg2, (void *) &bg3 };
@@ -374,43 +367,46 @@ void setupGui()
 
     //! main
     static lv_style_t mainStyle;
-    lv_style_copy(&mainStyle, &lv_style_plain);    /*Copy a built-in style to initialize the new style*/
-    mainStyle.body.main_color = LV_COLOR_GRAY;
-    mainStyle.body.grad_color = LV_COLOR_GRAY;
-    mainStyle.body.opa = LV_OPA_0;
-    mainStyle.body.radius = 0;
-    mainStyle.body.border.color = LV_COLOR_GRAY;
-    mainStyle.body.border.width = 0;
-    mainStyle.body.border.opa = LV_OPA_50;
-    mainStyle.text.color = LV_COLOR_WHITE;
-    mainStyle.image.color = LV_COLOR_WHITE;
+    lv_style_init(&mainStyle);
+    lv_style_set_radius(&mainStyle, LV_OBJ_PART_MAIN, 0);
+    lv_style_set_bg_color(&mainStyle, LV_OBJ_PART_MAIN, LV_COLOR_GRAY);
+    lv_style_set_bg_opa(&mainStyle, LV_OBJ_PART_MAIN, LV_OPA_0);
+    lv_style_set_border_width(&mainStyle, LV_OBJ_PART_MAIN, 0);
+    lv_style_set_text_color(&mainStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+    lv_style_set_image_recolor(&mainStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+
+
     mainBar = lv_cont_create(scr, NULL);
     lv_obj_set_size(mainBar,  LV_HOR_RES, LV_VER_RES - bar.height());
-    lv_obj_set_style(mainBar, &mainStyle);
+    lv_obj_add_style(mainBar, LV_OBJ_PART_MAIN, &mainStyle);
     lv_obj_align(mainBar, bar.self(), LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
     //! Time
     static lv_style_t timeStyle;
     lv_style_copy(&timeStyle, &mainStyle);
-    timeStyle.text.font = &Ubuntu;
+    lv_style_set_text_font(&timeStyle, LV_STATE_DEFAULT, &Ubuntu);
 
     timeLabel = lv_label_create(mainBar, NULL);
-    lv_label_set_style(timeLabel, LV_LABEL_STYLE_MAIN, &timeStyle);
+    lv_obj_add_style(timeLabel, LV_OBJ_PART_MAIN, &timeStyle);
     updateTime();
 
     //! menu
     static lv_style_t style_pr;
-    lv_style_copy(&style_pr, &lv_style_plain);
-    style_pr.image.color = LV_COLOR_BLACK;
-    style_pr.image.intense = LV_OPA_50;
-    style_pr.text.color = lv_color_hex3(0xaaa);
+
+    lv_style_init(&style_pr);
+    lv_style_set_image_recolor(&style_pr, LV_OBJ_PART_MAIN, LV_COLOR_BLACK);
+    lv_style_set_text_color(&style_pr, LV_OBJ_PART_MAIN, lv_color_hex3(0xaaa));
 
     menuBtn = lv_imgbtn_create(mainBar, NULL);
-    lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_REL, &menu);
-    lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_PR, &menu);
-    lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_TGL_REL, &menu);
-    lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_TGL_PR, &menu);
-    lv_imgbtn_set_style(menuBtn, LV_BTN_STATE_PR, &style_pr);
+
+    lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_ACTIVE, &menu);
+    lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_RELEASED, &menu);
+    lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_PRESSED, &menu);
+    lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_CHECKED_RELEASED, &menu);
+    lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_CHECKED_PRESSED, &menu);
+    lv_obj_add_style(menuBtn, LV_OBJ_PART_MAIN, &style_pr);
+
+
     lv_obj_align(menuBtn, mainBar, LV_ALIGN_OUT_BOTTOM_MID, 0, -70);
     lv_obj_set_event_cb(menuBtn, event_handler);
 
@@ -520,16 +516,14 @@ public:
     void create(lv_obj_t *parent =  nullptr)
     {
         static lv_style_t kbStyle;
-        lv_style_copy(&kbStyle, &lv_style_plain);    /*Copy a built-in style to initialize the new style*/
-        kbStyle.body.main_color = LV_COLOR_GRAY;
-        kbStyle.body.grad_color = LV_COLOR_GRAY;
-        kbStyle.body.opa = LV_OPA_0;
-        kbStyle.body.radius = 0;
-        kbStyle.body.border.color = LV_COLOR_GRAY;
-        kbStyle.body.border.width = 0;
-        kbStyle.body.border.opa = LV_OPA_50;
-        kbStyle.text.color = LV_COLOR_WHITE;
-        kbStyle.image.color = LV_COLOR_WHITE;
+
+        lv_style_init(&kbStyle);
+        lv_style_set_radius(&kbStyle, LV_OBJ_PART_MAIN, 0);
+        lv_style_set_bg_color(&kbStyle, LV_OBJ_PART_MAIN, LV_COLOR_GRAY);
+        lv_style_set_bg_opa(&kbStyle, LV_OBJ_PART_MAIN, LV_OPA_0);
+        lv_style_set_border_width(&kbStyle, LV_OBJ_PART_MAIN, 0);
+        lv_style_set_text_color(&kbStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+        lv_style_set_image_recolor(&kbStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
 
         if (parent == nullptr) {
             parent = lv_scr_act();
@@ -538,23 +532,26 @@ public:
         _kbCont = lv_cont_create(parent, NULL);
         lv_obj_set_size(_kbCont, LV_HOR_RES, LV_VER_RES - 30);
         lv_obj_align(_kbCont, NULL, LV_ALIGN_CENTER, 0, 0);
-        lv_obj_set_style(_kbCont, &kbStyle);
+        lv_obj_add_style(_kbCont, LV_OBJ_PART_MAIN, &kbStyle);
 
-        lv_obj_t *ta = lv_ta_create(_kbCont, NULL);
+        lv_obj_t *ta = lv_textarea_create(_kbCont, NULL);
         lv_obj_set_height(ta, 40);
-        lv_ta_set_one_line(ta, true);
-        lv_ta_set_pwd_mode(ta, false);
-        lv_ta_set_text(ta, "");
-        lv_obj_align(ta, _kbCont, LV_ALIGN_IN_TOP_MID, 0, 10);
+        lv_textarea_set_one_line(ta, true);
+        lv_textarea_set_pwd_mode(ta, false);
+        lv_textarea_set_text(ta, "");
 
-        lv_obj_t *kb = lv_kb_create(_kbCont, NULL);
-        lv_kb_set_map(kb, btnm_mapplus[0]);
+        lv_obj_align(ta, _kbCont, LV_ALIGN_IN_TOP_MID, 10, 10);
+
+        lv_obj_t *kb = lv_keyboard_create(_kbCont, NULL);
+        lv_keyboard_set_map(kb, LV_KEYBOARD_MODE_TEXT_LOWER, btnm_mapplus[0]);
         lv_obj_set_height(kb, LV_VER_RES / 3 * 2);
+        lv_obj_set_width(kb, 240);
         lv_obj_align(kb, _kbCont, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-        lv_kb_set_ta(kb, ta);
+        lv_keyboard_set_textarea(kb, ta);
 
-        lv_obj_set_style(ta, &kbStyle);
-        lv_obj_set_style(kb, &kbStyle);
+        lv_obj_add_style(kb, LV_OBJ_PART_MAIN, &kbStyle);
+        lv_obj_add_style(ta, LV_OBJ_PART_MAIN, &kbStyle);
+
         lv_obj_set_event_cb(kb, __kb_event_cb);
 
         _kb = this;
@@ -568,12 +565,12 @@ public:
     static void __kb_event_cb(lv_obj_t *kb, lv_event_t event)
     {
         if (event != LV_EVENT_VALUE_CHANGED && event != LV_EVENT_LONG_PRESSED_REPEAT) return;
-        lv_kb_ext_t *ext = (lv_kb_ext_t *)lv_obj_get_ext_attr(kb);
-        const char *txt = lv_btnm_get_active_btn_text(kb);
+        lv_keyboard_ext_t *ext = (lv_keyboard_ext_t *)lv_obj_get_ext_attr(kb);
+        const char *txt = lv_btnmatrix_get_active_btn_text(kb);
         if (txt == NULL) return;
         static int index = 0;
         if (strcmp(txt, LV_SYMBOL_OK) == 0) {
-            strcpy(__buf, lv_ta_get_text(ext->ta));
+            strcpy(__buf, lv_textarea_get_text(ext->ta));
             if (_kb->_cb != nullptr) {
                 _kb->_cb(KB_EVENT_OK);
             }
@@ -585,12 +582,12 @@ public:
             return;
         } else if (strcmp(txt, LV_SYMBOL_RIGHT) == 0) {
             index = index + 1 >= sizeof(btnm_mapplus) / sizeof(btnm_mapplus[0]) ? 0 : index + 1;
-            lv_kb_set_map(kb, btnm_mapplus[index]);
+            lv_keyboard_set_map(kb, LV_KEYBOARD_MODE_TEXT_LOWER, btnm_mapplus[index]);
             return;
         } else if (strcmp(txt, "Del") == 0) {
-            lv_ta_del_char(ext->ta);
+            lv_textarea_del_char(ext->ta);
         } else {
-            lv_ta_add_text(ext->ta, txt);
+            lv_textarea_add_text(ext->ta, txt);
         }
     }
 
@@ -710,16 +707,15 @@ public:
     void create(switch_cfg_t *cfg, uint8_t count, exit_cb cb, lv_obj_t *parent = nullptr)
     {
         static lv_style_t swlStyle;
-        lv_style_copy(&swlStyle, &lv_style_plain);    /*Copy a built-in style to initialize the new style*/
-        swlStyle.body.main_color = LV_COLOR_GRAY;
-        swlStyle.body.grad_color = LV_COLOR_GRAY;
-        swlStyle.body.opa = LV_OPA_0;
-        swlStyle.body.radius = 0;
-        swlStyle.body.border.color = LV_COLOR_GRAY;
-        swlStyle.body.border.width = 0;
-        swlStyle.body.border.opa = LV_OPA_50;
-        swlStyle.text.color = LV_COLOR_WHITE;
-        swlStyle.image.color = LV_COLOR_WHITE;
+        lv_style_init(&swlStyle);
+        lv_style_set_radius(&swlStyle, LV_OBJ_PART_MAIN, 0);
+        lv_style_set_bg_color(&swlStyle, LV_OBJ_PART_MAIN, LV_COLOR_GRAY);
+        lv_style_set_bg_opa(&swlStyle, LV_OBJ_PART_MAIN, LV_OPA_0);
+        lv_style_set_border_width(&swlStyle, LV_OBJ_PART_MAIN, 0);
+        lv_style_set_border_opa(&swlStyle, LV_OBJ_PART_MAIN, LV_OPA_50);
+        lv_style_set_text_color(&swlStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+        lv_style_set_image_recolor(&swlStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+
 
         if (parent == nullptr) {
             parent = lv_scr_act();
@@ -729,7 +725,7 @@ public:
         _swCont = lv_cont_create(parent, NULL);
         lv_obj_set_size(_swCont, LV_HOR_RES, LV_VER_RES - 30);
         lv_obj_align(_swCont, NULL, LV_ALIGN_CENTER, 0, 0);
-        lv_obj_set_style(_swCont, &swlStyle);
+        lv_obj_add_style(_swCont, LV_OBJ_PART_MAIN, &swlStyle);
 
         _count = count;
         _sw = new lv_obj_t *[count];
@@ -743,21 +739,26 @@ public:
             lv_label_set_text(la1, cfg[i].name);
             i == 0 ? lv_obj_align(la1, NULL, LV_ALIGN_IN_TOP_LEFT, 30, 20) : lv_obj_align(la1, prev, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
             _sw[i] = lv_imgbtn_create(_swCont, NULL);
-            lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_REL, &off);
-            lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_PR, &off);
-            lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_TGL_REL, &off);
-            lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_TGL_PR, &off);
-            lv_imgbtn_set_toggle(_sw[i], true);
+            lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_ACTIVE, &off);
+            lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_RELEASED, &off);
+            lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_PRESSED, &off);
+            lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_CHECKED_RELEASED, &off);
+            lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_CHECKED_PRESSED, &off);
+            lv_obj_set_click(_sw[i], true);
+
             lv_obj_align(_sw[i], la1, LV_ALIGN_OUT_RIGHT_MID, 80, 0);
             lv_obj_set_event_cb(_sw[i], __switch_event_cb);
             prev = la1;
         }
 
         _exitBtn = lv_imgbtn_create(_swCont, NULL);
-        lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_REL, &iexit);
-        lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_PR, &iexit);
-        lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_TGL_REL, &iexit);
-        lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_TGL_PR, &iexit);
+        lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_ACTIVE, &iexit);
+        lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_RELEASED, &iexit);
+        lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_PRESSED, &iexit);
+        lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_CHECKED_RELEASED, &iexit);
+        lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_CHECKED_PRESSED, &iexit);
+        lv_obj_set_click(_exitBtn, true);
+
         lv_obj_align(_exitBtn, _swCont, LV_ALIGN_IN_BOTTOM_MID, 0, -5);
         lv_obj_set_event_cb(_exitBtn, __switch_event_cb);
 
@@ -777,6 +778,7 @@ public:
     static void __switch_event_cb(lv_obj_t *obj, lv_event_t event)
     {
         if (event == LV_EVENT_SHORT_CLICKED) {
+            Serial.println("LV_EVENT_SHORT_CLICKED");
             if (obj == _switch->_exitBtn) {
                 if ( _switch->_exit_cb != nullptr) {
                     _switch->_exit_cb();
@@ -785,17 +787,19 @@ public:
             }
         }
 
-        if (event == LV_EVENT_VALUE_CHANGED) {
+        if (event == LV_EVENT_SHORT_CLICKED) {
+            Serial.println("LV_EVENT_VALUE_CHANGED");
             for (int i = 0; i < _switch->_count ; i++) {
                 lv_obj_t *sw = _switch->_sw[i];
                 if (obj == sw) {
-                    const void *src =  lv_imgbtn_get_src(sw, LV_BTN_STATE_REL);
+                    const void *src =  lv_imgbtn_get_src(sw, LV_BTN_STATE_RELEASED);
                     const void *dst = src == &off ? &on : &off;
                     bool en = src == &off;
-                    lv_imgbtn_set_src(sw, LV_BTN_STATE_REL, dst);
-                    lv_imgbtn_set_src(sw, LV_BTN_STATE_PR, dst);
-                    lv_imgbtn_set_src(sw, LV_BTN_STATE_TGL_REL, dst);
-                    lv_imgbtn_set_src(sw, LV_BTN_STATE_TGL_PR, dst);
+                    lv_imgbtn_set_src(sw, LV_BTN_STATE_ACTIVE, dst);
+                    lv_imgbtn_set_src(sw, LV_BTN_STATE_RELEASED, dst);
+                    lv_imgbtn_set_src(sw, LV_BTN_STATE_PRESSED, dst);
+                    lv_imgbtn_set_src(sw, LV_BTN_STATE_CHECKED_RELEASED, dst);
+                    lv_imgbtn_set_src(sw, LV_BTN_STATE_CHECKED_PRESSED, dst);
                     if (_switch->_cfg[i].cb != nullptr) {
                         _switch->_cfg[i].cb(i, en);
                     }
@@ -810,10 +814,11 @@ public:
         if (index > _count)return;
         lv_obj_t *sw = _sw[index];
         const void *dst =  en ? &on : &off;
-        lv_imgbtn_set_src(sw, LV_BTN_STATE_REL, dst);
-        lv_imgbtn_set_src(sw, LV_BTN_STATE_PR, dst);
-        lv_imgbtn_set_src(sw, LV_BTN_STATE_TGL_REL, dst);
-        lv_imgbtn_set_src(sw, LV_BTN_STATE_TGL_PR, dst);
+        lv_imgbtn_set_src(sw, LV_BTN_STATE_ACTIVE, dst);
+        lv_imgbtn_set_src(sw, LV_BTN_STATE_RELEASED, dst);
+        lv_imgbtn_set_src(sw, LV_BTN_STATE_PRESSED, dst);
+        lv_imgbtn_set_src(sw, LV_BTN_STATE_CHECKED_RELEASED, dst);
+        lv_imgbtn_set_src(sw, LV_BTN_STATE_CHECKED_PRESSED, dst);
     }
 
 private:
@@ -854,32 +859,32 @@ public:
         }
         if (_preloadCont == nullptr) {
             static lv_style_t plStyle;
-            lv_style_copy(&plStyle, &lv_style_plain);    /*Copy a built-in style to initialize the new style*/
-            plStyle.body.main_color = LV_COLOR_GRAY;
-            plStyle.body.grad_color = LV_COLOR_GRAY;
-            plStyle.body.opa = LV_OPA_0;
-            plStyle.body.radius = 0;
-            plStyle.body.border.color = LV_COLOR_GRAY;
-            plStyle.body.border.width = 0;
-            plStyle.body.border.opa = LV_OPA_50;
-            plStyle.text.color = LV_COLOR_WHITE;
-            plStyle.image.color = LV_COLOR_WHITE;
+            lv_style_init(&plStyle);
+            lv_style_set_radius(&plStyle, LV_OBJ_PART_MAIN, 0);
+            lv_style_set_bg_color(&plStyle, LV_OBJ_PART_MAIN, LV_COLOR_GRAY);
+            lv_style_set_bg_opa(&plStyle, LV_OBJ_PART_MAIN, LV_OPA_0);
+            lv_style_set_border_width(&plStyle, LV_OBJ_PART_MAIN, 0);
+            lv_style_set_text_color(&plStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+            lv_style_set_image_recolor(&plStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+
 
             static lv_style_t style;
-            lv_style_copy(&style, &lv_style_plain);
-            style.line.width = 10;                         /*10 px thick arc*/
-            style.line.color = LV_COLOR_GREEN;       /*Blueish arc color*/
-            style.body.border.color = LV_COLOR_WHITE; /*Gray background color*/
-            style.body.border.width = 10;
-            style.body.padding.left = 0;
+            lv_style_init(&style);
+            lv_style_set_radius(&style, LV_OBJ_PART_MAIN, 0);
+            lv_style_set_bg_color(&style, LV_OBJ_PART_MAIN, LV_COLOR_GRAY);
+            lv_style_set_bg_opa(&style, LV_OBJ_PART_MAIN, LV_OPA_0);
+            lv_style_set_border_width(&style, LV_OBJ_PART_MAIN, 0);
+            lv_style_set_text_color(&style, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+            lv_style_set_image_recolor(&style, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+
             _preloadCont = lv_cont_create(parent, NULL);
             lv_obj_set_size(_preloadCont, LV_HOR_RES, LV_VER_RES - 30);
             lv_obj_align(_preloadCont, NULL, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
-            lv_obj_set_style(_preloadCont, &plStyle);
+            lv_obj_add_style(_preloadCont, LV_OBJ_PART_MAIN, &plStyle);
 
-            lv_obj_t *preload = lv_preload_create(_preloadCont, NULL);
+            lv_obj_t *preload = lv_spinner_create(_preloadCont, NULL);
             lv_obj_set_size(preload, lv_obj_get_width(_preloadCont) / 2, lv_obj_get_height(_preloadCont) / 2);
-            lv_preload_set_style(preload, LV_PRELOAD_STYLE_MAIN, &style);
+            lv_obj_add_style(preload, LV_OBJ_PART_MAIN, &style);
             lv_obj_align(preload, _preloadCont, LV_ALIGN_CENTER, 0, 0);
         }
     }
@@ -924,20 +929,19 @@ public:
         }
         if (_listCont == nullptr) {
             static lv_style_t listStyle;
-            lv_style_copy(&listStyle, &lv_style_plain);    /*Copy a built-in style to initialize the new style*/
-            listStyle.body.main_color = LV_COLOR_GRAY;
-            listStyle.body.grad_color = LV_COLOR_GRAY;
-            listStyle.body.opa = LV_OPA_0;
-            listStyle.body.radius = 0;
-            listStyle.body.border.color = LV_COLOR_GRAY;
-            listStyle.body.border.width = 0;
-            listStyle.body.border.opa = LV_OPA_50;
-            listStyle.text.color = LV_COLOR_WHITE;
-            listStyle.image.color = LV_COLOR_WHITE;
+            lv_style_init(&listStyle);
+            lv_style_set_radius(&listStyle, LV_OBJ_PART_MAIN, 0);
+            lv_style_set_bg_color(&listStyle, LV_OBJ_PART_MAIN, LV_COLOR_GRAY);
+            lv_style_set_bg_opa(&listStyle, LV_OBJ_PART_MAIN, LV_OPA_0);
+            lv_style_set_border_width(&listStyle, LV_OBJ_PART_MAIN, 0);
+            lv_style_set_text_color(&listStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
+            lv_style_set_image_recolor(&listStyle, LV_OBJ_PART_MAIN, LV_COLOR_WHITE);
 
             _listCont = lv_list_create(lv_scr_act(), NULL);
+            lv_list_set_scrollbar_mode(_listCont, LV_SCROLLBAR_MODE_OFF);
             lv_obj_set_size(_listCont, LV_HOR_RES, LV_VER_RES - 30);
-            lv_list_set_style(_listCont, LV_LIST_STYLE_BG, &listStyle);
+
+            lv_obj_add_style(_listCont, LV_OBJ_PART_MAIN, &listStyle);
             lv_obj_align(_listCont, NULL, LV_ALIGN_CENTER, 0, 0);
         }
         _list = this;
@@ -1035,13 +1039,13 @@ public:
     {
         if (_mbox != nullptr)return;
         lv_obj_t *p = par == nullptr ? lv_scr_act() : par;
-        _mbox = lv_mbox_create(p, NULL);
-        lv_mbox_set_text(_mbox, text);
+        _mbox = lv_msgbox_create(p, NULL);
+        lv_msgbox_set_text(_mbox, text);
         if (btns == nullptr) {
             static const char *defBtns[] = {"Ok", ""};
-            lv_mbox_add_btns(_mbox, defBtns);
+            lv_msgbox_add_btns(_mbox, defBtns);
         } else {
-            lv_mbox_add_btns(_mbox, btns);
+            lv_msgbox_add_btns(_mbox, btns);
         }
         lv_obj_set_width(_mbox, LV_HOR_RES - 40);
         lv_obj_set_event_cb(_mbox, event_cb);
@@ -1060,7 +1064,7 @@ public:
 
     void setBtn(const char **btns)
     {
-        lv_mbox_add_btns(_mbox, btns);
+        lv_msgbox_add_btns(_mbox, btns);
     }
 
 private:
@@ -1168,7 +1172,7 @@ static void wifi_sync_mbox_cb(lv_task_t *t)
             mbox = new MBox;
             mbox->create(format, [](lv_obj_t *obj, lv_event_t event) {
                 if (event == LV_EVENT_VALUE_CHANGED) {
-                    const char *txt =  lv_mbox_get_active_btn_text(obj);
+                    const char *txt =  lv_msgbox_get_active_btn_text(obj);
                     if (!strcmp(txt, "Ok")) {
 
                         //!sync to rtc
@@ -1389,9 +1393,9 @@ static void create_mbox(const char *txt, lv_event_cb_t event_cb)
 {
     if (mbox1 != nullptr)return;
     static const char *btns[] = {"Ok", ""};
-    mbox1 = lv_mbox_create(lv_scr_act(), NULL);
-    lv_mbox_set_text(mbox1, txt);
-    lv_mbox_add_btns(mbox1, btns);
+    mbox1 = lv_msgbox_create(lv_scr_act(), NULL);
+    lv_msgbox_set_text(mbox1, txt);
+    lv_msgbox_add_btns(mbox1, btns);
     lv_obj_set_width(mbox1, LV_HOR_RES - 40);
     lv_obj_set_event_cb(mbox1, event_cb);
     lv_obj_align(mbox1, NULL, LV_ALIGN_CENTER, 0, 0);
