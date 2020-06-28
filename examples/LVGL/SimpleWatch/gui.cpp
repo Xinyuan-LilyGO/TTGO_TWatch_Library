@@ -1146,60 +1146,6 @@ void wifi_kb_event_cb(Keyboard::kb_event_t event)
     }
 }
 
-static void wifi_sync_mbox_cb(lv_task_t *t)
-{
-    static  struct tm timeinfo;
-    bool ret = false;
-    static int retry = 0;
-    configTzTime(RTC_TIME_ZONE, "pool.ntp.org");
-    while (1) {
-        ret = getLocalTime(&timeinfo);
-        if (!ret) {
-            Serial.printf("get ntp fail,retry : %d \n", retry++);
-        } else {
-            //! del preload
-            delete pl;
-            pl = nullptr;
-
-            char format[256];
-            snprintf(format, sizeof(format), "Time acquisition is: %d-%d-%d/%d:%d:%d. Synchronize?", timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
-            Serial.println(format);
-            delete task;
-            task = nullptr;
-
-            //! mbox
-            static const char *btns[] = {"Ok", "Cancel", ""};
-            mbox = new MBox;
-            mbox->create(format, [](lv_obj_t *obj, lv_event_t event) {
-                if (event == LV_EVENT_VALUE_CHANGED) {
-                    const char *txt =  lv_msgbox_get_active_btn_text(obj);
-                    if (!strcmp(txt, "Ok")) {
-
-                        //!sync to rtc
-                        struct tm *info =  (struct tm *)mbox->getData();
-                        Serial.printf("read use data = %d:%d:%d - %d:%d:%d \n", info->tm_year + 1900, info->tm_mon + 1, info->tm_mday, info->tm_hour, info->tm_min, info->tm_sec);
-
-                        TTGOClass *ttgo = TTGOClass::getWatch();
-                        ttgo->rtc->setDateTime(info->tm_year + 1900, info->tm_mon + 1, info->tm_mday, info->tm_hour, info->tm_min, info->tm_sec);
-                    } else if (!strcmp(txt, "Cancel")) {
-                        //!cancel
-                        // Serial.println("Cancel press");
-                    }
-                    delete mbox;
-                    mbox = nullptr;
-                    sw->hidden(false);
-                }
-            });
-            mbox->setBtn(btns);
-            mbox->setData(&timeinfo);
-            return;
-        }
-    }
-}
-
-
-
-
 void wifi_sw_event_cb(uint8_t index, bool en)
 {
     switch (index) {
@@ -1225,16 +1171,8 @@ void wifi_sw_event_cb(uint8_t index, bool en)
             Serial.println("WiFi is no connect");
             return;
         } else {
-            if (task != nullptr) {
-                Serial.println("task is runing ...");
-                return;
-            }
-            task = new Task;
-            task->create(wifi_sync_mbox_cb);
-            sw->hidden();
-            pl = new Preload;
-            pl->create();
-            pl->align(bar.self(), LV_ALIGN_OUT_BOTTOM_MID);
+            configTzTime(RTC_TIME_ZONE, "pool.ntp.org");
+            sw->hidden(false);
         }
         break;
     default:
