@@ -35,15 +35,9 @@
 
 <h2 align = "left">🔷 Install</h2>
 
-- Download a zipfile from github using the "Download ZIP" button and install it using the IDE ("Sketch" -> "Include Library" -> "Add .ZIP Library..."
-- Clone this git repository into your sketchbook/libraries folder.
-For more info, see https://www.arduino.cc/en/Guide/Libraries
+- Download a zipfile from github using the "Download ZIP" button and install it using the IDE ("Sketch" -> "Include Library" -> "Add .ZIP Library...", OR:
+- Clone this git repository into your sketchbook/libraries folder. For more info, see https://www.arduino.cc/en/Guide/Libraries
 
-
-<h2 align = "left">🔶 How to find the sample program</h2>
-
-- In the Arduino board select `TTGO T-Watch`
-- In the Arduino File -> Examples -> TTGO T-Watch
 
 <h2 align = "left">🔷 Note</h2>
 
@@ -56,6 +50,11 @@ For more info, see https://www.arduino.cc/en/Guide/Libraries
     + [Instructions for Debian/Ubuntu Linux](docs/arduino-ide/debian_ubuntu.md)
     + [Instructions for Fedora](docs/arduino-ide/fedora.md)
     + [Instructions for openSUSE](docs/arduino-ide/opensuse.md)
+
+<h2 align = "left">🔶 How to find the sample program</h2>
+
+- In the Arduino board select `TTGO T-Watch`
+- In the Arduino File -> Examples -> TTGO T-Watch
 
  <h2 align = "left">🔶 Precautions</h2>
 
