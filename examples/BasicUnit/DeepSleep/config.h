@@ -5,4 +5,4 @@
 //#define LILYGO_WATCH_2020_V1              // To use T-Watch2020 , please uncomment this line
 // #define LILYGO_WATCH_BLOCK               // To use T-Watch Block , please uncomment this line
 
-#include <lilyGoWatch.h>
+#include <LilyGoWatch.h>
