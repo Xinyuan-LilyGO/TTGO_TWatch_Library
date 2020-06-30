@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include <Arduino.h>
 
 #ifdef LILYGO_DEBUG
 namespace

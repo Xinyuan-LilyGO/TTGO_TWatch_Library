@@ -17,9 +17,9 @@ void setup()
 
 void loop()
 {
-    if (ttgo->touch->touched()) {
-        TP_Point p =  ttgo->touch->getPoint();
-        sprintf(buf, "x:%03d  y:%03d", p.x, p.y);
+    int16_t x, y;
+    if (ttgo->getTouch(x, y)) {
+        sprintf(buf, "x:%03d  y:%03d", x, y);
         ttgo->tft->drawString(buf, 80, 118);
     }
     delay(5);

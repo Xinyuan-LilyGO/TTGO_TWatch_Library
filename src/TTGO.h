@@ -116,10 +116,31 @@ public:
         initBlacklight();
     }
 
-
+#ifdef LILYGO_WATCH_HAS_TOUCH
+    /**
+     * @brief  Get the touch screen coordinates,
+     *  return true if pressed, false otherwise
+     */
+    bool getTouch(int16_t &x, int16_t &y)
+    {
+        if (touch == nullptr) {
+            return false;
+        }
+        if (!touch->touched()) {
+            return false;
+        }
+        TP_Point p = touch->getPoint();
+        x = p.x;
+        y = p.y;
+        return true;
+    }
+#endif
 
 
 #ifdef LILYGO_WATCH_HAS_AXP202
+    /*
+    * @brief  It will turn off the power supply of all peripherals except ESP32
+    * * */
     void powerOff()
     {
 #ifndef LILYGO_WATCH_2020_V1
@@ -137,6 +158,11 @@ public:
 #endif  /*LILYGO_WATCH_2020_V1*/
     }
 
+    /**
+     * @brief Turn on the peripheral power,
+     * usually control the power of different backplanes,
+     * In 2020V1, it controls the power of the audio circuit
+     */
     void enableLDO3(bool en = true)
     {
         power->setLDO3Mode(1);
@@ -275,9 +301,7 @@ public:
     TFT_eSPI *tft = nullptr;
 #endif
 
-#ifdef LILYGO_WATCH_HAS_TOUCH
-    FT5206_Class *touch = nullptr;
-#endif
+
 
 #ifdef LILYGO_WATCH_HAS_BUZZER
     Buzzer *buzzer = nullptr;
@@ -599,6 +623,9 @@ private:
     Ticker *tickTicker = nullptr;
 #endif  /*LILYGO_WATCH_LVGL*/
 
+#ifdef LILYGO_WATCH_HAS_TOUCH
+    FT5206_Class *touch = nullptr;
+#endif
 
 protected:
 
