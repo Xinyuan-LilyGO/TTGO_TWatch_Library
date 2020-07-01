@@ -14,4 +14,4 @@
 #define LILYGO_WATCH_HAS_SDCARD       //Use SD card module need to define own SD card
 
 
-#include <lilyGoWatch.h>
+#include <LilyGoWatch.h>

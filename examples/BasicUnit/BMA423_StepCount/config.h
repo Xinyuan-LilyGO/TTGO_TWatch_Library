@@ -7,4 +7,4 @@
 // Hardware NOT SUPPORT
 //// #define LILYGO_WATCH_BLOCK
 // Hardware NOT SUPPORT
-#include <lilyGoWatch.h>
+#include <LilyGoWatch.h>
