@@ -59,7 +59,7 @@
 //! M8M BOARD
 #define GPS_RX                  34
 #define GPS_TX                  33
-#define GPS_BANUD_RATE          9600
+#define GPS_BAUD_RATE          9600
 
 //! T-Quick BOARD
 #define TWATCH_TQUICK_EN         2

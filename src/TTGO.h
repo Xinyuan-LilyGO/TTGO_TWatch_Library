@@ -370,7 +370,7 @@ public:
         if (hwSerial == nullptr) {
             hwSerial = new HardwareSerial(1);
         }
-        hwSerial->begin(GPS_BANUD_RATE, SERIAL_8N1, GPS_RX, GPS_TX);
+        hwSerial->begin(GPS_BAUD_RATE, SERIAL_8N1, GPS_RX, GPS_TX);
     }
 
 
