@@ -25,8 +25,6 @@
 #define UART_TX             33
 #define UART_RX             34
 
-#define UART_BANUD_RATE     9600
-
 #define USER_BUTTON         36
 
 #define TP_INT              38
@@ -79,7 +77,6 @@
 #define TWATCH_LORA_DI0     26
 #define TWATCH_LORA_RST     25
 
-#define TWATCH_2020_IR_PIN      13
 
 
 

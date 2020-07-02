@@ -14,7 +14,6 @@
 #define UART_TX             33
 #define UART_RX             34
 
-#define UART_BANUD_RATE     9600
 
 #define USER_BUTTON         36
 
