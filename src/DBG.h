@@ -6,13 +6,13 @@
 namespace
 {
 template<typename T>
-static void DBG_PLAIN(T last)
+static void DBGX_PLAIN(T last)
 {
     LILYGO_DEBUG.println(last);
 }
 
 template<typename T, typename... Args>
-static void DBG_PLAIN(T head, Args... tail)
+static void DBGX_PLAIN(T head, Args... tail)
 {
     LILYGO_DEBUG.print(head);
     LILYGO_DEBUG.print(' ');
@@ -20,7 +20,7 @@ static void DBG_PLAIN(T head, Args... tail)
 }
 
 template<typename... Args>
-static void DBG(Args... args)
+static void DBGX(Args... args)
 {
     LILYGO_DEBUG.print("[");
     LILYGO_DEBUG.print(millis());
@@ -29,6 +29,6 @@ static void DBG(Args... args)
 }
 }
 #else
-#define DBG_PLAIN(...)
-#define DBG(...)
+#define DBGX_PLAIN(...)
+#define DBGX(...)
 #endif

@@ -134,6 +134,24 @@ public:
         y = p.y;
         return true;
     }
+
+    /*@brief  Cannot wake up after entering sleep mode,
+    * can only be solved by restarting the power supply
+    */
+    void touchToSleep()
+    {
+        touch->enterSleepMode();
+    }
+
+    /*
+    * @brief Enter the monitoring mode can reduce the touch current,
+    * when it monitors the touch, it will switch to the normal mode under the monitoring mode
+    */
+    void touchToMonitor()
+    {
+        touch->enterMonitorMode();
+    }
+
 #endif
 
 
@@ -168,7 +186,17 @@ public:
         power->setLDO3Mode(1);
         power->setPowerOutPut(AXP202_LDO3, en);
     }
+
+    void enableModemGPSPower(bool en = true)
+    {
+        power->setPowerOutPut(AXP202_LDO3, false);
+        power->setLDO3Mode(0);
+        power->setLDO3Voltage(3300);
+        power->setPowerOutPut(AXP202_LDO3, en);
+    }
+
 #endif  /*LILYGO_WATCH_HAS_AXP202*/
+
 
 
 #ifdef LILYGO_WATCH_HAS_DISPLAY
@@ -234,7 +262,7 @@ public:
 #ifdef TWATCH_USE_PSRAM_ALLOC_LVGL
         lv_color_t *buf1 = (lv_color_t *)heap_caps_calloc(LV_HOR_RES_MAX * 100, sizeof(lv_color_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT );
         if (!buf1) {
-            DBG("alloc failed\n");
+            DBGX("alloc failed\n");
             return false;
         }
 #else
@@ -349,7 +377,7 @@ public:
             sdhander->begin(SD_SCLK, SD_MISO, SD_MOSI, SD_CS);
         }
         if (!SD.begin(SD_CS, *sdhander)) {
-            DBG("SD Card Mount Failed");
+            DBGX("SD Card Mount Failed");
             return false;
         }
         return true;
@@ -541,16 +569,16 @@ private:
         touch = new FT5206_Class();
         Wire1.begin(TOUCH_SDA, TOUCH_SCL);
         if (!touch->begin(Wire1)) {
-            DBG("Begin touch FAIL");
+            DBGX("Begin touch FAIL");
         }
 #elif defined(LILYGO_EINK_TOUCHSCREEN)
         touch = new FT5206_Class();
         // This is just a sign
         touch->setType(FT5X0X_VENDID);
         if (!touch->begin(axpReadBytes, axpWriteBytes)) {
-            DBG("Begin touch FAIL");
+            DBGX("Begin touch FAIL");
         } else {
-            DBG("Begin touch PASS");
+            DBGX("Begin touch PASS");
         }
 #endif
     }
@@ -560,7 +588,7 @@ private:
 #ifdef LILYGO_WATCH_HAS_AXP202
         int ret = power->begin(axpReadBytes, axpWriteBytes);
         if (ret == AXP_FAIL) {
-            DBG("AXP Power begin failed");
+            DBGX("AXP Power begin failed");
         } else {
             //Change the button boot time to 4 seconds
             power->setShutdownTime(AXP_POWER_OFF_TIME_4S);
