@@ -187,16 +187,78 @@ public:
         power->setPowerOutPut(AXP202_LDO3, en);
     }
 
-    void enableModemGPSPower(bool en = true)
-    {
-        power->setPowerOutPut(AXP202_LDO3, false);
-        power->setLDO3Mode(0);
-        power->setLDO3Voltage(3300);
-        power->setPowerOutPut(AXP202_LDO3, en);
-    }
+
 
 #endif  /*LILYGO_WATCH_HAS_AXP202*/
 
+#if     defined(LILYGO_WATCH_HAS_SIM800L) || defined(LILYGO_WATCH_HAS_SIM800C)
+
+#define SIM800_MODEM_BAUD           115200  //SIM800L/C BAUD 
+#define SIM800_MODEM_RST            14      //SIM800L RESET PIN,JUST ONLY SIM800L
+#define SIM800_MODEM_PWRKEY         15      //SIM800L/C PWRKEY PIN
+#define SIM800_MODEM_TX             33      //SIM800L/C TX PIN
+#define SIM800_MODEM_RX             34      //SIM800L/C RX PIN
+#define SIM800_MODEM_1PPS           14      //SIM800L/C 1PPS PIN,JUST ONLY SIM800C
+#undef  MOTOR_PIN
+#define MOTOR_PIN                   4       //SIM800L/C MOTOR PIN
+
+    void enableModemGPSPower(bool en = true)
+    {
+        power->setPowerOutPut(AXP202_LDO3, en);
+    }
+
+    void powerOnModem()
+    {
+#if     defined(LILYGO_WATCH_HAS_SIM800L)
+
+        pinMode(SIM800_MODEM_RST, OUTPUT);
+        digitalWrite(SIM800_MODEM_RST, HIGH);
+
+        pinMode(SIM800_MODEM_PWRKEY, OUTPUT);
+        digitalWrite(SIM800_MODEM_PWRKEY, HIGH);
+        delay(200);
+        digitalWrite(SIM800_MODEM_PWRKEY, LOW);
+        delay(1000);
+        digitalWrite(SIM800_MODEM_PWRKEY, HIGH);
+
+#elif   defined(LILYGO_WATCH_HAS_SIM800C)
+
+        enableModemGPSPower();
+
+        pinMode(SIM800_MODEM_PWRKEY, OUTPUT);
+        digitalWrite(SIM800_MODEM_PWRKEY, HIGH);
+        delay(200);
+        digitalWrite(SIM800_MODEM_PWRKEY, LOW);
+        delay(1000);
+        digitalWrite(SIM800_MODEM_PWRKEY, HIGH);
+
+#endif  /*LILYGO_WATCH_HAS_SIM800C*/
+    }
+
+    void powerOffModem()
+    {
+        // 1.5s<T 1 <33s
+        digitalWrite(SIM800_MODEM_PWRKEY, LOW);
+        delay(1500);
+#ifdef LILYGO_WATCH_HAS_SIM800C
+        enableModemGPSPower(false);
+#endif
+    }
+
+    void restartModem()
+    {
+        // PWRKEY pull-down 15s < T1 < 2s
+        digitalWrite(SIM800_MODEM_PWRKEY, LOW);
+        delay(1800);
+        // T3 > 800ms
+        digitalWrite(SIM800_MODEM_PWRKEY, HIGH);
+        delay(900);
+        // pull-down > 1s power on
+        digitalWrite(SIM800_MODEM_PWRKEY, LOW);
+        delay(1000);
+        digitalWrite(SIM800_MODEM_PWRKEY, HIGH);
+    }
+#endif  /*LILYGO_WATCH_HAS_SIM800L || LILYGO_WATCH_HAS_SIM800C*/
 
 
 #ifdef LILYGO_WATCH_HAS_DISPLAY
@@ -235,6 +297,7 @@ public:
 #endif  /*LILYGO_WATCH_2020_V1*/
         bl->on();
     }
+
     void closeBL()
     {
 #if  defined(LILYGO_WATCH_2020_V1) && defined(LILYGO_WATCH_HAS_AXP202)
@@ -243,6 +306,10 @@ public:
         bl->off();
     }
 
+    void setBrightness(uint8_t level)
+    {
+        bl->adjust(level);
+    }
 #endif  /*LILYGO_WATCH_HAS_BLACKLIGHT*/
 
 
@@ -328,8 +395,6 @@ public:
 #ifdef LILYGO_WATCH_HAS_DISPLAY
     TFT_eSPI *tft = nullptr;
 #endif
-
-
 
 #ifdef LILYGO_WATCH_HAS_BUZZER
     Buzzer *buzzer = nullptr;
@@ -418,6 +483,9 @@ public:
 #ifdef LILYGO_WATCH_HAS_S76_S78G
     S7XG_Class *s7xg = nullptr;
 
+    /*
+    * Only S76/78 need to use LDO 4, it is responsible for GPS reset power
+    * * */
     void enableLDO4()
     {
         power->setLDO4Voltage(AXP202_LDO4_1800MV);
@@ -598,6 +666,13 @@ private:
             power->setPowerOutPut(AXP202_EXTEN, false);
             //axp202 allows maximum charging current of 1800mA, minimum 300mA
             power->setChargeControlCur(300);
+
+#ifdef LILYGO_WATCH_HAS_SIM800C
+            power->setPowerOutPut(AXP202_LDO3, false);
+            power->setLDO3Mode(0);
+            power->setLDO3Voltage(3300);
+#endif  /*LILYGO_WATCH_HAS_SIM800C*/
+
         }
 #endif /*LILYGO_WATCH_HAS_AXP202*/
     }
