@@ -42,6 +42,7 @@ public:
     uint8_t getIrqStatus();
     const char * getActivity();
 
+    bool set_remap_axes(struct bma423_axes_remap *remap_data);
     bool enableStepCountInterrupt(bool en = true);
     bool enableTiltInterrupt(bool en = true);
     bool enableWakeupInterrupt(bool en = true);
