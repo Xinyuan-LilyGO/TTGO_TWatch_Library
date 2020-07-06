@@ -25,6 +25,7 @@ public:
 
     void adjust(uint8_t level)
     {
+	_level = level;
         ledcWrite(_channel, level);
         _on = true;
     };
@@ -37,7 +38,7 @@ public:
     void on()
     {
         _on = true;
-        ledcWrite(_channel, 255);
+        ledcWrite(_channel, _level);
     };
 
     void off()
@@ -59,6 +60,7 @@ private:
     bool _on = false;
     int _pin;
     uint8_t _channel;
+    uint8_t _level = 128;
 };
 
 

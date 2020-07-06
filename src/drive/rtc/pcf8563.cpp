@@ -338,6 +338,19 @@ void PCF8563_Class::syncToSystem()
     t_tm.tm_mday = dt.day;
     val.tv_sec = mktime(&t_tm);
     val.tv_usec = 0;
+
+    if ((dt.month > 2) && (dt.month < 11))
+    {
+        uint32_t day3 = getDayOfWeek (31, 3, dt.year);
+        uint32_t day10 = getDayOfWeek (31, 10, dt.year);
+
+        if (!((dt.day <= (31 - (6 - day3))) && (dt.month == 3)) ||          
+            !((dt.day >= (31 - (6 - day10))) && (dt.month == 10)))
+        {
+           val.tv_sec += 60 * 60;
+        }
+    }
+
     settimeofday(&val, NULL);
     log_i("syncToSystem: %d %d %d - %d %d %d \n", t_tm.tm_year, t_tm.tm_mon + 1, t_tm.tm_mday, t_tm.tm_hour, t_tm.tm_min, t_tm.tm_sec);
 }

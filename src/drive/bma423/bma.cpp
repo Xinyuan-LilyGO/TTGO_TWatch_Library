@@ -173,6 +173,7 @@ void BMA::attachInterrupt()
 
 
     struct bma423_axes_remap remap_data;
+
     remap_data.x_axis = 0;
     remap_data.x_axis_sign = 1;
     remap_data.y_axis = 1;
@@ -182,6 +183,11 @@ void BMA::attachInterrupt()
 
     bma423_set_remap_axes(&remap_data, &_dev);
 
+}
+
+bool BMA::set_remap_axes(struct bma423_axes_remap *remap_data)
+{
+    bma423_set_remap_axes(remap_data, &_dev);
 }
 
 bool BMA::readInterrupt()
