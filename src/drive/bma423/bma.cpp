@@ -6,6 +6,15 @@ I2CBus *BMA::_bus = nullptr;
 BMA::BMA(I2CBus &bus)
 {
     _bus = &bus;
+    
+    //Default tilt mapping
+    //2020_V1 watch needs different mapping
+    tilt_mapping.x_axis = 0;
+    tilt_mapping.x_axis_sign = 1;
+    tilt_mapping.y_axis = 1;
+    tilt_mapping.y_axis_sign = 1;
+    tilt_mapping.z_axis  = 2;
+    tilt_mapping.z_axis_sign  = 0;
 }
 
 BMA::~BMA()
@@ -171,18 +180,12 @@ void BMA::attachInterrupt()
 
     // Serial.printf("[bma4] attachInterrupt %s\n", rslt != 0 ? "fail" : "pass");
 
+    bma423_set_remap_axes(&tilt_mapping, &_dev);
 
-    struct bma423_axes_remap remap_data;
+}
 
-    remap_data.x_axis = 0;
-    remap_data.x_axis_sign = 1;
-    remap_data.y_axis = 1;
-    remap_data.y_axis_sign = 1;
-    remap_data.z_axis  = 2;
-    remap_data.z_axis_sign  = 0;
-
-    bma423_set_remap_axes(&remap_data, &_dev);
-
+void BMA::remapTiltAxes(struct bma423_axes_remap data){
+    tilt_mapping = data;
 }
 
 bool BMA::set_remap_axes(struct bma423_axes_remap *remap_data)

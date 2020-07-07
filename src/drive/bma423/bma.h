@@ -48,6 +48,7 @@ public:
     bool enableWakeupInterrupt(bool en = true);
     bool enableAnyNoMotionInterrupt(bool en = true);
     bool enableActivityInterrupt(bool en = true);
+    void remapTiltAxes(struct bma423_axes_remap data);
 
 private:
     static uint16_t read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *read_data, uint16_t len);
@@ -60,5 +61,7 @@ private:
     static I2CBus *_bus;
     bool _irqRead = false;
     uint16_t _irqStatus;
+    struct bma423_axes_remap tilt_mapping;
 
 };
+

@@ -99,6 +99,17 @@ public:
 #ifdef LILYGO_WATCH_HAS_BMA423
         bma = new BMA(*i2c);
 #endif  /*LILYGO_WATCH_HAS_BMA423*/
+/*WATCH 2020 needs different axes so that the tilt function works*/
+#ifdef LILYGO_WATCH_2020_V1
+	struct bma423_axes_remap remap_data;
+	remap_data.x_axis = 0;
+	remap_data.x_axis_sign = 1;
+	remap_data.y_axis = 1;
+	remap_data.y_axis_sign = 0;
+	remap_data.z_axis  = 2;
+	remap_data.z_axis_sign  = 1;
+	bma->remapTiltAxes(remap_data);
+#endif
 
 #ifdef LILYGO_WATCH_HAS_BUTTON
         //In the 2020 version, Button IO36 is not used.
