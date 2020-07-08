@@ -191,26 +191,35 @@ public:
 
 #endif  /*LILYGO_WATCH_HAS_AXP202*/
 
-#if     defined(LILYGO_WATCH_HAS_SIM800L) || defined(LILYGO_WATCH_HAS_SIM800C)
+#if     defined(LILYGO_WATCH_HAS_SIM800L) || defined(LILYGO_WATCH_HAS_SIM868)
+#define SIM800_MODEM_BAUD           115200  //SIM800L BAUD 
+#define SIM800_MODEM_TX             33      //SIM800L TX PIN
+#define SIM800_MODEM_RX             34      //SIM800L RX PIN
 
-#define SIM800_MODEM_BAUD           115200  //SIM800L/C BAUD 
-#define SIM800_MODEM_RST            14      //SIM800L RESET PIN,JUST ONLY SIM800L
-#define SIM800_MODEM_PWRKEY         15      //SIM800L/C PWRKEY PIN
-#define SIM800_MODEM_TX             33      //SIM800L/C TX PIN
-#define SIM800_MODEM_RX             34      //SIM800L/C RX PIN
-#define SIM800_MODEM_1PPS           14      //SIM800L/C 1PPS PIN,JUST ONLY SIM800C
+
+#ifdef LILYGO_WATCH_HAS_SIM868
 #undef  MOTOR_PIN
-#define MOTOR_PIN                   4       //SIM800L/C MOTOR PIN
-
+#define MOTOR_PIN                   4       //SIM868 MOTOR PIN,JUST ONLY SIM868
+#define SIM868_MODEM_RI             26
+#define SIM868_MODEM_DTR            25
+#define SIM868_MODEM_BAUD           115200  //SIM800L BAUD 
+#define SIM868_MODEM_TX             33      //SIM800L TX PIN
+#define SIM868_MODEM_RX             34      //SIM800L RX PIN
     void enableModemGPSPower(bool en = true)
     {
         power->setPowerOutPut(AXP202_LDO3, en);
     }
+#endif
+
+#ifdef LILYGO_WATCH_HAS_SIM800L
+#define SIM800_MODEM_BAUD           115200  //SIM800L BAUD 
+#define SIM800_MODEM_TX             33      //SIM800L TX PIN
+#define SIM800_MODEM_RX             34      //SIM800L RX PIN
+#define SIM800_MODEM_RST            14      //SIM800L RESET PIN,JUST ONLY SIM800L
+#define SIM800_MODEM_PWRKEY         15      //SIM800L PWRKEY PIN,JUST ONLY SIM800L
 
     void powerOnModem()
     {
-#if     defined(LILYGO_WATCH_HAS_SIM800L)
-
         pinMode(SIM800_MODEM_RST, OUTPUT);
         digitalWrite(SIM800_MODEM_RST, HIGH);
 
@@ -220,19 +229,6 @@ public:
         digitalWrite(SIM800_MODEM_PWRKEY, LOW);
         delay(1000);
         digitalWrite(SIM800_MODEM_PWRKEY, HIGH);
-
-#elif   defined(LILYGO_WATCH_HAS_SIM800C)
-
-        enableModemGPSPower();
-
-        pinMode(SIM800_MODEM_PWRKEY, OUTPUT);
-        digitalWrite(SIM800_MODEM_PWRKEY, HIGH);
-        delay(200);
-        digitalWrite(SIM800_MODEM_PWRKEY, LOW);
-        delay(1000);
-        digitalWrite(SIM800_MODEM_PWRKEY, HIGH);
-
-#endif  /*LILYGO_WATCH_HAS_SIM800C*/
     }
 
     void powerOffModem()
@@ -240,9 +236,6 @@ public:
         // 1.5s<T 1 <33s
         digitalWrite(SIM800_MODEM_PWRKEY, LOW);
         delay(1500);
-#ifdef LILYGO_WATCH_HAS_SIM800C
-        enableModemGPSPower(false);
-#endif
     }
 
     void restartModem()
@@ -258,7 +251,9 @@ public:
         delay(1000);
         digitalWrite(SIM800_MODEM_PWRKEY, HIGH);
     }
-#endif  /*LILYGO_WATCH_HAS_SIM800L || LILYGO_WATCH_HAS_SIM800C*/
+#endif  /*LILYGO_WATCH_HAS_SIM800L*/
+
+#endif  /*LILYGO_WATCH_HAS_SIM800L || LILYGO_WATCH_HAS_SIM868*/
 
 
 #ifdef LILYGO_WATCH_HAS_DISPLAY
@@ -416,6 +411,13 @@ public:
             motor = new Motor(MOTOR_PIN);
         }
         motor->begin();
+    }
+
+    void shake()
+    {
+        if (motor) {
+            motor->onec();
+        }
     }
 #endif
 
@@ -702,11 +704,11 @@ private:
             //axp202 allows maximum charging current of 1800mA, minimum 300mA
             power->setChargeControlCur(300);
 
-#ifdef LILYGO_WATCH_HAS_SIM800C
+#ifdef LILYGO_WATCH_HAS_SIM868
             power->setPowerOutPut(AXP202_LDO3, false);
             power->setLDO3Mode(0);
             power->setLDO3Voltage(3300);
-#endif  /*LILYGO_WATCH_HAS_SIM800C*/
+#endif  /*LILYGO_WATCH_HAS_SIM868*/
 
         }
 #endif /*LILYGO_WATCH_HAS_AXP202*/
