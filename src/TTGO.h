@@ -102,7 +102,6 @@ public:
 
 #ifdef LILYGO_WATCH_HAS_BUTTON
         //In the 2020 version, Button IO36 is not used.
-        //In order to be compatible with the original sample code, keep it here
         button = new Button2(USER_BUTTON);
 #endif  /*LILYGO_WATCH_HAS_BUTTON*/
 
@@ -113,6 +112,7 @@ public:
         initPower();
         initTFT();
         initTouch();
+        initSensor();
         initBlacklight();
     }
 
@@ -602,6 +602,41 @@ private:
     ~TTGOClass()
     {
     };
+
+
+    bool initSensor()
+    {
+#if   defined(LILYGO_WATCH_HAS_BMA423)
+        struct bma423_axes_remap remap_data;
+
+        if (!bma->begin()) {
+            return false;
+        }
+        // T-Watch 2020 and 2019 use different mapping axes
+#if defined(LILYGO_WATCH_2020_V1)
+        remap_data.x_axis = 0;
+        remap_data.x_axis_sign = 1;
+        remap_data.y_axis = 1;
+        remap_data.y_axis_sign = 0;
+        remap_data.z_axis  = 2;
+        remap_data.z_axis_sign  = 1;
+#else
+        remap_data.x_axis = 0;
+        remap_data.x_axis_sign = 1;
+        remap_data.y_axis = 1;
+        remap_data.y_axis_sign = 1;
+        remap_data.z_axis  = 2;
+        remap_data.z_axis_sign  = 0;
+#endif
+        bma->set_remap_axes(&remap_data);
+
+#elif defined(LILYGO_WATCH_HAS_MPU6050)
+        //Not yet
+        //Not yet
+        //Not yet
+#endif
+        return true;
+    }
 
 
     void initTFT()

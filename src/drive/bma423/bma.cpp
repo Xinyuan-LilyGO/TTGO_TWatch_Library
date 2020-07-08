@@ -6,11 +6,11 @@ I2CBus *BMA::_bus = nullptr;
 BMA::BMA(I2CBus &bus)
 {
     _bus = &bus;
+    _init = false;
 }
 
 BMA::~BMA()
 {
-
 }
 
 uint16_t BMA::read(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t len)
@@ -25,6 +25,10 @@ uint16_t BMA::write(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t len)
 
 bool BMA::begin()
 {
+    if (_init) {
+        return true;
+    }
+
     _dev.dev_addr        = BMA4_I2C_ADDR_SECONDARY;
     _dev.interface       = BMA4_I2C_INTERFACE;
     _dev.bus_read        = read;
@@ -39,24 +43,30 @@ bool BMA::begin()
     delay(20);
 
     if (bma423_init(&_dev) != BMA4_OK) {
-        Serial.println("bma4 init fail");
+        log_e("bma423_init FAIL");
         return false;
     }
 
-    config();
+    if (bma423_write_config_file(&_dev) != BMA4_OK) {
+        log_e("bma423_write_config_file FAIL");
+        return false;
+    }
 
-    return true;
+    _init = true;
+
+    struct bma4_int_pin_config config ;
+    config.edge_ctrl = BMA4_LEVEL_TRIGGER;
+    config.lvl = BMA4_ACTIVE_HIGH;
+    config.od = BMA4_PUSH_PULL;
+    config.output_en = BMA4_OUTPUT_ENABLE;
+    config.input_en = BMA4_INPUT_DISABLE;
+    return BMA4_OK == bma4_set_int_pin_config(&config, BMA4_INTR1_MAP, &_dev);
 }
 
 void BMA::reset()
 {
     uint8_t reg = 0xB6;
     _bus->writeBytes(BMA4_I2C_ADDR_SECONDARY, 0x7E, &reg, 1);
-}
-
-uint16_t BMA::config()
-{
-    return bma423_write_config_file(&_dev);
 }
 
 bool BMA::getAccel(Accel &acc)
@@ -113,9 +123,14 @@ float BMA::temperature()
     return res;
 }
 
-
-void BMA::enableAccel()
+bool BMA::disableAccel()
 {
+    return enableAccel(false);
+}
+
+bool BMA::enableAccel(bool en)
+{
+    /*
     if (bma4_set_accel_enable(BMA4_ENABLE, &_dev)) {
         return;
     }
@@ -129,24 +144,59 @@ void BMA::enableAccel()
         Serial.println("[bma4] set accel config fail");
         return;
     }
+    */
+    return (BMA4_OK == bma4_set_accel_enable(en ? BMA4_ENABLE : BMA4_DISABLE, &_dev));
 }
 
-void BMA::disalbeIrq()
+bool BMA::accelConfig(Acfg &cfg)
 {
-    bma423_map_interrupt(BMA4_INTR1_MAP, BMA423_STEP_CNTR_INT /* |BMA423_WAKEUP_INT*/, BMA4_DISABLE, &_dev);
+    return (BMA4_OK == bma4_set_accel_config(&cfg, &_dev));
 }
 
-void BMA::enableIrq()
+bool BMA::disalbeIrq(uint16_t int_map)
 {
-    bma423_map_interrupt(BMA4_INTR1_MAP, BMA423_STEP_CNTR_INT /* |BMA423_WAKEUP_INT*/, BMA4_ENABLE, &_dev);
+    return (BMA4_OK == bma423_map_interrupt(BMA4_INTR1_MAP, int_map, BMA4_DISABLE, &_dev));
 }
 
-//attachInterrupt bma423 int1
+bool BMA::enableIrq(uint16_t int_map)
+{
+    return (BMA4_OK == bma423_map_interrupt(BMA4_INTR1_MAP, int_map, BMA4_ENABLE, &_dev));
+}
+
+bool BMA::enableFeature(uint8_t feature, uint8_t enable)
+{
+    if ((feature & BMA423_STEP_CNTR) == BMA423_STEP_CNTR) {
+        bma423_step_detector_enable(enable ? BMA4_ENABLE : BMA4_DISABLE, &_dev);
+    }
+
+    return (BMA4_OK == bma423_feature_enable(feature, enable, &_dev));
+}
+
+bool BMA::resetStepCounter()
+{
+    return  BMA4_OK == bma423_reset_step_counter(&_dev) ;
+}
+
+// Reserved for the SimpleWatch example
+// Reserved for the SimpleWatch example
+// Reserved for the SimpleWatch example
 void BMA::attachInterrupt()
 {
     uint16_t rslt = BMA4_OK;
-    enableAccel();
-    // rslt |= bma423_reset_step_counter(&_dev);
+    if (bma4_set_accel_enable(BMA4_ENABLE, &_dev)) {
+        return;
+    }
+    Acfg cfg;
+    cfg.odr = BMA4_OUTPUT_DATA_RATE_100HZ;
+    cfg.range = BMA4_ACCEL_RANGE_2G;
+    cfg.bandwidth = BMA4_ACCEL_NORMAL_AVG4;
+    cfg.perf_mode = BMA4_CONTINUOUS_MODE;
+
+    if (bma4_set_accel_config(&cfg, &_dev)) {
+        log_e("[bma4] set accel config fail");
+        return;
+    }
+    // // rslt |= bma423_reset_step_counter(&_dev);
     rslt |= bma423_step_detector_enable(BMA4_ENABLE, &_dev);
     rslt |= bma423_feature_enable(BMA423_STEP_CNTR, BMA4_ENABLE, &_dev);
     rslt |= bma423_feature_enable(BMA423_WAKEUP, BMA4_ENABLE, &_dev);
@@ -154,40 +204,15 @@ void BMA::attachInterrupt()
     rslt |= bma423_step_counter_set_watermark(100, &_dev);
 
     // rslt |= bma423_map_interrupt(BMA4_INTR1_MAP, BMA423_STEP_CNTR_INT | BMA423_WAKEUP_INT, BMA4_ENABLE, &_dev);
-
     rslt |= bma423_map_interrupt(BMA4_INTR1_MAP,  BMA423_STEP_CNTR_INT, BMA4_ENABLE, &_dev);
     rslt |= bma423_map_interrupt(BMA4_INTR1_MAP, BMA423_TILT_INT, BMA4_ENABLE, &_dev);
 
     bma423_anymotion_enable_axis(BMA423_ALL_AXIS_DIS, &_dev);
-
-    struct bma4_int_pin_config config ;
-
-    config.edge_ctrl = BMA4_LEVEL_TRIGGER;
-    config.lvl = BMA4_ACTIVE_HIGH;
-    config.od = BMA4_PUSH_PULL;
-    config.output_en = BMA4_OUTPUT_ENABLE;
-    config.input_en = BMA4_INPUT_DISABLE;
-    rslt |= bma4_set_int_pin_config(&config, BMA4_INTR1_MAP, &_dev);
-
-    // Serial.printf("[bma4] attachInterrupt %s\n", rslt != 0 ? "fail" : "pass");
-
-
-    struct bma423_axes_remap remap_data;
-
-    remap_data.x_axis = 0;
-    remap_data.x_axis_sign = 1;
-    remap_data.y_axis = 1;
-    remap_data.y_axis_sign = 1;
-    remap_data.z_axis  = 2;
-    remap_data.z_axis_sign  = 0;
-
-    bma423_set_remap_axes(&remap_data, &_dev);
-
 }
 
 bool BMA::set_remap_axes(struct bma423_axes_remap *remap_data)
 {
-    bma423_set_remap_axes(remap_data, &_dev);
+    return (BMA4_OK == bma423_set_remap_axes(remap_data, &_dev));
 }
 
 bool BMA::readInterrupt()
@@ -236,7 +261,6 @@ bool BMA::isAnyNoMotion()
     return (bool)(BMA423_ANY_NO_MOTION_INT & _irqStatus);
 }
 
-
 const char *BMA::getActivity()
 {
     uint8_t activity;
@@ -277,3 +301,4 @@ bool BMA::enableActivityInterrupt(bool en)
 {
     return  (BMA4_OK == bma423_map_interrupt(BMA4_INTR1_MAP, BMA423_ACTIVITY_INT, en, &_dev));
 }
+
