@@ -3,6 +3,7 @@
 TTGOClass *watch;
 TFT_eSPI *tft;
 BMA *sensor;
+uint8_t prevRotation;
 
 void setup()
 {
@@ -70,36 +71,47 @@ void setup()
     sensor->accelConfig(cfg);
 
     // Enable BMA423 accelerometer
+    // Warning : Need to use feature, you must first enable the accelerometer
+    // Warning : Need to use feature, you must first enable the accelerometer
+    // Warning : Need to use feature, you must first enable the accelerometer
     sensor->enableAccel();
-
-    // You can also turn it off
-    // sensor->disableAccel();
-
-    // Some display settings
-    tft->setTextColor(random(0xFFFF));
-    tft->drawString("BMA423 accel",  25, 50, 4);
-    tft->setTextFont(4);
-    tft->setTextColor(TFT_WHITE, TFT_BLACK);
 }
+
 
 void loop()
 {
-    Accel acc;
-
-    // Get acceleration data
-    bool res = sensor->getAccel(acc);
-
-    if (res == false) {
-        Serial.println("getAccel FAIL");
-    } else {
-        // Show the data
-        tft->fillRect(98, 100, 70, 85, TFT_BLACK);
-        tft->setCursor(80, 100);
-        tft->print("X:"); tft->println(acc.x);
-        tft->setCursor(80, 130);
-        tft->print("Y:"); tft->println(acc.y);
-        tft->setCursor(80, 160);
-        tft->print("Z:"); tft->println(acc.z);
+    // Obtain the BMA423 direction,
+    // so that the screen orientation is consistent with the sensor
+    uint8_t rotation = sensor->direction();
+    if (prevRotation != rotation) {
+        prevRotation = rotation;
+        Serial.println(rotation);
+        switch (rotation) {
+        case DIRECTION_DISP_DOWN:
+            //No use
+            break;
+        case DIRECTION_DISP_UP:
+            //No use
+            break;
+        case DIRECTION_BOTTOM_EDGE:
+            tft->setRotation(2);
+            break;
+        case DIRECTION_TOP_EDGE:
+            tft->setRotation(0);
+            break;
+        case DIRECTION_RIGHT_EDGE:
+            tft->setRotation(3);
+            break;
+        case DIRECTION_LEFT_EDGE:
+            tft->setRotation(1);
+            break;
+        default:
+            break;
+        }
+        tft->fillScreen(TFT_BLACK);
+        tft->drawCentreString("T-Watch", 120, 120, 4);
     }
-    delay(100);
+    delay(500);
 }
+
+

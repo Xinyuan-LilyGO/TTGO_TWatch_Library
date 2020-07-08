@@ -128,10 +128,9 @@ void setup()
     //Initialize lvgl
     ttgo->lvgl_begin();
 
-    //Initialize bma423
-    ttgo->bma->begin();
-
-    //Enable BMA423 interrupt
+    // Enable BMA423 interrupt ，
+    // The default interrupt configuration,
+    // you need to set the acceleration parameters, please refer to the BMA423_Accel example
     ttgo->bma->attachInterrupt();
 
     //Connection interrupted to the specified pin

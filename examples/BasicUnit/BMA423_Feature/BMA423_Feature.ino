@@ -4,6 +4,11 @@ TTGOClass *watch;
 TFT_eSPI *tft;
 BMA *sensor;
 bool irq = false;
+uint32_t tiltCount = 0;
+uint32_t clickCount = 0;
+uint32_t stepCount = 0;
+int16_t xoffset = 30;
+
 
 void setup()
 {
@@ -71,9 +76,9 @@ void setup()
     sensor->accelConfig(cfg);
 
     // Enable BMA423 accelerometer
-    // Warning : Need to use steps, you must first enable the accelerometer
-    // Warning : Need to use steps, you must first enable the accelerometer
-    // Warning : Need to use steps, you must first enable the accelerometer
+    // Warning : Need to use feature, you must first enable the accelerometer
+    // Warning : Need to use feature, you must first enable the accelerometer
+    // Warning : Need to use feature, you must first enable the accelerometer
     sensor->enableAccel();
 
     pinMode(BMA423_INT1, INPUT);
@@ -82,20 +87,40 @@ void setup()
         irq = 1;
     }, RISING); //It must be a rising edge
 
-    // Enable BMA423 step count feature
+    // Enable BMA423 isStepCounter feature
     sensor->enableFeature(BMA423_STEP_CNTR, true);
+    // Enable BMA423 isTilt feature
+    sensor->enableFeature(BMA423_TILT, true);
+    // Enable BMA423 isDoubleClick feature
+    sensor->enableFeature(BMA423_WAKEUP, true);
 
     // Reset steps
     sensor->resetStepCounter();
 
-    // Turn on step interrupt
+    // Turn on feature interrupt
     sensor->enableStepCountInterrupt();
+    sensor->enableTiltInterrupt();
+    // It corresponds to isDoubleClick interrupt
+    sensor->enableWakeupInterrupt();
 
     // Some display settings
     tft->setTextColor(random(0xFFFF));
     tft->drawString("BMA423 StepCount", 3, 50, 4);
     tft->setTextFont(4);
     tft->setTextColor(TFT_WHITE, TFT_BLACK);
+
+    tft->setTextColor(random(0xFFFF), TFT_BLACK);
+    tft->setCursor(xoffset, 118);
+    tft->print("StepCount:");
+    tft->print(stepCount);
+    tft->setTextColor(random(0xFFFF), TFT_BLACK);
+    tft->setCursor(xoffset, 160);
+    tft->print("isTilt:");
+    tft->print(tiltCount);
+    tft->setTextColor(random(0xFFFF), TFT_BLACK);
+    tft->setCursor(xoffset, 202);
+    tft->print("isDoubleClick:");
+    tft->print(clickCount);
 }
 
 void loop()
@@ -112,12 +137,27 @@ void loop()
         // Check if it is a step interrupt
         if (sensor->isStepCounter()) {
             // Get step data from register
-            uint32_t step = sensor->getCounter();
+            stepCount = sensor->getCounter();
             tft->setTextColor(random(0xFFFF), TFT_BLACK);
-            tft->setCursor(45, 118);
+            tft->setCursor(xoffset, 118);
             tft->print("StepCount:");
-            tft->print(step);
-            Serial.println(step);
+            tft->print(stepCount);
+        }
+        // The wrist must be worn correctly, otherwise the data will not come out
+        if (sensor->isTilt()) {
+            Serial.println("isTilt");
+            tft->setTextColor(random(0xFFFF), TFT_BLACK);
+            tft->setCursor(xoffset, 160);
+            tft->print("isTilt:");
+            tft->print(++tiltCount);
+        }
+        // Double-click interrupt
+        if (sensor->isDoubleClick()) {
+            Serial.println("isDoubleClick");
+            tft->setTextColor(random(0xFFFF), TFT_BLACK);
+            tft->setCursor(xoffset, 202);
+            tft->print("isDoubleClick:");
+            tft->print(++clickCount);
         }
     }
     delay(20);
