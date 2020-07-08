@@ -312,7 +312,7 @@ void loop()
 
     pinMode(SIM868_MODEM_RI, INPUT);
     tft->println("You can call in now");
-    while (digitalRead(SIM868_MODEM_RI) == LOW) {
+    while (digitalRead(SIM868_MODEM_RI) == HIGH) {
         delay(100);
     }
 
