@@ -192,19 +192,14 @@ public:
 #endif  /*LILYGO_WATCH_HAS_AXP202*/
 
 #if     defined(LILYGO_WATCH_HAS_SIM800L) || defined(LILYGO_WATCH_HAS_SIM868)
-#define SIM800_MODEM_BAUD           115200  //SIM800L BAUD 
-#define SIM800_MODEM_TX             33      //SIM800L TX PIN
-#define SIM800_MODEM_RX             34      //SIM800L RX PIN
-
-
 #ifdef LILYGO_WATCH_HAS_SIM868
 #undef  MOTOR_PIN
 #define MOTOR_PIN                   4       //SIM868 MOTOR PIN,JUST ONLY SIM868
 #define SIM868_MODEM_RI             26
 #define SIM868_MODEM_DTR            25
-#define SIM868_MODEM_BAUD           115200  //SIM800L BAUD 
-#define SIM868_MODEM_TX             33      //SIM800L TX PIN
-#define SIM868_MODEM_RX             34      //SIM800L RX PIN
+#define SIM868_MODEM_BAUD           115200  //SIM868 BAUD 
+#define SIM868_MODEM_TX             33      //SIM868 TX PIN
+#define SIM868_MODEM_RX             34      //SIM868 RX PIN
     void enableModemGPSPower(bool en = true)
     {
         power->setPowerOutPut(AXP202_LDO3, en);
