@@ -16,6 +16,8 @@ Created by Lewis he on October 10, 2019.
 #include "freertos/queue.h"
 #include <soc/rtc.h>
 #include "esp_wifi.h"
+#include "esp_sleep.h"
+#include <driver/rtc_io.h>
 #include <WiFi.h>
 #include "gui.h"
 
@@ -36,7 +38,7 @@ enum {
     Q_EVENT_AXP_INT,
 } ;
 
-#define DEFAULT_SCREEN_TIMEOUT  30*1000
+#define DEFAULT_SCREEN_TIMEOUT  3*1000
 
 #define WATCH_FLAG_SLEEP_MODE   _BV(1)
 #define WATCH_FLAG_SLEEP_EXIT   _BV(2)
@@ -86,6 +88,12 @@ void low_energy()
             // rtc_clk_cpu_freq_set(RTC_CPU_FREQ_2M);
             setCpuFrequencyMhz(20);
         }
+
+        // configure light sleep wakeup events
+        esp_sleep_enable_ext0_wakeup((gpio_num_t)38, 1);
+        // enter in light sleep
+        esp_light_sleep_start();
+        
     } else {
         ttgo->startLvglTick();
         ttgo->displayWakeup();
@@ -128,9 +136,10 @@ void setup()
     //Initialize lvgl
     ttgo->lvgl_begin();
 
-    // Enable BMA423 interrupt ，
-    // The default interrupt configuration,
-    // you need to set the acceleration parameters, please refer to the BMA423_Accel example
+    //Initialize bma423
+    ttgo->bma->begin();
+
+    //Enable BMA423 interrupt
     ttgo->bma->attachInterrupt();
 
     //Connection interrupted to the specified pin
@@ -214,6 +223,9 @@ void setup()
 
     //When the initialization is complete, turn on the backlight
     ttgo->openBL();
+
+    //Set BackLight to 5 improving battery perdormance
+    ttgo->setBrightness(5);
 }
 
 void loop()
