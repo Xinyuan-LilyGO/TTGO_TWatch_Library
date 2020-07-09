@@ -1,35 +1,95 @@
 #include "config.h"
 
 TTGOClass *ttgo;
+TFT_eSPI *tft;
+AXP20X_Class *power;
 
 void setup()
 {
     Serial.begin(115200);
+
+    //Get watch instance
     ttgo = TTGOClass::getWatch();
+
+    // Initialize the hardware
     ttgo->begin();
+
+    // Turn on the backlight
     ttgo->openBL();
-    ttgo->tft->fillScreen(TFT_BLACK);
-    ttgo->tft->drawString("T-Watch AXP202",  25, 50, 4);
-    ttgo->tft->setTextFont(4);
-    ttgo->tft->setTextColor(TFT_WHITE, TFT_BLACK);
-    ttgo->power->adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
+
+    //  Receive as a local variable for easy writing
+    tft = ttgo->tft;
+    power = ttgo->power;
+
+    // ADC monitoring must be enabled to use the AXP202 monitoring function
+    power->adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
+
+    // Some display setting
+    tft->setTextFont(2);
+    tft->setTextColor(TFT_GREEN, TFT_BLACK);
 }
 
 void loop()
 {
-    float vbus_v = ttgo->power->getVbusVoltage();
-    float vbus_c = ttgo->power->getVbusCurrent();
-    float batt_v = ttgo->power->getBattVoltage();
-    int per = ttgo->power->getBattPercentage();
+    // A simple clear screen will flash a bit
+    tft->fillRect(0, 0, 210, 130, TFT_BLACK);
 
-    ttgo->tft->fillRect(85, 100, 145, 85, TFT_BLACK);
-    ttgo->tft->setCursor(20, 100);
-    ttgo->tft->print("Vbus: "); ttgo->tft->print(vbus_v); ttgo->tft->println(" mV");
-    ttgo->tft->setCursor(20, 130);
-    ttgo->tft->print("Vbus: "); ttgo->tft->print(vbus_c); ttgo->tft->println(" mA");
-    ttgo->tft->setCursor(20, 160);
-    ttgo->tft->print("BATT: "); ttgo->tft->print(batt_v); ttgo->tft->println(" mV");
-    ttgo->tft->setCursor(20, 190);
-    ttgo->tft->print("Per: "); ttgo->tft->print(per); ttgo->tft->println(" %");
+    tft->setCursor(0, 0);
+
+    tft->print("VBUS STATUS: ");
+    // You can use isVBUSPlug to check whether the USB connection is normal
+    if (power->isVBUSPlug()) {
+        tft->println("CONNECT");
+
+        // Get USB voltage
+        tft->print("VBUS Volate:");
+        tft->print(power->getVbusVoltage());
+        tft->println(" mV");
+
+        // Get USB current
+        tft->print("VBUS Current: ");
+        tft->print(power->getVbusCurrent());
+        tft->println(" mA");
+
+    } else {
+
+        tft->setTextColor(TFT_RED, TFT_BLACK);
+        tft->println("DISCONNECT");
+        tft->setTextColor(TFT_GREEN, TFT_BLACK);
+    }
+
+    tft->println();
+
+    tft->print("BATTERY STATUS: ");
+    // You can use isBatteryConnect() to check whether the battery is connected properly
+    if (power->isBatteryConnect()) {
+        tft->println("CONNECT");
+
+        // Get battery voltage
+        tft->print("BAT Volate:");
+        tft->print(power->getBattVoltage());
+        tft->println(" mV");
+
+        // To display the charging status, you must first discharge the battery,
+        // and it is impossible to read the full charge when it is fully charged
+        if (power->isChargeing()) {
+            tft->print("Charge:");
+            tft->print(power->getBattChargeCurrent());
+            tft->println(" mA");
+        } else {
+            // Show current consumption
+            tft->print("Discharge:");
+            tft->print(power->getBattDischargeCurrent());
+            tft->println(" mA");
+            tft->print("Per: ");
+            tft->print(power->getBattPercentage());
+            tft->println(" %");
+
+        }
+    } else {
+        tft->setTextColor(TFT_RED, TFT_BLACK);
+        tft->println("DISCONNECT");
+        tft->setTextColor(TFT_GREEN, TFT_BLACK);
+    }
     delay(1000);
 }
