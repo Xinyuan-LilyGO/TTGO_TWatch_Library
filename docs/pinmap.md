@@ -27,6 +27,7 @@
 |      I2S BCK      |    N/A[1]    |    N/A[1]     |    N/A[1]    |       26       |
 |      I2S WS       |    N/A[1]    |    N/A[1]     |    N/A[1]    |       25       |
 |     I2S DOUT      |    N/A[1]    |    N/A[1]     |    N/A[1]    |       33       |
+|      IR Send      |     N/A      |      N/A      |     N/A      |       13       |
 
 
 [1]. According to different base plates
