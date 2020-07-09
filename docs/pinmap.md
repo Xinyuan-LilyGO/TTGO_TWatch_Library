@@ -30,13 +30,16 @@
 
 
 [1]. According to different base plates
+
 [2]. Capacitive touch button
+
 [3]. SENSOR SDA and SCL share PCF8563, BMA423, AXP192,T-Block without BMA423, use MPU6050
+
 [4]. T-Watch2020 V1, Audio audio power domain is controlled by AXP202 LDO3
 
 
 
-### 2. Bottom plate Pinout(The following does not apply to T-Watch2020)
+## 2. Bottom plate Pinout(The following does not apply to T-Watch2020)
 
 **Standard**
 
