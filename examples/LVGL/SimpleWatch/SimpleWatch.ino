@@ -17,7 +17,6 @@ Created by Lewis he on October 10, 2019.
 #include <soc/rtc.h>
 #include "esp_wifi.h"
 #include "esp_sleep.h"
-#include <driver/rtc_io.h>
 #include <WiFi.h>
 #include "gui.h"
 
