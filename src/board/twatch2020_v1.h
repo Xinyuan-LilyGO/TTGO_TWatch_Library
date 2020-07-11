@@ -11,8 +11,8 @@
 #define TWATCH_TFT_RST              (gpio_num_t)-1
 #define TWATCH_TFT_BL               (gpio_num_t)12
 
-#define TOUCH_SDA                      23
-#define TOUCH_SCL                      32
+#define TOUCH_SDA                   23
+#define TOUCH_SCL                   32
 #define TP_INT                      38
 
 #define SEN_SDA                     21
