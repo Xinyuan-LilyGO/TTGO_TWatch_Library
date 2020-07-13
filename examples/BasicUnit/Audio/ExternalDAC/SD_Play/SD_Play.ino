@@ -129,11 +129,6 @@ void create_gui()
     lv_obj_set_width(label, 80);
     lv_obj_align(label, play_cont, LV_ALIGN_IN_TOP_MID, 0, 50);
 
-    static lv_style_t style;
-    lv_style_copy(&style, &lv_style_plain_color);
-    style.text.color = LV_COLOR_WHITE;
-    lv_obj_set_style(label, &style);
-
     for (uint8_t i = 0; i < 3; i++) {
         button[i] = lv_btn_create(play_cont, NULL);
         lv_obj_set_size(button[i], 50, 50);
@@ -221,8 +216,6 @@ void setup()
     }
 
     ttgo->lvgl_begin();
-
-    lv_theme_set_current(lv_theme_material_init(100, NULL));
 
     scr = lv_scr_act();
 
