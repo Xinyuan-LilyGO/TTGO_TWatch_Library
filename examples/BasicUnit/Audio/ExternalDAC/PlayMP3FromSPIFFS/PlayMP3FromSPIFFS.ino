@@ -1,19 +1,23 @@
-#pragma mark - Depend ESP8266Audio and ESP8266_Spiram libraries
+// #pragma mark - Depend ESP8266Audio and ESP8266_Spiram libraries
 /*
 cd ~/Arduino/libraries
 git clone https://github.com/earlephilhower/ESP8266Audio
 git clone https://github.com/Gianbacchio/ESP8266_Spiram
+
+The test version uses ESP8266Audio, commit id: e59319f6,
+If you encounter problems with compilation,
+please return to the commit version
+
 */
 
-
-#include "config.h"
 #include <WiFi.h>
 #include <HTTPClient.h>         //Remove Audio Lib error
+#include <SPIFFS.h>
 #include "AudioFileSourceSPIFFS.h"
 #include "AudioFileSourceID3.h"
 #include "AudioGeneratorMP3.h"
 #include "AudioOutputI2S.h"
-#include <SPIFFS.h>
+#include "config.h"
 
 TTGOClass *ttgo;
 AudioGeneratorMP3 *mp3;
