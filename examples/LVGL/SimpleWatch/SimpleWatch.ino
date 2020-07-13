@@ -16,6 +16,7 @@ Created by Lewis he on October 10, 2019.
 #include "freertos/queue.h"
 #include <soc/rtc.h>
 #include "esp_wifi.h"
+#include "esp_sleep.h"
 #include <WiFi.h>
 #include "gui.h"
 
@@ -85,6 +86,12 @@ void low_energy()
             WiFi.mode(WIFI_OFF);
             // rtc_clk_cpu_freq_set(RTC_CPU_FREQ_2M);
             setCpuFrequencyMhz(20);
+
+            Serial.println("ENTER IN LIGHT SLEEEP MODE");
+            gpio_wakeup_enable ((gpio_num_t)AXP202_INT, GPIO_INTR_LOW_LEVEL);
+            gpio_wakeup_enable ((gpio_num_t)BMA423_INT1, GPIO_INTR_HIGH_LEVEL);
+            esp_sleep_enable_gpio_wakeup ();
+            esp_light_sleep_start();
         }
     } else {
         ttgo->startLvglTick();
