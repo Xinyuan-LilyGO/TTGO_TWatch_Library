@@ -3,30 +3,49 @@
 #include <Arduino.h>
 #include <Ticker.h>
 
-class BackLight
+
+class PWMBase
 {
 public:
-    BackLight(int pin, int channel = 0)
+    PWMBase(uint8_t pin, uint8_t channel)
     {
         _pin = pin;
         _channel = channel;
     };
-    ~BackLight()
+    
+    virtual ~PWMBase()
     {
         ledcDetachPin(_pin);
     };
 
-    void begin()
+    virtual void begin()
     {
-        ledcAttachPin(_pin, _channel);
         ledcSetup(_channel, 12000, 8);
+        ledcAttachPin(_pin, _channel);
         ledcWrite(_channel, 0);
+    };
+
+    virtual void adjust(uint8_t level)
+    {
+        ledcWrite(_channel, level);
+    };
+    
+protected:
+    uint8_t _pin;
+    uint8_t _channel;
+};
+
+class BackLight : public PWMBase
+{
+public:
+    BackLight(uint8_t pin, uint8_t channel = 0) : PWMBase(pin, channel)
+    {
     };
 
     void adjust(uint8_t level)
     {
         _level = level;
-        ledcWrite(_channel, level);
+        PWMBase::adjust(level);
         _on = true;
     };
 
@@ -49,106 +68,68 @@ public:
 
     bool reverse()
     {
-        if (isOn()) {
-            off(); return false;
-        } else {
-            on(); return true;
-        }
+        _on ? off() : on();
+        return _on;
     };
 
 private:
     bool _on = false;
-    int _pin;
-    uint8_t _channel;
     uint8_t _level = 255;
 };
 
 
-class Motor
+class PWMToneBase : public PWMBase
 {
 public:
-    Motor(int pin, int channel = 1, int freq = 1000)
+    PWMToneBase(uint8_t pin, uint8_t channel, int freq) : PWMBase(pin, channel)
     {
-        _pin = pin;
-        _channel = channel;
         _freq = freq;
+        _tick = nullptr;
     };
-    ~Motor()
+    
+    virtual ~PWMToneBase()
     {
-        ledcDetachPin(_pin);
-        delete tick;
+        if (_tick != nullptr)
+        {
+            delete _tick;
+        }
+    }
+
+    virtual void begin()
+    {
+        PWMBase::begin();
+        _tick = new Ticker;
     };
 
-    void begin()
-    {
-        ledcAttachPin(_pin, _channel);
-        ledcSetup(_channel, 12000, 8);
-        ledcWrite(_channel, 0);
-        tick = new Ticker;
-    };
-
-    void adjust(uint8_t level)
-    {
-        ledcWrite(_channel, level);
-    };
-
-    void onec()
+    virtual void onec()
     {
         ledcWriteTone(_channel, _freq);
-        tick->once_ms(200, []() {
-            ledcWriteTone(1, 0);
-        });
+        _tick->once_ms<uint8_t>(200, [](uint8_t channel) {
+            ledcWriteTone(channel, 0);
+        }, _channel);
     };
 
-private:
-    int _pin;
-    uint8_t _channel;
+protected:
     double _freq;
-    Ticker *tick;
+    Ticker *_tick;
+    
+};
+
+class Motor : public PWMToneBase
+{
+public:
+    Motor(uint8_t pin, uint8_t channel = 1, int freq = 1000) : PWMToneBase(pin, channel, freq)
+    {
+    };
 };
 
 
-class Buzzer
+class Buzzer : public PWMToneBase
 {
 public:
-    Buzzer(int pin, int channel = 2, int freq = 1000)
+    Buzzer(uint8_t pin, uint8_t channel = 2, int freq = 1000) : PWMToneBase(pin, channel, freq)
     {
-        _pin = pin;
-        _channel = channel;
-        _freq = freq;
     };
-    ~Buzzer()
-    {
-        ledcDetachPin(_pin);
-        delete tick;
-    };
-
-    void begin()
-    {
-        ledcAttachPin(_pin, _channel);
-        ledcSetup(_channel, 12000, 8);
-        ledcWrite(_channel, 0);
-        tick = new Ticker;
-    };
-
-    void adjust(uint8_t level)
-    {
-        ledcWrite(_channel, level);
-    };
-
-    void onec()
-    {
-        ledcWriteTone(_channel, _freq);
-        tick->once_ms(200, []() {
-            ledcWriteTone(2, 0);
-        });
-    };
-
-private:
-    int _pin;
-    uint8_t _channel;
-    double _freq;
-    Ticker *tick;
 };
 
 #endif

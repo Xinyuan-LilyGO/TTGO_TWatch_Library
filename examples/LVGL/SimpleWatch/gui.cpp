@@ -1162,13 +1162,13 @@ static void wifi_sync_mbox_cb(lv_task_t *t)
             pl = nullptr;
 
             char format[256];
-            snprintf(format, sizeof(format), "Time acquisition is:%d-%d-%d/%d:%d:%d, Whether to synchronize?", timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+            snprintf(format, sizeof(format), "Time acquisition is: %d-%d-%d/%d:%d:%d. Synchronize?", timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
             Serial.println(format);
             delete task;
             task = nullptr;
 
             //! mbox
-            static const char *btns[] = {"Ok", "Cancle", ""};
+            static const char *btns[] = {"Ok", "Cancel", ""};
             mbox = new MBox;
             mbox->create(format, [](lv_obj_t *obj, lv_event_t event) {
                 if (event == LV_EVENT_VALUE_CHANGED) {
@@ -1181,9 +1181,9 @@ static void wifi_sync_mbox_cb(lv_task_t *t)
 
                         TTGOClass *ttgo = TTGOClass::getWatch();
                         ttgo->rtc->setDateTime(info->tm_year + 1900, info->tm_mon + 1, info->tm_mday, info->tm_hour, info->tm_min, info->tm_sec);
-                    } else if (!strcmp(txt, "Cancle")) {
-                        //!cancle
-                        // Serial.println("Cancle press");
+                    } else if (!strcmp(txt, "Cancel")) {
+                        //!cancel
+                        // Serial.println("Cancel press");
                     }
                     delete mbox;
                     mbox = nullptr;
