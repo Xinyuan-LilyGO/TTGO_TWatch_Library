@@ -39,6 +39,19 @@
 [4]. T-Watch2020 V1, Audio audio power domain is controlled by AXP202 LDO3
 
 
+## 3. AXP202 power management channel
+
+| channel |      Explanation       |
+| :-----: | :--------------------: |
+|   DC2   |         NO USE         |
+|   DC3   |   ESP32(Can't close)   |
+|  LDO1   |     Can't control      |
+|  LDO2   |       Backlight        |
+|  LDO3   | Backplane power supply |
+|  LDO4   | S76/78G Backplane only |
+
+
+- In T-Watch 2020, LDO3 is the audio power domain, and the remaining power channels are not applicable
 
 ## 2. Bottom plate Pinout(The following does not apply to T-Watch2020)
 
@@ -48,6 +61,7 @@
 | :--------: | :----: | :-----: | :----: | :----: |
 |  Standard  | Motor  | Speaker |  SDA   |  SCL   |
 * Onboard SD card slot
+* The motor/speaker power domain is LDO3
 
 **SIM800L**
 
@@ -55,6 +69,7 @@
 | :--------: | :----: | :----: | :--------: | :----: | :----: |
 |  SIM800L   |  RST   | PWRKEY | BOOST_CTRL |   TX   |   RX   |
 * No onboard SD card slot
+* The modem power domain is LDO3
 
 **SIM868**
 
@@ -70,6 +85,7 @@
 | :--------: | :----: | :----: |
 |   MPR121   |  SDA   |  SCL   |
 * Onboard SD card slot
+* The sensor power domain is LDO3
 
 **S7XG_Lora & GPS**
 
@@ -77,4 +93,5 @@
 | :--------: | :----: | :----: |
 | S7XG_Lora  |   TX   |   RX   |
 * Onboard SD card slot
-* The power domain is LDO3/LDO4
+* The S76/78G power domain is LDO3
+* The gps power domain is LDO3
