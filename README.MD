@@ -10,6 +10,21 @@
 3. Most of the examples are only used as hardware function demonstrations. This library only completes some initialization work and some demonstrations. For more advanced gameplay, please see [TTGO.h](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/src/TTGO.h), to understand how to initialize, after being familiar with it, you can completely leave this library for more advanced gameplay
 - About API, please check the source code
 
+- The latest factory firmware is made by [sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch)
+
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen1.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen2.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen3.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen4.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen5.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen6.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen7.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen8.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen9.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen10.png)
+
+
+
 <h2 align = "left">🚀 Characteristics</h2>
 
 1. The library already contains all the hardware drivers for `T-Watch`
