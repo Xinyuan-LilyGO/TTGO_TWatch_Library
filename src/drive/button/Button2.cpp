@@ -103,7 +103,7 @@ unsigned int Button2::getClickType() {
 /////////////////////////////////////////////////////////////////
 
 void Button2::loop() {
-  if(pin < 0)return;
+  if(pin == 0xFF)return;
 
   prev_state = state;
   state = digitalRead(pin);
