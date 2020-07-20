@@ -92,7 +92,7 @@ class RTC_Date
 {
 public:
     RTC_Date();
-    RTC_Date(const char* date, const char* time);
+    RTC_Date(const char *date, const char *time);
     RTC_Date(uint16_t year,
              uint8_t month,
              uint8_t day,
@@ -107,8 +107,8 @@ public:
     uint8_t minute;
     uint8_t second;
     bool operator==(RTC_Date d);
-    private:
-    uint8_t StringToUint8(const char* pString);
+private:
+    uint8_t StringToUint8(const char *pString);
 };
 
 class RTC_Alarm
@@ -131,7 +131,7 @@ public:
 class PCF8563_Class
 {
 public:
-    PCF8563_Class(I2CBus &bus , uint8_t addr = PCF8563_SLAVE_ADDRESS);
+    PCF8563_Class(I2CBus &bus, uint8_t addr = PCF8563_SLAVE_ADDRESS);
 
     void check();
 
@@ -151,7 +151,7 @@ public:
     void resetAlarm();
     void setAlarm(RTC_Alarm alarm);
     void setAlarm(uint8_t hour, uint8_t minute, uint8_t day, uint8_t weekday);
-    bool isVaild();
+    bool isValid();
 
     void setAlarmByWeekDay(uint8_t weekday);
     void setAlarmByHours(uint8_t hour);
@@ -170,7 +170,7 @@ public:
 
     void syncToSystem();
     void syncToRtc();
-    
+
     const char *formatDateTime(uint8_t sytle = PCF_TIMEFORMAT_HMS);
     uint32_t getDayOfWeek(uint32_t day, uint32_t month, uint32_t year);
     uint8_t status2();
@@ -207,7 +207,7 @@ private:
         // _i2cPort->endTransmission();
     }
 
-    uint8_t _isVaild = false;
+    uint8_t _isValid = false;
     uint8_t _address;
     bool _init = false;
     TwoWire *_i2cPort;
