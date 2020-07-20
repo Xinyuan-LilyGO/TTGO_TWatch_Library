@@ -47,10 +47,14 @@ void setup()
 
     file = new AudioFileSourceSPIFFS("/pno-cs.mp3");
     id3 = new AudioFileSourceID3(file);
-    out = new AudioOutputI2S();
 
-    //! External DAC decoding
+#if defined(STANDARD_BACKPLANE)
+    out = new AudioOutputI2S(0, 1);
+#elif defined(EXTERNAL_DAC_BACKPLANE)
+    out = new AudioOutputI2S();
+    //External DAC decoding
     out->SetPinout(TWATCH_DAC_IIS_BCK, TWATCH_DAC_IIS_WS, TWATCH_DAC_IIS_DOUT);
+#endif
 
     mp3 = new AudioGeneratorMP3();
     mp3->begin(id3, out);
