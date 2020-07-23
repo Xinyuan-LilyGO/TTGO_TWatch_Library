@@ -805,12 +805,15 @@ protected:
         case 0:
             x = TFT_WIDTH - p.x;
             y = TFT_HEIGHT - p.y;
+	          break;
         case 1:
             x = TFT_WIDTH - p.y;
-            y = TFT_HEIGHT - p.x;
+            y = p.x;
+	          break;
         case 3:
             x = p.y;
             y = TFT_HEIGHT - p.x;
+            break;
         case 2:
         default:
             x = p.x;
