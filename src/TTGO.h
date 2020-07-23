@@ -13,7 +13,13 @@ Written by Lewis he //https://github.com/lewisxhe
 
 #pragma once
 
-#include "DBG.h"
+// #define LILYGO_DEBUG Serial
+
+#ifdef LILYGO_DEBUG
+#define DBGX(...)        LILYGO_DEBUG.printf(__VA_ARGS__)
+#else
+#define DBGX(...)
+#endif
 
 #include <SPI.h>
 
@@ -788,12 +794,15 @@ protected:
         case 1:
             x = _y;
             y = TFT_HEIGHT - _x;
+            break;
         case 2:
             x = TFT_WIDTH - _x;
             y = TFT_HEIGHT - _y;
+            break;
         case 3:
             x = TFT_WIDTH - _y;
             y = _x;
+            break;
         case 0:
         default:
             x = _x;
@@ -805,11 +814,11 @@ protected:
         case 0:
             x = TFT_WIDTH - p.x;
             y = TFT_HEIGHT - p.y;
-	          break;
+            break;
         case 1:
             x = TFT_WIDTH - p.y;
             y = p.x;
-	          break;
+            break;
         case 3:
             x = p.y;
             y = TFT_HEIGHT - p.x;
@@ -836,15 +845,6 @@ protected:
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_TOUCH)
     static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     {
-//         static TP_Point p;
-//         uint8_t rotation = _ttgo->tft->getRotation();
-//         data->state = _ttgo->touch->touched() ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
-//         if (data->state == LV_INDEV_STATE_PR) {
-//             p = _ttgo->touch->getPoint(0, rotation);
-//         }
-//         /*Set the coordinates (if released use the last pressed coordinates)*/
-//         data->point.x = p.x;
-//         data->point.y = p.y;
         data->state = _ttgo->getTouchXY(data->point.x, data->point.y) ?  LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
         return false; /*Return false because no moare to be read*/
     }
