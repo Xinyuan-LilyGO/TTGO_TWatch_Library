@@ -17,6 +17,13 @@
 #include "TFT_eSPI.h"
 
 #if defined (ESP32)
+////////////////////////////////////////////////////
+// TFT_eSPI driver functions for ESP32 processors //
+////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////
+// Global variables
+////////////////////////////////////////////////////////////////////////////////////////
 
 // Select the SPI port to use, ESP32 has 2 options
 #if !defined (TFT_PARALLEL_8_BIT)
@@ -756,7 +763,7 @@ bool TFT_eSPI::initDMA(void)
 void TFT_eSPI::deInitDMA(void)
 {
     if (!DMA_Enabled) return;
-
+    spi_bus_remove_device(dmaHAL);
     spi_bus_free(spi_host);
     DMA_Enabled = false;
 }
@@ -764,6 +771,7 @@ void TFT_eSPI::deInitDMA(void)
 ////////////////////////////////////////////////////////////////////////////////////////
 #endif // End of DMA FUNCTIONS    
 ////////////////////////////////////////////////////////////////////////////////////////
+
 #endif
 
 
@@ -1621,14 +1629,14 @@ void TFT_eSPI::readRect(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t *da
 
 
 /***************************************************************************************
-** Function name:           push rectangle (for SPI Interface II i.e. IM [3:0] = "1101")
+** Function name:           push rectangle
 ** Description:             push 565 pixel colours into a defined area
 ***************************************************************************************/
 void TFT_eSPI::pushRect(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t *data)
 {
-    // Function deprecated, remains for backwards compatibility
-    // New pushImage() is better as it will crop partly off-screen image blocks
+    bool swap = _swapBytes; _swapBytes = false;
     pushImage(x, y, w, h, data);
+    _swapBytes = swap;
 }
 
 
@@ -3407,9 +3415,6 @@ void TFT_eSPI::setWindow(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
 {
     //begin_tft_write(); // Must be called before setWindow
 
-    addr_col = 0xFFFF;
-    addr_row = 0xFFFF;
-
 #ifdef CGRAM_OFFSET
     x0 += colstart;
     x1 += colstart;
@@ -3417,16 +3422,29 @@ void TFT_eSPI::setWindow(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
     y1 += rowstart;
 #endif
 
-    // Column addr set
+#ifdef MULTI_TFT_SUPPORT
+    // No optimisation to permit multiple screens
     DC_C; tft_Write_8(TFT_CASET);
     DC_D; tft_Write_32C(x0, x1);
-
-    // Row addr set
     DC_C; tft_Write_8(TFT_PASET);
     DC_D; tft_Write_32C(y0, y1);
+#else
+    // No need to send x if it has not changed (speeds things up)
+    if (addr_col != (x0 << 16 | x1)) {
+        DC_C; tft_Write_8(TFT_CASET);
+        DC_D; tft_Write_32C(x0, x1);
+        addr_col = (x0 << 16 | x1);
+    }
+
+    // No need to send y if it has not changed (speeds things up)
+    if (addr_row != (y0 << 16 | y1)) {
+        DC_C; tft_Write_8(TFT_PASET);
+        DC_D; tft_Write_32C(y0, y1);
+        addr_row = (y0 << 16 | y1);
+    }
+#endif
 
     DC_C; tft_Write_8(TFT_RAMWR);
-
     DC_D;
 
     //end_tft_write(); // Must be called after setWindow
@@ -3487,19 +3505,27 @@ void TFT_eSPI::drawPixel(int32_t x, int32_t y, uint32_t color)
 
     begin_tft_write();
 
+#ifdef MULTI_TFT_SUPPORT
+    // No optimisation
+    DC_C; tft_Write_8(TFT_CASET);
+    DC_D; tft_Write_32D(x);
+    DC_C; tft_Write_8(TFT_PASET);
+    DC_D; tft_Write_32D(y);
+#else
     // No need to send x if it has not changed (speeds things up)
-    if (addr_col != x) {
+    if (addr_col != (x << 16 | x)) {
         DC_C; tft_Write_8(TFT_CASET);
         DC_D; tft_Write_32D(x);
-        addr_col = x;
+        addr_col = (x << 16 | x);
     }
 
     // No need to send y if it has not changed (speeds things up)
-    if (addr_row != y) {
+    if (addr_row != (y << 16 | y)) {
         DC_C; tft_Write_8(TFT_PASET);
         DC_D; tft_Write_32D(y);
-        addr_row = y;
+        addr_row = (y << 16 | y);
     }
+#endif
 
     DC_C; tft_Write_8(TFT_RAMWR);
     DC_D; tft_Write_16(color);
@@ -4381,20 +4407,53 @@ int16_t TFT_eSPI::drawChar(uint16_t uniCode, int32_t x, int32_t y, uint8_t font)
                     pc += line;
                 }
             }
-        } else { // Text colour != background && textsize = 1
+        } else {
+            // Text colour != background && textsize = 1 and character is within screen area
             // so use faster drawing of characters and background using block write
-            setWindow(x, y, x + width - 1, y + height - 1);
+            if ((x >= 0) && (x + width <= _width) && (y >= 0) && (y + height <= _height)) {
+                setWindow(x, y, x + width - 1, y + height - 1);
 
-            // Maximum font size is equivalent to 180x180 pixels in area
-            while (w > 0) {
-                line = pgm_read_byte((uint8_t *)flash_address++); // 8 bytes smaller when incrementing here
-                if (line & 0x80) {
-                    line &= 0x7F;
-                    line++; w -= line;
-                    pushBlock(textcolor, line);
-                } else {
-                    line++; w -= line;
-                    pushBlock(textbgcolor, line);
+                // Maximum font size is equivalent to 180x180 pixels in area
+                while (w > 0) {
+                    line = pgm_read_byte((uint8_t *)flash_address++); // 8 bytes smaller when incrementing here
+                    if (line & 0x80) {
+                        line &= 0x7F;
+                        line++; w -= line;
+                        pushBlock(textcolor, line);
+                    } else {
+                        line++; w -= line;
+                        pushBlock(textbgcolor, line);
+                    }
+                }
+            } else {
+                int32_t px = x, py = y;  // To hold character block start and end column and row values
+                int32_t pc = 0;          // Pixel count
+                int32_t pl = 0;          // Pixel line length
+                uint16_t pcol = 0;       // Pixel color
+
+                while (pc < w) {
+                    line = pgm_read_byte((uint8_t *)flash_address);
+                    flash_address++;
+                    if (line & 0x80) {
+                        pcol = textcolor;
+                        line &= 0x7F;
+                    } else pcol = textbgcolor;
+                    line++;
+                    px = x + pc % width;
+                    py = y + pc / width;
+
+                    pl = 0;
+                    pc += line;
+                    while (line--) { // In this case the while(line--) is faster
+                        pl++;
+                        if ((px + pl) >= (x + width)) {
+                            drawFastHLine(px, py, pl, pcol);
+                            pl = 0;
+                            px = x;
+                            py ++;
+                        }
+                    }
+                    if (pl)drawFastHLine(px, py, pl, pcol);
                 }
             }
         }
@@ -5006,6 +5065,14 @@ void TFT_eSPI::getSetup(setup_t &tft_settings)
     tft_settings.pin_tft_d7 = -1;
 #endif
 
+#if defined (TFT_BL)
+    tft_settings.pin_tft_led = TFT_BL;
+#endif
+
+#if defined (TFT_BACKLIGHT_ON)
+    tft_settings.pin_tft_led_on = TFT_BACKLIGHT_ON;
+#endif
+
 #if defined (TOUCH_CS)
     tft_settings.pin_tch_cs   = TOUCH_CS;
     tft_settings.tch_spi_freq = SPI_TOUCH_FREQUENCY / 100000;
@@ -5030,6 +5097,7 @@ void TFT_eSPI::getSetup(setup_t &tft_settings)
 // Color bytes are swapped when writing to RAM, this introduces a small overhead but
 // there is a nett performance gain by using swapped bytes.
 ***************************************************************************************/
+
 /***************************************************************************************
 ** Function name:           TFT_eSprite
 ** Description:             Class constructor
@@ -5079,8 +5147,6 @@ void *TFT_eSprite::createSprite(int16_t w, int16_t h, uint8_t frames)
     _iwidth  = _dwidth  = _bitwidth = w;
     _iheight = _dheight = h;
 
-    _colorMap = nullptr;
-
     this->cursor_x = 0;
     this->cursor_y = 0;
 
@@ -5114,6 +5180,8 @@ void *TFT_eSprite::createSprite(int16_t w, int16_t h, uint8_t frames)
         _img8_2 = _img8 + (w * h + 1);
     }
 
+    if ( (_bpp == 4) && (_colorMap == nullptr)) createPalette(default_4bit_palette);
+
     // This is to make it clear what pointer size is expected to be used
     // but casting in the user sketch is needed due to the use of void*
     if ( (_bpp == 1) && (frames > 1) ) {
@@ -5127,6 +5195,16 @@ void *TFT_eSprite::createSprite(int16_t w, int16_t h, uint8_t frames)
     }
 
     return NULL;
+}
+
+
+/***************************************************************************************
+** Function name:           created
+** Description:             Returns true is sprite has been created
+*************************************************************************************x*/
+bool TFT_eSprite::created(void)
+{
+    return _created;
 }
 
 
@@ -5209,21 +5287,25 @@ void *TFT_eSprite::callocSprite(int16_t w, int16_t h, uint8_t frames)
 ** Description:             Set a palette for a 4-bit per pixel sprite
 *************************************************************************************x*/
 
-void TFT_eSprite::createPalette(uint16_t colorMap[], int colors)
+void TFT_eSprite::createPalette(uint16_t colorMap[], uint8_t colors)
 {
     if (_colorMap != nullptr) {
         free(_colorMap);
     }
 
     if (colorMap == nullptr) {
-        return; // do nothing other than clear the existing map
+        // Create a color map using the default FLASH map
+        createPalette(default_4bit_palette);
+        return;
     }
 
-    // allocate color map
+    // Allocate and clear memory for 16 color map
     _colorMap = (uint16_t *)calloc(16, sizeof(uint16_t));
-    if (colors > 16)
-        colors = 16;
-    for (auto i = 0; i < colors; i++) {
+
+    if (colors > 16) colors = 16;
+
+    // Copy map colors
+    for (uint8_t i = 0; i < colors; i++) {
         _colorMap[i] = colorMap[i];
     }
 }
@@ -5233,21 +5315,24 @@ void TFT_eSprite::createPalette(uint16_t colorMap[], int colors)
 ** Description:             Set a palette for a 4-bit per pixel sprite
 *************************************************************************************x*/
 
-void TFT_eSprite::createPalette(const uint16_t colorMap[], int colors)
+void TFT_eSprite::createPalette(const uint16_t colorMap[], uint8_t colors)
 {
     if (_colorMap != nullptr) {
         free(_colorMap);
     }
 
     if (colorMap == nullptr) {
-        return; // do nothing other than clear the existing map
+        // Create a color map using the default FLASH map
+        colorMap = default_4bit_palette;
     }
 
-    // allocate color map
+    // Allocate and clear memory for 16 color map
     _colorMap = (uint16_t *)calloc(16, sizeof(uint16_t));
-    if (colors > 16)
-        colors = 16;
-    for (auto i = 0; i < colors; i++) {
+
+    if (colors > 16) colors = 16;
+
+    // Copy map colors
+    for (uint8_t i = 0; i < colors; i++) {
         _colorMap[i] = pgm_read_word(colorMap++);
     }
 }
@@ -5313,7 +5398,7 @@ int8_t TFT_eSprite::getColorDepth(void)
 
 /***************************************************************************************
 ** Function name:           setBitmapColor
-** Description:             Set the foreground foreground and background colour
+** Description:             Set the 1bpp foreground foreground and background colour
 ***************************************************************************************/
 void TFT_eSprite::setBitmapColor(uint16_t c, uint16_t b)
 {
@@ -5324,23 +5409,22 @@ void TFT_eSprite::setBitmapColor(uint16_t c, uint16_t b)
 
 /***************************************************************************************
 ** Function name:           setPaletteColor
-** Description:             Set the palette color at the given index
+** Description:             Set the 4bpp palette color at the given index
 ***************************************************************************************/
 void TFT_eSprite::setPaletteColor(uint8_t index, uint16_t color)
 {
-    if (_colorMap == nullptr || index > 15)
-        return; // out of bounds
+    if (_colorMap == nullptr || index > 15) return; // out of bounds
+
     _colorMap[index] = color;
 }
 
 /***************************************************************************************
 ** Function name:           getPaletteColor
-** Description:             Return the palette color at index, or 0 (black) on error.
+** Description:             Return the palette color at 4bpp index, or 0 on error.
 ***************************************************************************************/
 uint16_t TFT_eSprite::getPaletteColor(uint8_t index)
 {
-    if (_colorMap == nullptr || index > 15)
-        return 0;
+    if (_colorMap == nullptr || index > 15) return 0; // out of bounds
 
     return _colorMap[index];
 }
@@ -5401,7 +5485,7 @@ int16_t TFT_eSprite::getPivotY(void)
 #define FP_SCALE 10
 bool TFT_eSprite::pushRotated(int16_t angle, int32_t transp)
 {
-    if ( !_created || _bpp == 4) return false;
+    if ( !_created) return false;
 
     // Bounding box parameters
     int16_t min_x;
@@ -5419,6 +5503,7 @@ bool TFT_eSprite::pushRotated(int16_t angle, int32_t transp)
     uint32_t xe = _iwidth << FP_SCALE;
     uint32_t ye = _iheight << FP_SCALE;
     uint32_t tpcolor = transp;  // convert to unsigned
+    if (_bpp == 4) tpcolor = _colorMap[transp & 0x0F];
 
     _tft->startWrite(); // Avoid transaction overhead for every tft pixel
 
@@ -5472,9 +5557,10 @@ bool TFT_eSprite::pushRotated(int16_t angle, int32_t transp)
 ** Function name:           pushRotated - Fast fixed point integer maths version
 ** Description:             Push a rotated copy of the Sprite to another Sprite
 *************************************************************************************x*/
+// Not compatible with 4bpp
 bool TFT_eSprite::pushRotated(TFT_eSprite *spr, int16_t angle, int32_t transp)
 {
-    if ( !_created  || _bpp == 4) return false;       // Check this Sprite is created
+    if ( !_created  || _bpp == 4) return false; // Check this Sprite is created
     if ( !spr->_created  || spr->_bpp == 4) return false;  // Ckeck destination Sprite is created
 
     // Bounding box parameters
@@ -5671,13 +5757,8 @@ void TFT_eSprite::pushSprite(int32_t x, int32_t y)
         _tft->pushImage(x, y, _iwidth, _iheight, _img );
         _tft->setSwapBytes(oldSwapBytes);
     } else if (_bpp == 4) {
-        if (_colorMap == nullptr) {
-            return;
-        }
         _tft->pushImage(x, y, _dwidth, _dheight, _img4, false, _colorMap);
-    }
-
-    else _tft->pushImage(x, y, _dwidth, _dheight, _img8, (bool)(_bpp == 8));
+    } else _tft->pushImage(x, y, _dwidth, _dheight, _img8, (bool)(_bpp == 8));
 }
 
 
@@ -5856,12 +5937,39 @@ void  TFT_eSprite::pushImage(int32_t x, int32_t y, int32_t w, int32_t h, uint16_
             ys++;
         }
     } else if (_bpp == 4) {
-        // not supported.  The image is unlikely to have the correct colors for the color map.
-        // we could implement a way to push a 4-bit image using the color map?
-#ifdef TFT_eSPI_DEBUG
-        Serial.println("pushImage(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t *data) not implemented");
-#endif
-        return;
+        // the image is assumed to be 4 bit, where each byte corresponds to two pixels.
+        // much faster when aligned to a byte boundary, because the alternative is slower, requiring
+        // tedious bit operations.
+
+        const uint8_t *dataBuf = (uint8_t *)data;
+        int sWidth = (_iwidth >> 1);
+
+        if ((xs & 0x01) == 0 && (xo & 0x01) == 0 && (ws & 0x01) == 0) {
+            if ((ws & 0x01) == 0) { // use memcpy for better perf.
+                xs = (xs >> 1) + ys * sWidth;
+                ws = (ws >> 1);
+                xo = (xo >> 1) + yo * (w >> 1);
+                while (hs--) {
+                    memcpy(_img4 + xs, dataBuf + xo, ws);
+                    xo += (w >> 1);
+                    xs += sWidth;
+                }
+            }
+        } else { // not optimized
+            for (int32_t yp = yo; yp < yo + hs; yp++) {
+                x = xs;
+                for (int32_t xp = xo; xp < xo + ws; xp++) {
+                    uint32_t color;
+                    if ((xp & 0x01) == 0)
+                        color = (dataBuf[((xp + yp * w) >> 1)] & 0xF0) >> 4; // even index = bits 7 .. 4
+                    else
+                        color = dataBuf[((xp - 1 + yp * w) >> 1)] & 0x0F; // odd index = bits 3 .. 0.
+                    drawPixel(x, ys, color);
+                    x++;
+                }
+                ys++;
+            }
+        }
     }
 
     else { // 1bpp
@@ -6638,19 +6746,19 @@ void TFT_eSprite::fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t 
         } else if ((w & 0x01) == 1) {
             yp = (yp + 1) >> 1;
             while (h--) {
-                drawPixel(x, y + h - 1, color & 0x0F);
+                drawPixel(x, y + h, color & 0x0F);
                 if (w > 1)
-                    memset(_img4 + (yp + ((x - 1) >> 1)), c2, (w - 1) >> 1);
+                    memset(_img4 + yp, c2, (w - 1) >> 1);
                 // same as above but you have a hangover on the left instead
                 yp += (_iwidth >> 1);
             }
         } else {
             yp = (yp + 1) >> 1;
             while (h--) {
-                drawPixel(x, y + h - 1, color & 0x0F);
-                drawPixel(x + w - 1, y + h - 1, color & 0x0F);
+                drawPixel(x, y + h, color & 0x0F);
+                if (w > 1) drawPixel(x + w - 1, y + h, color & 0x0F);
                 if (w > 2)
-                    memset(_img4 + (yp + ((x - 1) >> 1)), c2, (w - 2) >> 1);
+                    memset(_img4 + yp, c2, (w - 2) >> 1);
                 // maximal hacking, single pixels on left and right.
                 yp += (_iwidth >> 1);
             }
@@ -7323,10 +7431,8 @@ int16_t TFT_eSprite::printToSprite(int16_t x, int16_t y, uint16_t index)
 }
 #endif
 
+
 #ifdef SMOOTH_FONT
-// #include "Extensions/Smooth_font.cpp"
-// Coded by Bodmer 10/2/18, see license in root directory.
-// This is part of the TFT_eSPI class and is associated with anti-aliased font functions
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // New anti-aliased (smoothed) font functions added below
@@ -7817,6 +7923,7 @@ void TFT_eSPI::showFont(uint32_t td)
     delay(timeDelay);
     fillScreen(textbgcolor);
     //fontFile.close();
+
 }
 
 #endif
