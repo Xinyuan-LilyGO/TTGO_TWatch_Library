@@ -77,6 +77,9 @@ Written by Lewis he //https://github.com/lewisxhe
 #include "./drive/tft/bl.h"
 
 
+
+#define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
+
 class TTGOClass
 {
 public:
@@ -656,6 +659,10 @@ private:
 
         tft->init();
 
+#ifdef ENABLE_LVGL_FLUSH_DMA
+        tft->initDMA(); // To use SPI DMA you must call initDMA() to setup the DMA engine
+#endif
+
 #ifdef  LILYGO_WATCH_2020_V1
         // Set default initial orientation
         tft->setRotation(2);
@@ -836,9 +843,19 @@ protected:
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_DISPLAY)
     static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
     {
+
         uint32_t size = (area->x2 - area->x1 + 1) * (area->y2 - area->y1 + 1) ;
+
+        // Use DMA for transfer
+#ifdef ENABLE_LVGL_FLUSH_DMA
+        _ttgo->tft->startWrite();
+        _ttgo->tft->setAddrWindow(area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1)); /* set the working window */
+        _ttgo->tft->pushPixelsDMA(( uint16_t *)color_p, size);
+        _ttgo->tft->endWrite();
+#else
         _ttgo->tft->setAddrWindow(area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1)); /* set the working window */
         _ttgo->tft->pushColors(( uint16_t *)color_p, size, false);
+#endif
         lv_disp_flush_ready(disp_drv);
     }
 

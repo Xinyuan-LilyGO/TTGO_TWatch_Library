@@ -741,7 +741,7 @@ bool TFT_eSPI::initDMA(void)
         .clock_speed_hz = SPI_FREQUENCY,
         .input_delay_ns = 0,
         .spics_io_num = TFT_CS,
-        .flags = 0,
+        .flags = SPI_DEVICE_NO_DUMMY,
         .queue_size = 7,
         .pre_cb = dc_callback, //Callback to handle D/C line
         .post_cb = 0
