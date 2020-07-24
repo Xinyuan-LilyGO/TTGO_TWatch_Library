@@ -68,5 +68,8 @@
 #define TWATCH_LORA_RST     25
 
 
+#define TBLOCK_IMU_INT      39
+
+
 
 

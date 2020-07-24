@@ -66,15 +66,18 @@ Written by Lewis he //https://github.com/lewisxhe
 
 #ifdef LILYGO_WATCH_LVGL
 #include "lvgl/lvgl.h"
-// #include "./font/font.h"
 #endif
 
 #ifdef LILYGO_WATCH_HAS_AXP202
-#include "./drive/axp/axp20x.h"
+#include "drive/axp/axp20x.h"
 #endif
 
-#include "./drive/i2c/i2c_bus.h"
-#include "./drive/tft/bl.h"
+#ifdef LILYGO_WATCH_HAS_MPU6050
+#include "drive/mup6050/MPU6050.h"
+#endif
+
+#include "drive/i2c/i2c_bus.h"
+#include "drive/tft/bl.h"
 
 
 
@@ -117,6 +120,10 @@ public:
 #ifdef LILYGO_WATCH_HAS_AXP202
         power = new AXP20X_Class();
 #endif  /*LILYGO_WATCH_HAS_AXP202*/
+
+#ifdef LILYGO_WATCH_HAS_MPU6050
+        mpu = new MPU6050();
+#endif  /*LILYGO_WATCH_HAS_MPU6050*/
 
         initPower();
         initTFT();
@@ -291,7 +298,7 @@ public:
 #ifdef LILYGO_WATCH_HAS_BLACKLIGHT
     void openBL()
     {
-#if  defined(LILYGO_WATCH_2020_V1) && defined(LILYGO_WATCH_HAS_AXP202)
+#if  !defined(LILYGO_WATCH_2020_V1) && defined(LILYGO_WATCH_HAS_AXP202)
         power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
 #endif  /*LILYGO_WATCH_2020_V1*/
         bl->on();
@@ -299,7 +306,7 @@ public:
 
     void closeBL()
     {
-#if  defined(LILYGO_WATCH_2020_V1) && defined(LILYGO_WATCH_HAS_AXP202)
+#if  !defined(LILYGO_WATCH_2020_V1) && defined(LILYGO_WATCH_HAS_AXP202)
         power->setPowerOutPut(AXP202_LDO2, AXP202_OFF);
 #endif  /*LILYGO_WATCH_2020_V1*/
         bl->off();
@@ -405,6 +412,10 @@ public:
 
 #ifdef LILYGO_WATCH_HAS_BUTTON
     Button2 *button = nullptr;
+#endif
+
+#ifdef LILYGO_WATCH_HAS_MPU6050
+    MPU6050 *mpu = nullptr;
 #endif
 
 #ifdef LILYGO_WATCH_HAS_MOTOR
@@ -616,6 +627,7 @@ private:
         struct bma423_axes_remap remap_data;
 
         if (!bma->begin()) {
+            DBGX("Begin BMA423 FAIL");
             return false;
         }
         // T-Watch 2020 and 2019 use different mapping axes
@@ -637,9 +649,11 @@ private:
         bma->set_remap_axes(&remap_data);
 
 #elif defined(LILYGO_WATCH_HAS_MPU6050)
-        //Not yet
-        //Not yet
-        //Not yet
+        if (!mpu->begin(axpReadBytes, axpWriteBytes,
+                        MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G)) {
+            DBGX("Begin MPU6050 FAIL");
+            return false;
+        }
 #endif
         return true;
     }
@@ -684,10 +698,8 @@ private:
         if (!touch->begin(Wire1)) {
             DBGX("Begin touch FAIL");
         }
-#elif defined(LILYGO_EINK_TOUCHSCREEN)
+#elif defined(LILYGO_EINK_TOUCHSCREEN) || defined(LILYGO_BLOCK_TOUCHSCREEN)
         touch = new FT5206_Class();
-        // This is just a sign
-        touch->setType(FT5X0X_VENDID);
         if (!touch->begin(axpReadBytes, axpWriteBytes)) {
             DBGX("Begin touch FAIL");
         } else {
@@ -703,7 +715,7 @@ private:
         if (ret == AXP_FAIL) {
             DBGX("AXP Power begin failed");
         } else {
-            //Change the button boot time to 4 seconds
+            //Change the shutdown time to 4 seconds
             power->setShutdownTime(AXP_POWER_OFF_TIME_4S);
             // Turn off the charging instructions, there should be no
             power->setChgLEDMode(AXP20X_LED_OFF);
