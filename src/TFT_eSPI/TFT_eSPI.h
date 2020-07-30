@@ -27,14 +27,31 @@
 #include <Print.h>
 #include <SPI.h>
 
-/***************************************************************************************
-**                         Section 2: Load library and processor specific header files
-***************************************************************************************/
-// Include header file that defines the fonts loaded, the TFT drivers
-// available and the pins to be used, etc, etc
-#include "User_Setups/Setup45_TTGO_T_Watch.h"     // Setup file for ESP32 and TTGO T-Watch ST7789 SPI bus TFT  240x240
+// False definition, no practical use, resolution has been set in TTGO.h
+#define TFT_WIDTH           240
+#define TFT_HEIGHT          240
+
+#define TFT_MISO            0   //IO0 is not used, just to remove errors
+#define TFT_MOSI            19
+#define TFT_SCLK            18
+#define TFT_CS              5
+#define TFT_DC              27
+
+// #define SPI_FREQUENCY    27000000 // Actually sets it to 26.67MHz = 80/3
+#define SPI_FREQUENCY       40000000
+
+// ST7796 is compatible with ST7789 instructions
 #include "TFT_Drivers/ST7789_Defines.h"
-#define  TFT_DRIVER 0x7789
+
+
+#define LOAD_GLCD   // Font 1. Original Adafruit 8 pixel font needs ~1820 bytes in FLASH
+#define LOAD_FONT2  // Font 2. Small 16 pixel high font, needs ~3534 bytes in FLASH, 96 characters
+#define LOAD_FONT4  // Font 4. Medium 26 pixel high font, needs ~5848 bytes in FLASH, 96 characters
+#define LOAD_FONT6  // Font 6. Large 48 pixel font, needs ~2666 bytes in FLASH, only characters 1234567890:-.apm
+#define LOAD_FONT7  // Font 7. 7 segment 48 pixel font, needs ~2438 bytes in FLASH, only characters 1234567890:.
+#define LOAD_FONT8  // Font 8. Large 75 pixel font needs ~3256 bytes in FLASH, only characters 1234567890:-.
+#define LOAD_GFXFF  // FreeFonts. Include access to the 48 Adafruit_GFX free fonts FF1 to FF48 and custom fonts
+#define SMOOTH_FONT
 
 // Handle FLASH based storage e.g. PROGMEM
 #ifdef __AVR__
@@ -45,6 +62,11 @@
 #define PROGMEM
 #endif
 
+/***************************************************************************************
+**                         Section 2: Load library and processor specific header files
+***************************************************************************************/
+// Include header file that defines the fonts loaded, the TFT drivers
+// available and the pins to be used, etc, etc
 // Include the processor specific drivers
 #if defined (ESP32)
 ////////////////////////////////////////////////////
@@ -783,6 +805,10 @@ public:
     // Sketch defined tab colour option is for ST7735 displays only
     void     init(uint8_t tc = TAB_COLOUR), begin(uint8_t tc = TAB_COLOUR);
 
+    // lewis add. Mark : Used to set different models
+    void    setDriver(uint32_t model);
+
+
     // These are virtual so the TFT_eSprite class can override them with sprite specific functions
     virtual void     drawPixel(int32_t x, int32_t y, uint32_t color),
             drawChar(int32_t x, int32_t y, uint16_t c, uint32_t color, uint32_t bg, uint8_t size),
@@ -1235,6 +1261,7 @@ private:
 
     uint8_t *fontPtr = nullptr;
 
+    setup_t drv;
 
 #endif
 

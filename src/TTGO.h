@@ -324,10 +324,20 @@ public:
      *              LVGL
      * ***************************************/
 #if  defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_DISPLAY)
+    void lvgl_whirling(uint8_t rot)
+    {
+        tft->setRotation(rot);
+        disp_drv.hor_res = tft->width();
+        disp_drv.ver_res = tft->height();
+        lv_disp_drv_update(lv_disp_get_default(), &disp_drv);
+    }
+
     bool lvgl_begin()
     {
+        if (tft == nullptr) {
+            return false;
+        }
         lv_init();
-        lv_disp_drv_t disp_drv;
         lv_indev_drv_t indev_drv;
         lv_disp_drv_init(&disp_drv);
         static lv_disp_buf_t disp_buf;
@@ -343,8 +353,8 @@ public:
 #endif  /*TWATCH_USE_PSRAM_ALLOC_LVGL*/
 
         lv_disp_buf_init(&disp_buf, buf1, NULL, LV_HOR_RES_MAX * 100);
-        disp_drv.hor_res = TFT_WIDTH;
-        disp_drv.ver_res = TFT_HEIGHT;
+        disp_drv.hor_res = tft->width();
+        disp_drv.ver_res = tft->height();
         disp_drv.flush_cb = disp_flush;
         /*Set a display buffer*/
         disp_drv.buffer = &disp_buf;
@@ -668,8 +678,18 @@ private:
         //is shared with the backlight, so LDO2 cannot be turned off
         power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
 #endif
+        int16_t w = 240;
+        int16_t h = 240;
+        uint32_t drv = 0x7789;
+#if defined(LILYGO_BLOCK_TOUCHSCREEN) && defined(LILYGO_WATCH_BLOCK)
+        w = 320;
+        h = 480;
+        drv = 0x7796;
+#endif
 
-        tft = new TFT_eSPI();
+        tft = new TFT_eSPI(w, h);
+
+        tft->setDriver(drv);
 
         tft->init();
 
@@ -769,12 +789,6 @@ private:
 #endif  /*LILYGO_WATCH_HAS_NFC*/
 
 
-#if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_DISPLAY)
-    // static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p);
-    // static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data);
-#endif  /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_DISPLAY*/
-
-
     I2CBus *i2c = nullptr;
 
     static TTGOClass *_ttgo;
@@ -785,6 +799,10 @@ private:
 
 #ifdef LILYGO_WATCH_HAS_TOUCH
     FT5206_Class *touch = nullptr;
+#endif
+
+#if  defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_DISPLAY)
+    lv_disp_drv_t disp_drv;
 #endif
 
 protected:
@@ -802,9 +820,27 @@ protected:
         }
         p = _ttgo->touch->getPoint();
 
-#if     0 //defined(LILYGO_WATCH_BLOCK) &&defined(LILYGO_EINK_TOUCHSCREEN)
-        // x = p.x;
-        // y = p.y;
+#if     defined(LILYGO_BLOCK_TOUCHSCREEN) && defined(LILYGO_WATCH_BLOCK)
+        uint8_t rotation = _ttgo->tft->getRotation();
+        switch (rotation) {
+        case 1:
+            x = p.y;
+            y = _ttgo->tft->height() - p.x;
+            break;
+        case 2:
+            x = _ttgo->tft->width() - p.x;
+            y = _ttgo->tft->height() - p.y;
+            break;
+        case 3:
+            x = _ttgo->tft->width() - p.y;
+            y = p.x;
+            break;
+        case 0:
+        default:
+            x = p.x;
+            y = p.y;
+            break;
+        }
 #elif   defined(LILYGO_WATCH_2019_WITH_TOUCH)
         uint8_t rotation = _ttgo->tft->getRotation();
         int16_t _x = map(p.x, 0, 320, 0, 240);

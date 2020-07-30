@@ -176,7 +176,7 @@
 #endif
 
 // Hardware not support
-#undef LILYGO_WATCH_LVGL
+// #undef LILYGO_WATCH_LVGL
 #undef LILYGO_WATCH_HAS_IRREMOTE
 #undef LILYGO_WATCH_HAS_BMA423
 

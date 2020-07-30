@@ -891,6 +891,9 @@ void TFT_eSPI::spi_end_read()
 TFT_eSPI::TFT_eSPI(int16_t w, int16_t h)
 {
 
+    // lewis add. Mark : Used to set different models
+    memset(&drv, 0, sizeof(drv));
+
 // The control pins are deliberately set to the inactive state (CS high) as setup()
 // might call and initialise other SPI peripherals which would could cause conflicts
 // if CS is floating or undefined.
@@ -1124,48 +1127,16 @@ void TFT_eSPI::init(uint8_t tc)
 
     tc = tc; // Supress warning
 
-    // This loads the driver specific initialisation code  <<<<<<<<<<<<<<<<<<<<< ADD NEW DRIVERS TO THE LIST HERE <<<<<<<<<<<<<<<<<<<<<<<
-#if   defined (ILI9341_DRIVER)
-#include "TFT_Drivers/ILI9341_Init.h"
-
-#elif defined (ST7735_DRIVER)
-    tabcolor = tc;
-#include "TFT_Drivers/ST7735_Init.h"
-
-#elif defined (ILI9163_DRIVER)
-#include "TFT_Drivers/ILI9163_Init.h"
-
-#elif defined (S6D02A1_DRIVER)
-#include "TFT_Drivers/S6D02A1_Init.h"
-
-#elif defined (ST7796_DRIVER)
-#include "TFT_Drivers/ST7796_Init.h"
-
-#elif defined (ILI9486_DRIVER)
-#include "TFT_Drivers/ILI9486_Init.h"
-
-#elif defined (ILI9481_DRIVER)
-#include "TFT_Drivers/ILI9481_Init.h"
-
-#elif defined (ILI9488_DRIVER)
-#include "TFT_Drivers/ILI9488_Init.h"
-
-#elif defined (HX8357D_DRIVER)
-#include "TFT_Drivers/HX8357D_Init.h"
-
-#elif defined (ST7789_DRIVER)
+    // lewis add. Mark : Used to set different models
+    switch (drv.tft_driver) {
+    case 0x7789:/*ST7789_DRIVER*/
 #include "TFT_Drivers/ST7789_Init.h"
-
-#elif defined (R61581_DRIVER)
-#include "TFT_Drivers/R61581_Init.h"
-
-#elif defined (RM68140_DRIVER)
-#include "TFT_Drivers/RM68140_Init.h"
-
-#elif defined (ST7789_2_DRIVER)
-#include "TFT_Drivers/ST7789_2_Init.h"
-
-#endif
+        break;
+    case 0x7796:/*ST7796_DRIVER*/
+#include "TFT_Drivers/ST7796_Init.h"
+    default:
+        break;
+    }
 
 #ifdef TFT_INVERSION_ON
     writecommand(TFT_INVON);
@@ -1201,48 +1172,16 @@ void TFT_eSPI::setRotation(uint8_t m)
 
     begin_tft_write();
 
-    // This loads the driver specific rotation code  <<<<<<<<<<<<<<<<<<<<< ADD NEW DRIVERS TO THE LIST HERE <<<<<<<<<<<<<<<<<<<<<<<
-#if   defined (ILI9341_DRIVER)
-#include "TFT_Drivers/ILI9341_Rotation.h"
-
-#elif defined (ST7735_DRIVER)
-#include "TFT_Drivers/ST7735_Rotation.h"
-
-#elif defined (ILI9163_DRIVER)
-#include "TFT_Drivers/ILI9163_Rotation.h"
-
-#elif defined (S6D02A1_DRIVER)
-#include "TFT_Drivers/S6D02A1_Rotation.h"
-
-#elif defined (ST7796_DRIVER)
-#include "TFT_Drivers/ST7796_Rotation.h"
-
-#elif defined (ILI9486_DRIVER)
-#include "TFT_Drivers/ILI9486_Rotation.h"
-
-#elif defined (ILI9481_DRIVER)
-#include "TFT_Drivers/ILI9481_Rotation.h"
-
-#elif defined (ILI9488_DRIVER)
-#include "TFT_Drivers/ILI9488_Rotation.h"
-
-#elif defined (HX8357D_DRIVER)
-#include "TFT_Drivers/HX8357D_Rotation.h"
-
-#elif defined (ST7789_DRIVER)
+    // lewis add. Mark : Used to set different models
+    switch (drv.tft_driver) {
+    case 0x7789:/*ST7789_DRIVER*/
 #include "TFT_Drivers/ST7789_Rotation.h"
-
-#elif defined (R61581_DRIVER)
-#include "TFT_Drivers/R61581_Rotation.h"
-
-#elif defined (RM68140_DRIVER)
-#include "TFT_Drivers/RM68140_Rotation.h"
-
-#elif defined (ST7789_2_DRIVER)
-#include "TFT_Drivers/ST7789_2_Rotation.h"
-
-#endif
-
+        break;
+    case 0x7796:/*ST7796_DRIVER*/
+#include "TFT_Drivers/ST7796_Rotation.h"
+    default:
+        break;
+    }
     delayMicroseconds(10);
 
     end_tft_write();
@@ -4973,7 +4912,7 @@ void TFT_eSPI::getSetup(setup_t &tft_settings)
     tft_settings.overlap = false;
 #endif
 
-    tft_settings.tft_driver = TFT_DRIVER;
+    tft_settings.tft_driver = drv.tft_driver;
     tft_settings.tft_width  = _init_width;
     tft_settings.tft_height = _init_height;
 
@@ -7930,3 +7869,8 @@ void TFT_eSPI::showFont(uint32_t td)
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
+// lewis add. Mark : Used to set different models
+void TFT_eSPI::setDriver(uint32_t model)
+{
+    drv.tft_driver = model;
+}
