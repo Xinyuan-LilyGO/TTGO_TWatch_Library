@@ -718,7 +718,6 @@ void IRAM_ATTR dc_callback(spi_transaction_t *spi_tx)
 bool TFT_eSPI::initDMA(void)
 {
     if (DMA_Enabled) return false;
-
     esp_err_t ret;
     spi_bus_config_t buscfg = {
         .mosi_io_num = TFT_MOSI,
@@ -738,7 +737,7 @@ bool TFT_eSPI::initDMA(void)
         .duty_cycle_pos = 0,
         .cs_ena_pretrans = 0,
         .cs_ena_posttrans = 0,
-        .clock_speed_hz = SPI_FREQUENCY,
+        .clock_speed_hz = drv.tft_spi_freq,     // lewis add. Mark : Used to set different models
         .input_delay_ns = 0,
         .spics_io_num = TFT_CS,
         .flags = SPI_DEVICE_NO_DUMMY,
@@ -784,7 +783,7 @@ inline void TFT_eSPI::begin_tft_write(void)
 #if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS) && !defined(TFT_PARALLEL_8_BIT)
     if (locked) {
         locked = false;
-        spi.beginTransaction(SPISettings(SPI_FREQUENCY, MSBFIRST, TFT_SPI_MODE));
+        spi.beginTransaction(SPISettings(drv.tft_spi_freq, MSBFIRST, TFT_SPI_MODE));
         CS_L;
     }
 #else
@@ -854,7 +853,7 @@ inline void TFT_eSPI::end_tft_read(void)
     }
 #else
 #if !defined(TFT_PARALLEL_8_BIT)
-    spi.setFrequency(SPI_FREQUENCY);
+    spi.setFrequency(drv.tft_spi_freq);
 #endif
     if (!inTransaction) {
         CS_H;
@@ -7870,7 +7869,8 @@ void TFT_eSPI::showFont(uint32_t td)
 ////////////////////////////////////////////////////////////////////////////////////////
 
 // lewis add. Mark : Used to set different models
-void TFT_eSPI::setDriver(uint32_t model)
+void TFT_eSPI::setDriver(uint32_t model, uint32_t freq)
 {
     drv.tft_driver = model;
+    drv.tft_spi_freq = freq;
 }

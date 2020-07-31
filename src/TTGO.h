@@ -13,7 +13,7 @@ Written by Lewis he //https://github.com/lewisxhe
 
 #pragma once
 
-// #define LILYGO_DEBUG Serial
+#define LILYGO_DEBUG Serial
 
 #ifdef LILYGO_DEBUG
 #define DBGX(...)        LILYGO_DEBUG.printf(__VA_ARGS__)
@@ -681,15 +681,17 @@ private:
         int16_t w = 240;
         int16_t h = 240;
         uint32_t drv = 0x7789;
+        uint32_t freq = 40000000;
 #if defined(LILYGO_BLOCK_TOUCHSCREEN) && defined(LILYGO_WATCH_BLOCK)
         w = 320;
         h = 480;
         drv = 0x7796;
+        freq = 27000000;
 #endif
 
         tft = new TFT_eSPI(w, h);
 
-        tft->setDriver(drv);
+        tft->setDriver(drv, freq);
 
         tft->init();
 

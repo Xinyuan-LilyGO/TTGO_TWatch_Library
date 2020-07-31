@@ -772,7 +772,7 @@ typedef struct {
 
     int8_t pin_tch_cs;   // Touch chip select pin
 
-    int16_t tft_spi_freq;// TFT write SPI frequency
+    int32_t tft_spi_freq;// TFT write SPI frequency
     int16_t tft_rd_freq; // TFT read  SPI frequency
     int16_t tch_spi_freq;// Touch controller read/write SPI frequency
 } setup_t;
@@ -806,7 +806,7 @@ public:
     void     init(uint8_t tc = TAB_COLOUR), begin(uint8_t tc = TAB_COLOUR);
 
     // lewis add. Mark : Used to set different models
-    void    setDriver(uint32_t model);
+    void    setDriver(uint32_t model, uint32_t freq );
 
 
     // These are virtual so the TFT_eSprite class can override them with sprite specific functions

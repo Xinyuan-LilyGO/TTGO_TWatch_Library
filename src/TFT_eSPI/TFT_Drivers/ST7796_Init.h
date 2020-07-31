@@ -5,7 +5,7 @@
 //
 // See ST7735_Setup.h file for an alternative format
 
-#define TFT_INIT_DELAY 0
+
 {
     delay(120);
 
