@@ -342,17 +342,23 @@ public:
         lv_disp_drv_init(&disp_drv);
         static lv_disp_buf_t disp_buf;
 
+#if     defined(LILYGO_BLOCK_TOUCHSCREEN) && defined(LILYGO_WATCH_BLOCK)
+        const uint16_t buffer_size = 320 * 100;
+#else
+        const uint16_t buffer_size = 240 * 100;
+#endif
+
 #ifdef TWATCH_USE_PSRAM_ALLOC_LVGL
-        lv_color_t *buf1 = (lv_color_t *)heap_caps_calloc(LV_HOR_RES_MAX * 100, sizeof(lv_color_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT );
+        lv_color_t *buf1 = (lv_color_t *)heap_caps_calloc(buffer_size, sizeof(lv_color_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT );
         if (!buf1) {
             DBGX("alloc failed\n");
             return false;
         }
 #else
-        static lv_color_t buf1[LV_HOR_RES_MAX * 100];
+        static lv_color_t buf1[buffer_size];
 #endif  /*TWATCH_USE_PSRAM_ALLOC_LVGL*/
 
-        lv_disp_buf_init(&disp_buf, buf1, NULL, LV_HOR_RES_MAX * 100);
+        lv_disp_buf_init(&disp_buf, buf1, NULL, buffer_size);
         disp_drv.hor_res = tft->width();
         disp_drv.ver_res = tft->height();
         disp_drv.flush_cb = disp_flush;
