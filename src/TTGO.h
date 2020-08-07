@@ -81,7 +81,7 @@ Written by Lewis he //https://github.com/lewisxhe
 
 
 
-// #define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
+#define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
 
 class TTGOClass
 {
@@ -698,7 +698,6 @@ private:
         h = 480;
         drv = 0x9488;
         freq = 27000000;
-        // freq = 20000000;
 #endif
 
         tft = new TFT_eSPI(w, h);
@@ -707,7 +706,7 @@ private:
 
         tft->init();
 
-#ifdef ENABLE_LVGL_FLUSH_DMA
+#if defined(ENABLE_LVGL_FLUSH_DMA) && !defined(LILYGO_BLOCK_TOUCHSCREEN_ILI9488)
         tft->initDMA(); // To use SPI DMA you must call initDMA() to setup the DMA engine
 #endif
 
@@ -908,11 +907,9 @@ protected:
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_DISPLAY)
     static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
     {
-
         uint32_t size = (area->x2 - area->x1 + 1) * (area->y2 - area->y1 + 1) ;
-
         // Use DMA for transfer
-#ifdef ENABLE_LVGL_FLUSH_DMA
+#if defined(ENABLE_LVGL_FLUSH_DMA) && !defined(LILYGO_BLOCK_TOUCHSCREEN_ILI9488)
         _ttgo->tft->startWrite();
         _ttgo->tft->setAddrWindow(area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1)); /* set the working window */
         _ttgo->tft->pushPixelsDMA(( uint16_t *)color_p, size);
