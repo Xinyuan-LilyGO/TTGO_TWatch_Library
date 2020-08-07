@@ -8,7 +8,8 @@
 //NOT SUPPORT ...
 
 // => Function select
-#define LILYGO_BLOCK_TOUCHSCREEN
+#define LILYGO_BLOCK_TOUCHSCREEN                //Use ST7796S
+// #define LILYGO_BLOCK_TOUCHSCREEN_ILI9488     //Use ILI9488
 #define LILYGO_WATCH_LVGL                   //To use LVGL, you need to enable the macro LVGL
 
 #include <LilyGoWatch.h>
