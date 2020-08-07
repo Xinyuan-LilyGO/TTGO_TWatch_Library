@@ -158,7 +158,7 @@ void TFT_eSPI::gpioMode(uint8_t gpio, uint8_t mode)
 #endif // #ifdef TFT_PARALLEL_8_BIT
 ////////////////////////////////////////////////////////////////////////////////////////
 
-
+#ifdef    DISABLE_CONDITIONAL_MACROS
 ////////////////////////////////////////////////////////////////////////////////////////
 #if defined (RPI_WRITE_STROBE) && !defined (TFT_PARALLEL_8_BIT) // Code for RPi TFT
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -537,7 +537,378 @@ void TFT_eSPI::pushPixels(const void *data_in, uint32_t len)
 ////////////////////////////////////////////////////////////////////////////////////////
 #endif // End of display interface specific functions
 ////////////////////////////////////////////////////////////////////////////////////////
+#else   /*DISABLE_CONDITIONAL_MACROS*/
+void TFT_eSPI::ILI9488_pushBlock(uint16_t color, uint32_t len)
+{
+// Split out the colours
+    uint32_t r = (color & 0xF800) >> 8;
+    uint32_t g = (color & 0x07E0) << 5;
+    uint32_t b = (color & 0x001F) << 19;
+    // Concatenate 4 pixels into three 32 bit blocks
+    uint32_t r0 = r << 24 | b | g | r;
+    uint32_t r1 = r0 >> 8 | g << 16;
+    uint32_t r2 = r1 >> 8 | b << 8;
 
+    if (len > 19) {
+        SET_PERI_REG_BITS(SPI_MOSI_DLEN_REG(SPI_PORT), SPI_USR_MOSI_DBITLEN, 479, SPI_USR_MOSI_DBITLEN_S);
+
+        while (len > 19) {
+            while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+            WRITE_PERI_REG(SPI_W0_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W1_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W2_REG(SPI_PORT), r2);
+            WRITE_PERI_REG(SPI_W3_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W4_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W5_REG(SPI_PORT), r2);
+            WRITE_PERI_REG(SPI_W6_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W7_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W8_REG(SPI_PORT), r2);
+            WRITE_PERI_REG(SPI_W9_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W10_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W11_REG(SPI_PORT), r2);
+            WRITE_PERI_REG(SPI_W12_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W13_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W14_REG(SPI_PORT), r2);
+            SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+            len -= 20;
+        }
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+    }
+
+    if (len) {
+        SET_PERI_REG_BITS(SPI_MOSI_DLEN_REG(SPI_PORT), SPI_USR_MOSI_DBITLEN, (len * 24) - 1, SPI_USR_MOSI_DBITLEN_S);
+        WRITE_PERI_REG(SPI_W0_REG(SPI_PORT), r0);
+        WRITE_PERI_REG(SPI_W1_REG(SPI_PORT), r1);
+        WRITE_PERI_REG(SPI_W2_REG(SPI_PORT), r2);
+        WRITE_PERI_REG(SPI_W3_REG(SPI_PORT), r0);
+        WRITE_PERI_REG(SPI_W4_REG(SPI_PORT), r1);
+        WRITE_PERI_REG(SPI_W5_REG(SPI_PORT), r2);
+        if (len > 8 ) {
+            WRITE_PERI_REG(SPI_W6_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W7_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W8_REG(SPI_PORT), r2);
+            WRITE_PERI_REG(SPI_W9_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W10_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W11_REG(SPI_PORT), r2);
+            WRITE_PERI_REG(SPI_W12_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W13_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W14_REG(SPI_PORT), r2);
+        }
+
+        SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+    }
+}
+
+void TFT_eSPI::ILI9488_pushPixels(const void *data_in, uint32_t len)
+{
+    uint16_t *data = (uint16_t *)data_in;
+    // ILI9488 write macro is not endianess dependant, hence !_swapBytes
+    if (!_swapBytes) {
+        while ( len-- ) {
+            tft_Write_16S(*data);
+            data++;
+        }
+    } else {
+        while ( len-- ) {
+            tft_Write_16(*data);
+            data++;
+        }
+    }
+}
+
+void TFT_eSPI::ILI9488_pushSwapBytePixels(const void *data_in, uint32_t len)
+{
+
+    uint16_t *data = (uint16_t *)data_in;
+    // ILI9488 write macro is not endianess dependant, so swap byte macro not used here
+    while ( len-- ) {
+        tft_Write_16(*data);
+        data++;
+    }
+}
+
+void TFT_eSPI::General_pushBlock(uint16_t color, uint32_t len)
+{
+    uint32_t color32 = (color << 8 | color >> 8) << 16 | (color << 8 | color >> 8);
+    if (len > 31) {
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), 511);
+        while (len > 31) {
+            while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+            WRITE_PERI_REG(SPI_W0_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W1_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W2_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W3_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W4_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W5_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W6_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W7_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W8_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W9_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W10_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W11_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W12_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W13_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W14_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W15_REG(SPI_PORT), color32);
+            SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+            len -= 32;
+        }
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+    }
+
+    if (len) {
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), (len << 4) - 1);
+        for (uint32_t i = 0; i <= (len << 1); i += 4) WRITE_PERI_REG(SPI_W0_REG(SPI_PORT) + i, color32);
+        SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+    }
+}
+
+void TFT_eSPI::General_pushSwapBytePixels(const void *data_in, uint32_t len)
+{
+
+    uint8_t *data = (uint8_t *)data_in;
+    uint32_t color[16];
+
+    if (len > 31) {
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), 511);
+        while (len > 31) {
+            uint32_t i = 0;
+            while (i < 16) {
+                color[i++] = DAT8TO32(data);
+                data += 4;
+            }
+            while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+            WRITE_PERI_REG(SPI_W0_REG(SPI_PORT),  color[0]);
+            WRITE_PERI_REG(SPI_W1_REG(SPI_PORT),  color[1]);
+            WRITE_PERI_REG(SPI_W2_REG(SPI_PORT),  color[2]);
+            WRITE_PERI_REG(SPI_W3_REG(SPI_PORT),  color[3]);
+            WRITE_PERI_REG(SPI_W4_REG(SPI_PORT),  color[4]);
+            WRITE_PERI_REG(SPI_W5_REG(SPI_PORT),  color[5]);
+            WRITE_PERI_REG(SPI_W6_REG(SPI_PORT),  color[6]);
+            WRITE_PERI_REG(SPI_W7_REG(SPI_PORT),  color[7]);
+            WRITE_PERI_REG(SPI_W8_REG(SPI_PORT),  color[8]);
+            WRITE_PERI_REG(SPI_W9_REG(SPI_PORT),  color[9]);
+            WRITE_PERI_REG(SPI_W10_REG(SPI_PORT), color[10]);
+            WRITE_PERI_REG(SPI_W11_REG(SPI_PORT), color[11]);
+            WRITE_PERI_REG(SPI_W12_REG(SPI_PORT), color[12]);
+            WRITE_PERI_REG(SPI_W13_REG(SPI_PORT), color[13]);
+            WRITE_PERI_REG(SPI_W14_REG(SPI_PORT), color[14]);
+            WRITE_PERI_REG(SPI_W15_REG(SPI_PORT), color[15]);
+            SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+            len -= 32;
+        }
+    }
+
+    if (len > 15) {
+        uint32_t i = 0;
+        while (i < 8) {
+            color[i++] = DAT8TO32(data);
+            data += 4;
+        }
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), 255);
+        WRITE_PERI_REG(SPI_W0_REG(SPI_PORT),  color[0]);
+        WRITE_PERI_REG(SPI_W1_REG(SPI_PORT),  color[1]);
+        WRITE_PERI_REG(SPI_W2_REG(SPI_PORT),  color[2]);
+        WRITE_PERI_REG(SPI_W3_REG(SPI_PORT),  color[3]);
+        WRITE_PERI_REG(SPI_W4_REG(SPI_PORT),  color[4]);
+        WRITE_PERI_REG(SPI_W5_REG(SPI_PORT),  color[5]);
+        WRITE_PERI_REG(SPI_W6_REG(SPI_PORT),  color[6]);
+        WRITE_PERI_REG(SPI_W7_REG(SPI_PORT),  color[7]);
+        SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+        len -= 16;
+    }
+
+    if (len) {
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), (len << 4) - 1);
+        for (uint32_t i = 0; i <= (len << 1); i += 4) {
+            WRITE_PERI_REG(SPI_W0_REG(SPI_PORT) + i, DAT8TO32(data)); data += 4;
+        }
+        SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+    }
+    while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+
+}
+
+void TFT_eSPI::General_pushPixels(const void *data_in, uint32_t len)
+{
+
+    if (_swapBytes) {
+        pushSwapBytePixels(data_in, len);
+        return;
+    }
+
+    uint32_t *data = (uint32_t *)data_in;
+
+    if (len > 31) {
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), 511);
+        while (len > 31) {
+            while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+            WRITE_PERI_REG(SPI_W0_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W1_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W2_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W3_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W4_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W5_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W6_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W7_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W8_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W9_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W10_REG(SPI_PORT), *data++);
+            WRITE_PERI_REG(SPI_W11_REG(SPI_PORT), *data++);
+            WRITE_PERI_REG(SPI_W12_REG(SPI_PORT), *data++);
+            WRITE_PERI_REG(SPI_W13_REG(SPI_PORT), *data++);
+            WRITE_PERI_REG(SPI_W14_REG(SPI_PORT), *data++);
+            WRITE_PERI_REG(SPI_W15_REG(SPI_PORT), *data++);
+            SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+            len -= 32;
+        }
+    }
+
+    if (len) {
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), (len << 4) - 1);
+        for (uint32_t i = 0; i <= (len << 1); i += 4) WRITE_PERI_REG((SPI_W0_REG(SPI_PORT) + i), *data++);
+        SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+    }
+    while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+/***************************************************************************************
+** Function name:           pushBlock - for ESP32
+** Description:             Write a block of pixels of the same colour
+***************************************************************************************/
+void TFT_eSPI::pushBlock(uint16_t color, uint32_t len)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        ILI9488_pushBlock(color, len);
+        break;
+    default:
+        General_pushBlock(color, len);
+        break;
+    }
+}
+
+/***************************************************************************************
+** Function name:           pushSwapBytePixels - for ESP32
+** Description:             Write a sequence of pixels with swapped bytes
+***************************************************************************************/
+void TFT_eSPI::pushSwapBytePixels(const void *data_in, uint32_t len)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        ILI9488_pushSwapBytePixels(data_in, len);
+        break;
+    default:
+        General_pushSwapBytePixels(data_in, len);
+        break;
+    }
+}
+
+/***************************************************************************************
+** Function name:           pushPixels - for ESP32
+** Description:             Write a sequence of pixels
+***************************************************************************************/
+void TFT_eSPI::pushPixels(const void *data_in, uint32_t len)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        ILI9488_pushPixels(data_in, len);
+        break;
+    default:
+        General_pushPixels(data_in, len);
+        break;
+    }
+}
+
+
+#endif  /*DISABLE_CONDITIONAL_MACROS**/
+
+#if 1
+
+#define TFT_WRITE_BITS(D, B) \
+  WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), B-1); \
+  WRITE_PERI_REG(SPI_W0_REG(SPI_PORT), D); \
+  SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR); \
+  while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+
+void   TFT_eSPI::tft_Write_8(uint8_t C)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        spi.transfer(C);
+        break;
+    default:
+        TFT_WRITE_BITS(C, 8);
+        break;
+    }
+}
+void   TFT_eSPI::tft_Write_16(uint16_t C)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        spi.transfer(((C) & 0xF800) >> 8);
+        spi.transfer(((C) & 0x07E0) >> 3);
+        spi.transfer(((C) & 0x001F) << 3);
+        break;
+    default:
+        TFT_WRITE_BITS((C) << 8 | (C) >> 8, 16);
+        break;
+    }
+}
+void   TFT_eSPI::tft_Write_16S(uint16_t C)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        spi.transfer((C) & 0xF8);
+        spi.transfer(((C) & 0xE000) >> 11 | ((C) & 0x07) << 5);
+        spi.transfer(((C) & 0x1F00) >> 5);
+        break;
+    default:
+        TFT_WRITE_BITS(C, 16);
+        break;
+    }
+}
+void   TFT_eSPI::tft_Write_32(uint32_t C)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        spi.write32(C);
+        break;
+    default:
+        TFT_WRITE_BITS(C, 32);
+        break;
+    }
+}
+void  TFT_eSPI::tft_Write_32C(uint32_t C, uint32_t D)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        spi.write32((C) << 16 | (D));
+        break;
+    default:
+        TFT_WRITE_BITS((uint16_t)((D) << 8 | (D) >> 8) << 16 | (uint16_t)((C) << 8 | (C) >> 8), 32);
+        break;
+    }
+}
+void   TFT_eSPI::tft_Write_32D(uint32_t C)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        spi.write32((C) << 16 | (C));
+        break;
+    default:
+        TFT_WRITE_BITS((uint16_t)((C) << 8 | (C) >> 8) << 16 | (uint16_t)((C) << 8 | (C) >> 8), 32);
+        break;
+    }
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
 #if defined ESP32_DMA && !defined (TFT_PARALLEL_8_BIT) //       DMA FUNCTIONS
@@ -773,7 +1144,6 @@ void TFT_eSPI::deInitDMA(void)
 
 #endif
 
-
 /***************************************************************************************
 ** Function name:           begin_tft_write (was called spi_begin)
 ** Description:             Start SPI transaction for writes and select TFT
@@ -943,6 +1313,8 @@ TFT_eSPI::TFT_eSPI(int16_t w, int16_t h)
     CONSTRUCTOR_INIT_TFT_DATA_BUS;
 
 #endif
+    drv.tft_height = _height;
+    drv.tft_width = _width;
 
     _init_width  = _width  = w; // Set by specific xxxxx_Defines.h file or by users sketch
     _init_height = _height = h; // Set by specific xxxxx_Defines.h file or by users sketch
@@ -1058,9 +1430,9 @@ void TFT_eSPI::init(uint8_t tc)
 #endif
 
 #if defined (TFT_SPI_OVERLAP) && defined (ESP8266)
-        // Overlap mode SD0=MISO, SD1=MOSI, CLK=SCLK must use D3 as CS
-        //    pins(int8_t sck, int8_t miso, int8_t mosi, int8_t ss);
-        //spi.pins(        6,          7,           8,          0);
+// Overlap mode SD0=MISO, SD1=MOSI, CLK=SCLK must use D3 as CS
+//    pins(int8_t sck, int8_t miso, int8_t mosi, int8_t ss);
+//spi.pins(        6,          7,           8,          0);
         spi.pins(6, 7, 8, 0);
 #endif
 
@@ -1084,7 +1456,7 @@ void TFT_eSPI::init(uint8_t tc)
 
 
 #ifdef TFT_CS
-        // Set to output once again in case D6 (MISO) is used for CS
+// Set to output once again in case D6 (MISO) is used for CS
         pinMode(TFT_CS, OUTPUT);
         digitalWrite(TFT_CS, HIGH); // Chip select high (inactive)
 #elif defined (ESP8266) && !defined (TFT_PARALLEL_8_BIT)
@@ -1133,6 +1505,10 @@ void TFT_eSPI::init(uint8_t tc)
         break;
     case 0x7796:/*ST7796_DRIVER*/
 #include "TFT_Drivers/ST7796_Init.h"
+        break;
+    case 0x9488:/*ILI9488_DRIVER*/
+#include "TFT_Drivers/ILI9488_Init.h"
+        break;
     default:
         break;
     }
@@ -1178,6 +1554,10 @@ void TFT_eSPI::setRotation(uint8_t m)
         break;
     case 0x7796:/*ST7796_DRIVER*/
 #include "TFT_Drivers/ST7796_Rotation.h"
+        break;
+    case 0x9488:/*ILI9488_DRIVER*/
+#include "TFT_Drivers/ILI9488_Rotation.h"
+        break;
     default:
         break;
     }
@@ -1428,11 +1808,11 @@ uint16_t TFT_eSPI::readPixel(int32_t x0, int32_t y0)
     /*
 #else
 
-        // The 6 colour bits are in MS 6 bits of each byte, but the ILI9488 needs an extra clock pulse
-        // so bits appear shifted right 1 bit, so mask the middle 6 bits then shift 1 place left
-        uint8_t r = (tft_Read_8()&0x7E)<<1;
-        uint8_t g = (tft_Read_8()&0x7E)<<1;
-        uint8_t b = (tft_Read_8()&0x7E)<<1;
+    // The 6 colour bits are in MS 6 bits of each byte, but the ILI9488 needs an extra clock pulse
+    // so bits appear shifted right 1 bit, so mask the middle 6 bits then shift 1 place left
+    uint8_t r = (tft_Read_8()&0x7E)<<1;
+    uint8_t g = (tft_Read_8()&0x7E)<<1;
+    uint8_t b = (tft_Read_8()&0x7E)<<1;
 
 #endif
     */

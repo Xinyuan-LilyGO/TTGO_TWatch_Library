@@ -81,7 +81,7 @@ Written by Lewis he //https://github.com/lewisxhe
 
 
 
-#define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
+// #define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
 
 class TTGOClass
 {
@@ -342,7 +342,7 @@ public:
         lv_disp_drv_init(&disp_drv);
         static lv_disp_buf_t disp_buf;
 
-#if     defined(LILYGO_BLOCK_TOUCHSCREEN) && defined(LILYGO_WATCH_BLOCK)
+#if     (defined(LILYGO_BLOCK_TOUCHSCREEN)  || defined(LILYGO_BLOCK_TOUCHSCREEN_ILI9488)) && defined(LILYGO_WATCH_BLOCK)
         const uint16_t buffer_size = 320 * 100;
 #else
         const uint16_t buffer_size = 240 * 100;
@@ -693,6 +693,12 @@ private:
         h = 480;
         drv = 0x7796;
         freq = 27000000;
+#elif defined(LILYGO_BLOCK_TOUCHSCREEN_ILI9488) && defined(LILYGO_WATCH_BLOCK)
+        w = 320;
+        h = 480;
+        drv = 0x9488;
+        freq = 27000000;
+        // freq = 20000000;
 #endif
 
         tft = new TFT_eSPI(w, h);
@@ -891,6 +897,9 @@ protected:
             x = p.x;
             y = p.y;
         }
+#else
+        x = p.x;
+        y = p.y;
 #endif
         return true;
     }

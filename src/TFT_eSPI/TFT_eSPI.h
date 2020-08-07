@@ -37,9 +37,9 @@
 #define TFT_CS              5
 #define TFT_DC              27
 
-// #define SPI_FREQUENCY    27000000 // Actually sets it to 26.67MHz = 80/3
-#define SPI_FREQUENCY       40000000
-
+#define SPI_FREQUENCY    27000000 // Actually sets it to 26.67MHz = 80/3
+// #define SPI_FREQUENCY       40000000
+// #define ILI9488_DRIVER
 // ST7796 is compatible with ST7789 instructions
 #include "TFT_Drivers/ST7789_Defines.h"
 
@@ -310,6 +310,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 // Define the parallel bus interface chip pin drive code
 ////////////////////////////////////////////////////////////////////////////////////////
+#if 0
 #if defined (TFT_PARALLEL_8_BIT)
 
 // Create a bit set lookup table for data bus - wastes 1kbyte of RAM but speeds things up dramatically
@@ -470,7 +471,7 @@
 #define tft_Write_32D(C) TFT_WRITE_BITS((uint16_t)((C)<<8 | (C)>>8)<<16 | (uint16_t)((C)<<8 | (C)>>8), 32)
 
 #endif
-
+#endif /*0*/
 ////////////////////////////////////////////////////////////////////////////////////////
 // Macros to read from display using SPI or software SPI
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -1107,6 +1108,29 @@ public:
 
 //--------------------------------------- private ------------------------------------//
 private:
+
+    void inline  tft_Write_8(uint8_t C);
+
+    void inline  tft_Write_16(uint16_t C);
+
+    void inline  tft_Write_16S(uint16_t C);
+
+    void inline  tft_Write_32(uint32_t C);
+
+    void inline  tft_Write_32C(uint32_t C, uint32_t D);
+
+    void inline  tft_Write_32D(uint32_t C);
+
+
+
+    void ILI9488_pushBlock(uint16_t color, uint32_t len);
+    void ILI9488_pushPixels(const void *data_in, uint32_t len);
+    void ILI9488_pushSwapBytePixels(const void *data_in, uint32_t len);
+    void General_pushBlock(uint16_t color, uint32_t len);
+    void General_pushSwapBytePixels(const void *data_in, uint32_t len);
+    void General_pushPixels(const void *data_in, uint32_t len);
+
+
     // Legacy begin and end prototypes - deprecated TODO: delete
     void     spi_begin();
     void     spi_end();
