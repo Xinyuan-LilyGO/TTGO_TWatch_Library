@@ -36,9 +36,13 @@ Written by Lewis he //https://github.com/lewisxhe
 #include "drive/fx50xx/FT5206.h"
 #endif
 
+#if !defined(EXTERNAL_TFT_ESPI_LIBRARY)
 #if defined(LILYGO_WATCH_HAS_DISPLAY)   || defined(LILYGO_EINK_TOUCHSCREEN) || defined(LILYGO_WATCH_HAS_EINK)
 #include "TFT_eSPI/TFT_eSPI.h"
 #endif
+#else   //EXTERNAL_TFT_ESPI_LIBRARY
+#include <TFT_eSPI.h>
+#endif  /*EXTERNAL_TFT_ESPI_LIBRARY*/
 
 #ifdef LILYGO_WATCH_HAS_BMA423
 #include "drive/bma423/bma.h"
@@ -80,13 +84,14 @@ Written by Lewis he //https://github.com/lewisxhe
 #include "drive/tft/bl.h"
 
 
-
+#if !defined(EXTERNAL_TFT_ESPI_LIBRARY) && !defined(LILYGO_BLOCK_ILI9488_MODULE)
 #define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
+#endif
+
 
 class TTGOClass
 {
 public:
-
     static TTGOClass *getWatch()
     {
         if (_ttgo == nullptr) {
@@ -94,6 +99,13 @@ public:
         }
         return _ttgo;
     }
+
+#if defined(EXTERNAL_TFT_ESPI_LIBRARY)
+    void setTftExternal(TFT_eSPI &handler )
+    {
+        tft = &handler;
+    }
+#endif
 
     void begin()
     {
@@ -684,6 +696,13 @@ private:
         //is shared with the backlight, so LDO2 cannot be turned off
         power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
 #endif
+
+#if defined(EXTERNAL_TFT_ESPI_LIBRARY)
+        if (tft == nullptr) {
+            DBGX("TFT Handler is NULL!!!");
+            return;
+        }
+#else
         int16_t w = 240;
         int16_t h = 240;
         uint32_t drv = 0x7789;
@@ -701,12 +720,12 @@ private:
 #endif
 
         tft = new TFT_eSPI(w, h);
-
         tft->setDriver(drv, freq);
+#endif  /*EXTERNAL_TFT_ESPI_LIBRARY*/
 
         tft->init();
 
-#if defined(ENABLE_LVGL_FLUSH_DMA) && !defined(LILYGO_BLOCK_ILI9488_MODULE)
+#if defined(ENABLE_LVGL_FLUSH_DMA)
         tft->initDMA(); // To use SPI DMA you must call initDMA() to setup the DMA engine
 #endif
 
@@ -909,7 +928,7 @@ protected:
     {
         uint32_t size = (area->x2 - area->x1 + 1) * (area->y2 - area->y1 + 1) ;
         // Use DMA for transfer
-#if defined(ENABLE_LVGL_FLUSH_DMA) && !defined(LILYGO_BLOCK_ILI9488_MODULE)
+#if defined(ENABLE_LVGL_FLUSH_DMA)
         _ttgo->tft->startWrite();
         _ttgo->tft->setAddrWindow(area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1)); /* set the working window */
         _ttgo->tft->pushPixelsDMA(( uint16_t *)color_p, size);
