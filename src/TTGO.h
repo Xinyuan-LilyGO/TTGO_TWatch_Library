@@ -342,7 +342,7 @@ public:
         lv_disp_drv_init(&disp_drv);
         static lv_disp_buf_t disp_buf;
 
-#if     (defined(LILYGO_BLOCK_TOUCHSCREEN)  || defined(LILYGO_BLOCK_TOUCHSCREEN_ILI9488)) && defined(LILYGO_WATCH_BLOCK)
+#if     (defined(LILYGO_BLOCK_ST7796S_MODULE)  || defined(LILYGO_BLOCK_ILI9488_MODULE)) && defined(LILYGO_WATCH_BLOCK)
         const uint16_t buffer_size = 320 * 100;
 #else
         const uint16_t buffer_size = 240 * 100;
@@ -688,12 +688,12 @@ private:
         int16_t h = 240;
         uint32_t drv = 0x7789;
         uint32_t freq = 40000000;
-#if defined(LILYGO_BLOCK_TOUCHSCREEN) && defined(LILYGO_WATCH_BLOCK)
+#if defined(LILYGO_BLOCK_ST7796S_MODULE) && defined(LILYGO_WATCH_BLOCK)
         w = 320;
         h = 480;
         drv = 0x7796;
         freq = 27000000;
-#elif defined(LILYGO_BLOCK_TOUCHSCREEN_ILI9488) && defined(LILYGO_WATCH_BLOCK)
+#elif defined(LILYGO_BLOCK_ILI9488_MODULE) && defined(LILYGO_WATCH_BLOCK)
         w = 320;
         h = 480;
         drv = 0x9488;
@@ -706,7 +706,7 @@ private:
 
         tft->init();
 
-#if defined(ENABLE_LVGL_FLUSH_DMA) && !defined(LILYGO_BLOCK_TOUCHSCREEN_ILI9488)
+#if defined(ENABLE_LVGL_FLUSH_DMA) && !defined(LILYGO_BLOCK_ILI9488_MODULE)
         tft->initDMA(); // To use SPI DMA you must call initDMA() to setup the DMA engine
 #endif
 
@@ -731,7 +731,7 @@ private:
         if (!touch->begin(Wire1)) {
             DBGX("Begin touch FAIL");
         }
-#elif defined(LILYGO_EINK_TOUCHSCREEN) || defined(LILYGO_BLOCK_TOUCHSCREEN)
+#elif defined(LILYGO_EINK_TOUCHSCREEN) || defined(LILYGO_BLOCK_ST7796S_MODULE)
         touch = new FT5206_Class();
         if (!touch->begin(axpReadBytes, axpWriteBytes)) {
             DBGX("Begin touch FAIL");
@@ -833,7 +833,7 @@ protected:
         }
         p = _ttgo->touch->getPoint();
 
-#if     defined(LILYGO_BLOCK_TOUCHSCREEN) && defined(LILYGO_WATCH_BLOCK)
+#if     defined(LILYGO_BLOCK_ST7796S_MODULE) && defined(LILYGO_WATCH_BLOCK)
         uint8_t rotation = _ttgo->tft->getRotation();
         switch (rotation) {
         case 1:
@@ -909,7 +909,7 @@ protected:
     {
         uint32_t size = (area->x2 - area->x1 + 1) * (area->y2 - area->y1 + 1) ;
         // Use DMA for transfer
-#if defined(ENABLE_LVGL_FLUSH_DMA) && !defined(LILYGO_BLOCK_TOUCHSCREEN_ILI9488)
+#if defined(ENABLE_LVGL_FLUSH_DMA) && !defined(LILYGO_BLOCK_ILI9488_MODULE)
         _ttgo->tft->startWrite();
         _ttgo->tft->setAddrWindow(area->x1, area->y1, (area->x2 - area->x1 + 1), (area->y2 - area->y1 + 1)); /* set the working window */
         _ttgo->tft->pushPixelsDMA(( uint16_t *)color_p, size);
