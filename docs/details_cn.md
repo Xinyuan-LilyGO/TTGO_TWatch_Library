@@ -9,6 +9,19 @@
 2. 在`config.h`文件中,你还能看到类似的定义,如**LILYGO_WATCH_LVGL**,  **LILYGO_WATCH_HAS_MOTOR**，这类型的定义，它将负责开启所定义的模块功能,所有定义将在这里可以[查看](./defined_cn.md)
 3. 大多数示例只是作为硬件功能演示,这个库只是完成了一些初始化工作和一些演示,更高级的玩法，请查看[TTGO.h](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/src/TTGO.h)，了解如何初始化, 熟悉了之后,完全可以脱离本库，进行更高级的玩法
 4. 关于API，请查看源码
+5. [示例说明](examples_cn.md)
+6. 关于出厂固件，由 [sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch) 编写
+
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen1.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen2.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen3.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen4.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen5.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen6.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen7.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen8.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen9.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen10.png)
 
 
 <h2 align = "left">特性</h2>
