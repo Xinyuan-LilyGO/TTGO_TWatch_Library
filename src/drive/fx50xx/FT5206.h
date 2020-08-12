@@ -91,8 +91,6 @@ public:
 
     int begin(TwoWire &port, uint8_t addr = FT5206_SLAVE_ADDRESS);
     int begin(tp_com_fptr_t read_cb, tp_com_fptr_t write_cb, uint8_t addr = FT5206_SLAVE_ADDRESS);
-    void setType(uint8_t type);
-
     int dev_probe();
     // valid touching detect threshold.
     void adjustTheshold(uint8_t thresh);
@@ -103,7 +101,6 @@ public:
     uint8_t touched();
     void enterSleepMode();
     void enterMonitorMode();
-    uint8_t getType();
 private:
     void _readRegister();
     int _readByte(uint8_t reg, uint8_t nbytes, uint8_t *data)
@@ -145,5 +142,4 @@ private:
     uint8_t _touches = 0;
     bool _init = false;
     TwoWire *_i2cPort;
-    uint8_t _type = 0xFF;
 };

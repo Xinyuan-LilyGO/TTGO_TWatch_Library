@@ -13,6 +13,7 @@ enum {
     DIRECTION_DISP_UP         = 4,
     DIRECTION_DISP_DOWN       = 5
 } ;
+
 typedef struct bma4_dev Bma;
 typedef struct bma4_accel Accel;
 typedef struct bma4_accel_config Acfg;
@@ -26,11 +27,15 @@ public:
     void reset();
     uint8_t direction();
     float temperature();
-    void enableAccel();
 
-    void disalbeIrq();
-    void enableIrq();
+    bool disableAccel();
+    bool enableAccel(bool en = true);
+
+    bool disalbeIrq(uint16_t int_map = BMA423_STEP_CNTR_INT);
+    bool enableIrq(uint16_t int_map = BMA423_STEP_CNTR_INT);
+
     void attachInterrupt();
+
     uint32_t getCounter();
     bool isStepCounter();
     bool isDoubleClick();
@@ -40,7 +45,11 @@ public:
     bool isAnyNoMotion();
     bool getAccel(Accel &acc);
     uint8_t getIrqStatus();
-    const char * getActivity();
+    const char *getActivity();
+
+    bool resetStepCounter();
+    bool enableFeature(uint8_t feature, uint8_t enable );
+    bool accelConfig(Acfg &cfg);
 
     bool set_remap_axes(struct bma423_axes_remap *remap_data);
     bool enableStepCountInterrupt(bool en = true);
@@ -54,11 +63,9 @@ private:
     static uint16_t write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *read_data, uint16_t len);
 
     uint16_t config();
-    Bma _dev;
-    static bma4_com_fptr_t _read;
-    static bma4_com_fptr_t _write;
-    static I2CBus *_bus;
-    bool _irqRead = false;
-    uint16_t _irqStatus;
 
+    Bma _dev;
+    static I2CBus *_bus;
+    uint16_t _irqStatus;
+    bool _init;
 };

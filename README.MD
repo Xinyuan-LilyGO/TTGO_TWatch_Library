@@ -9,6 +9,21 @@
 2. In the `config.h` file, you can also see similar definitions, such as **LILYGO_WATCH_LVGL**, **LILYGO_WATCH_HAS_MOTOR**, this type of definition, it will be responsible for opening the defined module function, all definitions Will be available here [View](./docs/defined_en.md)
 3. Most of the examples are only used as hardware function demonstrations. This library only completes some initialization work and some demonstrations. For more advanced gameplay, please see [TTGO.h](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/src/TTGO.h), to understand how to initialize, after being familiar with it, you can completely leave this library for more advanced gameplay
 - About API, please check the source code
+- Example [description](docs/examples_en.md)
+- The latest factory firmware is made by [sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch)
+
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen1.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen2.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen3.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen4.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen5.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen6.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen7.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen8.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen9.png)
+![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen10.png)
+
+
 
 <h2 align = "left">🚀 Characteristics</h2>
 
@@ -20,15 +35,10 @@
 
 <h2 align = "left">🔷 Install</h2>
 
-- Download a zipfile from github using the "Download ZIP" button and install it using the IDE ("Sketch" -> "Include Library" -> "Add .ZIP Library..."
-- Clone this git repository into your sketchbook/libraries folder.
-For more info, see https://www.arduino.cc/en/Guide/Libraries
+- Install the [Arduino IDE](https://www.arduino.cc/en/Main/Software). Note: Later instructions may not work if you use Arduino via Flatpak.
+- Download a zipfile from github using the "Download ZIP" button and install it using the IDE ("Sketch" -> "Include Library" -> "Add .ZIP Library...", OR:
+- Clone this git repository into your sketchbook/libraries folder. For more info, see https://www.arduino.cc/en/Guide/Libraries
 
-
-<h2 align = "left">🔶 How to find the sample program</h2>
-
-- In the Arduino board select `TTGO T-Watch`
-- In the Arduino File -> Examples -> TTGO T-Watch
 
 <h2 align = "left">🔷 Note</h2>
 
@@ -41,6 +51,11 @@ For more info, see https://www.arduino.cc/en/Guide/Libraries
     + [Instructions for Debian/Ubuntu Linux](docs/arduino-ide/debian_ubuntu.md)
     + [Instructions for Fedora](docs/arduino-ide/fedora.md)
     + [Instructions for openSUSE](docs/arduino-ide/opensuse.md)
+
+<h2 align = "left">🔶 How to find the sample program</h2>
+
+- In the Arduino board select `TTGO T-Watch`
+- In the Arduino File -> Examples -> TTGO T-Watch
 
  <h2 align = "left">🔶 Precautions</h2>
 

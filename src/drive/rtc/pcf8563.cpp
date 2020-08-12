@@ -93,10 +93,10 @@ void PCF8563_Class::setDateTime(uint16_t year,
     _writeByte(PCF8563_SEC_REG, 7, _data);
 }
 
-bool PCF8563_Class::isVaild()
+bool PCF8563_Class::isValid()
 {
-    _readByte(PCF8563_SEC_REG, 1, &_isVaild);
-    return !(_isVaild  & (1 << 7));
+    _readByte(PCF8563_SEC_REG, 1, &_isValid);
+    return !(_isValid  & (1 << 7));
 }
 
 RTC_Date PCF8563_Class::getDateTime()
@@ -329,7 +329,7 @@ void PCF8563_Class::syncToSystem()
     struct tm t_tm;
     struct timeval val;
     RTC_Date dt = getDateTime();
-    log_i("syncToSystem: %d %d %d - %d %d %d \n",  dt.year, dt.month, dt.day,  dt.hour, dt.minute, dt.second);
+    // log_i("syncToSystem: %d %d %d - %d %d %d \n",  dt.year, dt.month, dt.day,  dt.hour, dt.minute, dt.second);
     t_tm.tm_hour = dt.hour;
     t_tm.tm_min = dt.minute;
     t_tm.tm_sec = dt.second;
@@ -339,20 +339,18 @@ void PCF8563_Class::syncToSystem()
     val.tv_sec = mktime(&t_tm);
     val.tv_usec = 0;
 
-    if ((dt.month > 2) && (dt.month < 11))
-    {
+    if ((dt.month > 2) && (dt.month < 11)) {
         uint32_t day3 = getDayOfWeek (31, 3, dt.year);
         uint32_t day10 = getDayOfWeek (31, 10, dt.year);
 
-        if (!((dt.day <= (31 - (6 - day3))) && (dt.month == 3)) ||          
-            !((dt.day >= (31 - (6 - day10))) && (dt.month == 10)))
-        {
-           val.tv_sec += 60 * 60;
+        if (!((dt.day <= (31 - (6 - day3))) && (dt.month == 3)) ||
+                !((dt.day >= (31 - (6 - day10))) && (dt.month == 10))) {
+            val.tv_sec += 60 * 60;
         }
     }
 
     settimeofday(&val, NULL);
-    log_i("syncToSystem: %d %d %d - %d %d %d \n", t_tm.tm_year, t_tm.tm_mon + 1, t_tm.tm_mday, t_tm.tm_hour, t_tm.tm_min, t_tm.tm_sec);
+    // log_i("syncToSystem: %d %d %d - %d %d %d \n", t_tm.tm_year, t_tm.tm_mon + 1, t_tm.tm_mday, t_tm.tm_hour, t_tm.tm_min, t_tm.tm_sec);
 }
 
 void PCF8563_Class::syncToRtc()
@@ -362,7 +360,7 @@ void PCF8563_Class::syncToRtc()
     time(&now);
     localtime_r(&now, &info);
     setDateTime(info.tm_year, info.tm_mon + 1, info.tm_mday, info.tm_hour, info.tm_min, info.tm_sec);
-    Serial.printf("syncToRtc: %d %d %d - %d %d %d \n", info.tm_year, info.tm_mon + 1, info.tm_mday, info.tm_hour, info.tm_min, info.tm_sec);
+    // Serial.printf("syncToRtc: %d %d %d - %d %d %d \n", info.tm_year, info.tm_mon + 1, info.tm_mday, info.tm_hour, info.tm_min, info.tm_sec);
 }
 
 RTC_Date::RTC_Date(

@@ -17,6 +17,13 @@
 #include "TFT_eSPI.h"
 
 #if defined (ESP32)
+////////////////////////////////////////////////////
+// TFT_eSPI driver functions for ESP32 processors //
+////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////
+// Global variables
+////////////////////////////////////////////////////////////////////////////////////////
 
 // Select the SPI port to use, ESP32 has 2 options
 #if !defined (TFT_PARALLEL_8_BIT)
@@ -151,7 +158,7 @@ void TFT_eSPI::gpioMode(uint8_t gpio, uint8_t mode)
 #endif // #ifdef TFT_PARALLEL_8_BIT
 ////////////////////////////////////////////////////////////////////////////////////////
 
-
+#ifdef    DISABLE_CONDITIONAL_MACROS
 ////////////////////////////////////////////////////////////////////////////////////////
 #if defined (RPI_WRITE_STROBE) && !defined (TFT_PARALLEL_8_BIT) // Code for RPi TFT
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -530,7 +537,378 @@ void TFT_eSPI::pushPixels(const void *data_in, uint32_t len)
 ////////////////////////////////////////////////////////////////////////////////////////
 #endif // End of display interface specific functions
 ////////////////////////////////////////////////////////////////////////////////////////
+#else   /*DISABLE_CONDITIONAL_MACROS*/
+void TFT_eSPI::ILI9488_pushBlock(uint16_t color, uint32_t len)
+{
+// Split out the colours
+    uint32_t r = (color & 0xF800) >> 8;
+    uint32_t g = (color & 0x07E0) << 5;
+    uint32_t b = (color & 0x001F) << 19;
+    // Concatenate 4 pixels into three 32 bit blocks
+    uint32_t r0 = r << 24 | b | g | r;
+    uint32_t r1 = r0 >> 8 | g << 16;
+    uint32_t r2 = r1 >> 8 | b << 8;
 
+    if (len > 19) {
+        SET_PERI_REG_BITS(SPI_MOSI_DLEN_REG(SPI_PORT), SPI_USR_MOSI_DBITLEN, 479, SPI_USR_MOSI_DBITLEN_S);
+
+        while (len > 19) {
+            while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+            WRITE_PERI_REG(SPI_W0_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W1_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W2_REG(SPI_PORT), r2);
+            WRITE_PERI_REG(SPI_W3_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W4_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W5_REG(SPI_PORT), r2);
+            WRITE_PERI_REG(SPI_W6_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W7_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W8_REG(SPI_PORT), r2);
+            WRITE_PERI_REG(SPI_W9_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W10_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W11_REG(SPI_PORT), r2);
+            WRITE_PERI_REG(SPI_W12_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W13_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W14_REG(SPI_PORT), r2);
+            SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+            len -= 20;
+        }
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+    }
+
+    if (len) {
+        SET_PERI_REG_BITS(SPI_MOSI_DLEN_REG(SPI_PORT), SPI_USR_MOSI_DBITLEN, (len * 24) - 1, SPI_USR_MOSI_DBITLEN_S);
+        WRITE_PERI_REG(SPI_W0_REG(SPI_PORT), r0);
+        WRITE_PERI_REG(SPI_W1_REG(SPI_PORT), r1);
+        WRITE_PERI_REG(SPI_W2_REG(SPI_PORT), r2);
+        WRITE_PERI_REG(SPI_W3_REG(SPI_PORT), r0);
+        WRITE_PERI_REG(SPI_W4_REG(SPI_PORT), r1);
+        WRITE_PERI_REG(SPI_W5_REG(SPI_PORT), r2);
+        if (len > 8 ) {
+            WRITE_PERI_REG(SPI_W6_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W7_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W8_REG(SPI_PORT), r2);
+            WRITE_PERI_REG(SPI_W9_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W10_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W11_REG(SPI_PORT), r2);
+            WRITE_PERI_REG(SPI_W12_REG(SPI_PORT), r0);
+            WRITE_PERI_REG(SPI_W13_REG(SPI_PORT), r1);
+            WRITE_PERI_REG(SPI_W14_REG(SPI_PORT), r2);
+        }
+
+        SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+    }
+}
+
+void TFT_eSPI::ILI9488_pushPixels(const void *data_in, uint32_t len)
+{
+    uint16_t *data = (uint16_t *)data_in;
+    // ILI9488 write macro is not endianess dependant, hence !_swapBytes
+    if (!_swapBytes) {
+        while ( len-- ) {
+            tft_Write_16S(*data);
+            data++;
+        }
+    } else {
+        while ( len-- ) {
+            tft_Write_16(*data);
+            data++;
+        }
+    }
+}
+
+void TFT_eSPI::ILI9488_pushSwapBytePixels(const void *data_in, uint32_t len)
+{
+
+    uint16_t *data = (uint16_t *)data_in;
+    // ILI9488 write macro is not endianess dependant, so swap byte macro not used here
+    while ( len-- ) {
+        tft_Write_16(*data);
+        data++;
+    }
+}
+
+void TFT_eSPI::General_pushBlock(uint16_t color, uint32_t len)
+{
+    uint32_t color32 = (color << 8 | color >> 8) << 16 | (color << 8 | color >> 8);
+    if (len > 31) {
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), 511);
+        while (len > 31) {
+            while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+            WRITE_PERI_REG(SPI_W0_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W1_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W2_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W3_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W4_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W5_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W6_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W7_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W8_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W9_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W10_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W11_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W12_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W13_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W14_REG(SPI_PORT), color32);
+            WRITE_PERI_REG(SPI_W15_REG(SPI_PORT), color32);
+            SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+            len -= 32;
+        }
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+    }
+
+    if (len) {
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), (len << 4) - 1);
+        for (uint32_t i = 0; i <= (len << 1); i += 4) WRITE_PERI_REG(SPI_W0_REG(SPI_PORT) + i, color32);
+        SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+    }
+}
+
+void TFT_eSPI::General_pushSwapBytePixels(const void *data_in, uint32_t len)
+{
+
+    uint8_t *data = (uint8_t *)data_in;
+    uint32_t color[16];
+
+    if (len > 31) {
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), 511);
+        while (len > 31) {
+            uint32_t i = 0;
+            while (i < 16) {
+                color[i++] = DAT8TO32(data);
+                data += 4;
+            }
+            while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+            WRITE_PERI_REG(SPI_W0_REG(SPI_PORT),  color[0]);
+            WRITE_PERI_REG(SPI_W1_REG(SPI_PORT),  color[1]);
+            WRITE_PERI_REG(SPI_W2_REG(SPI_PORT),  color[2]);
+            WRITE_PERI_REG(SPI_W3_REG(SPI_PORT),  color[3]);
+            WRITE_PERI_REG(SPI_W4_REG(SPI_PORT),  color[4]);
+            WRITE_PERI_REG(SPI_W5_REG(SPI_PORT),  color[5]);
+            WRITE_PERI_REG(SPI_W6_REG(SPI_PORT),  color[6]);
+            WRITE_PERI_REG(SPI_W7_REG(SPI_PORT),  color[7]);
+            WRITE_PERI_REG(SPI_W8_REG(SPI_PORT),  color[8]);
+            WRITE_PERI_REG(SPI_W9_REG(SPI_PORT),  color[9]);
+            WRITE_PERI_REG(SPI_W10_REG(SPI_PORT), color[10]);
+            WRITE_PERI_REG(SPI_W11_REG(SPI_PORT), color[11]);
+            WRITE_PERI_REG(SPI_W12_REG(SPI_PORT), color[12]);
+            WRITE_PERI_REG(SPI_W13_REG(SPI_PORT), color[13]);
+            WRITE_PERI_REG(SPI_W14_REG(SPI_PORT), color[14]);
+            WRITE_PERI_REG(SPI_W15_REG(SPI_PORT), color[15]);
+            SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+            len -= 32;
+        }
+    }
+
+    if (len > 15) {
+        uint32_t i = 0;
+        while (i < 8) {
+            color[i++] = DAT8TO32(data);
+            data += 4;
+        }
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), 255);
+        WRITE_PERI_REG(SPI_W0_REG(SPI_PORT),  color[0]);
+        WRITE_PERI_REG(SPI_W1_REG(SPI_PORT),  color[1]);
+        WRITE_PERI_REG(SPI_W2_REG(SPI_PORT),  color[2]);
+        WRITE_PERI_REG(SPI_W3_REG(SPI_PORT),  color[3]);
+        WRITE_PERI_REG(SPI_W4_REG(SPI_PORT),  color[4]);
+        WRITE_PERI_REG(SPI_W5_REG(SPI_PORT),  color[5]);
+        WRITE_PERI_REG(SPI_W6_REG(SPI_PORT),  color[6]);
+        WRITE_PERI_REG(SPI_W7_REG(SPI_PORT),  color[7]);
+        SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+        len -= 16;
+    }
+
+    if (len) {
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), (len << 4) - 1);
+        for (uint32_t i = 0; i <= (len << 1); i += 4) {
+            WRITE_PERI_REG(SPI_W0_REG(SPI_PORT) + i, DAT8TO32(data)); data += 4;
+        }
+        SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+    }
+    while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+
+}
+
+void TFT_eSPI::General_pushPixels(const void *data_in, uint32_t len)
+{
+
+    if (_swapBytes) {
+        pushSwapBytePixels(data_in, len);
+        return;
+    }
+
+    uint32_t *data = (uint32_t *)data_in;
+
+    if (len > 31) {
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), 511);
+        while (len > 31) {
+            while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+            WRITE_PERI_REG(SPI_W0_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W1_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W2_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W3_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W4_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W5_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W6_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W7_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W8_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W9_REG(SPI_PORT),  *data++);
+            WRITE_PERI_REG(SPI_W10_REG(SPI_PORT), *data++);
+            WRITE_PERI_REG(SPI_W11_REG(SPI_PORT), *data++);
+            WRITE_PERI_REG(SPI_W12_REG(SPI_PORT), *data++);
+            WRITE_PERI_REG(SPI_W13_REG(SPI_PORT), *data++);
+            WRITE_PERI_REG(SPI_W14_REG(SPI_PORT), *data++);
+            WRITE_PERI_REG(SPI_W15_REG(SPI_PORT), *data++);
+            SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+            len -= 32;
+        }
+    }
+
+    if (len) {
+        while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+        WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), (len << 4) - 1);
+        for (uint32_t i = 0; i <= (len << 1); i += 4) WRITE_PERI_REG((SPI_W0_REG(SPI_PORT) + i), *data++);
+        SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR);
+    }
+    while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+/***************************************************************************************
+** Function name:           pushBlock - for ESP32
+** Description:             Write a block of pixels of the same colour
+***************************************************************************************/
+void TFT_eSPI::pushBlock(uint16_t color, uint32_t len)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        ILI9488_pushBlock(color, len);
+        break;
+    default:
+        General_pushBlock(color, len);
+        break;
+    }
+}
+
+/***************************************************************************************
+** Function name:           pushSwapBytePixels - for ESP32
+** Description:             Write a sequence of pixels with swapped bytes
+***************************************************************************************/
+void TFT_eSPI::pushSwapBytePixels(const void *data_in, uint32_t len)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        ILI9488_pushSwapBytePixels(data_in, len);
+        break;
+    default:
+        General_pushSwapBytePixels(data_in, len);
+        break;
+    }
+}
+
+/***************************************************************************************
+** Function name:           pushPixels - for ESP32
+** Description:             Write a sequence of pixels
+***************************************************************************************/
+void TFT_eSPI::pushPixels(const void *data_in, uint32_t len)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        ILI9488_pushPixels(data_in, len);
+        break;
+    default:
+        General_pushPixels(data_in, len);
+        break;
+    }
+}
+
+
+#endif  /*DISABLE_CONDITIONAL_MACROS**/
+
+#if 1
+
+#define TFT_WRITE_BITS(D, B) \
+  WRITE_PERI_REG(SPI_MOSI_DLEN_REG(SPI_PORT), B-1); \
+  WRITE_PERI_REG(SPI_W0_REG(SPI_PORT), D); \
+  SET_PERI_REG_MASK(SPI_CMD_REG(SPI_PORT), SPI_USR); \
+  while (READ_PERI_REG(SPI_CMD_REG(SPI_PORT))&SPI_USR);
+
+void   TFT_eSPI::tft_Write_8(uint8_t C)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        spi.transfer(C);
+        break;
+    default:
+        TFT_WRITE_BITS(C, 8);
+        break;
+    }
+}
+void   TFT_eSPI::tft_Write_16(uint16_t C)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        spi.transfer(((C) & 0xF800) >> 8);
+        spi.transfer(((C) & 0x07E0) >> 3);
+        spi.transfer(((C) & 0x001F) << 3);
+        break;
+    default:
+        TFT_WRITE_BITS((C) << 8 | (C) >> 8, 16);
+        break;
+    }
+}
+void   TFT_eSPI::tft_Write_16S(uint16_t C)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        spi.transfer((C) & 0xF8);
+        spi.transfer(((C) & 0xE000) >> 11 | ((C) & 0x07) << 5);
+        spi.transfer(((C) & 0x1F00) >> 5);
+        break;
+    default:
+        TFT_WRITE_BITS(C, 16);
+        break;
+    }
+}
+void   TFT_eSPI::tft_Write_32(uint32_t C)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        spi.write32(C);
+        break;
+    default:
+        TFT_WRITE_BITS(C, 32);
+        break;
+    }
+}
+void  TFT_eSPI::tft_Write_32C(uint32_t C, uint32_t D)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        spi.write32((C) << 16 | (D));
+        break;
+    default:
+        TFT_WRITE_BITS((uint16_t)((D) << 8 | (D) >> 8) << 16 | (uint16_t)((C) << 8 | (C) >> 8), 32);
+        break;
+    }
+}
+void   TFT_eSPI::tft_Write_32D(uint32_t C)
+{
+    switch (drv.tft_driver) {
+    case 0x9488:
+        spi.write32((C) << 16 | (C));
+        break;
+    default:
+        TFT_WRITE_BITS((uint16_t)((C) << 8 | (C) >> 8) << 16 | (uint16_t)((C) << 8 | (C) >> 8), 32);
+        break;
+    }
+}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
 #if defined ESP32_DMA && !defined (TFT_PARALLEL_8_BIT) //       DMA FUNCTIONS
@@ -711,7 +1089,6 @@ void IRAM_ATTR dc_callback(spi_transaction_t *spi_tx)
 bool TFT_eSPI::initDMA(void)
 {
     if (DMA_Enabled) return false;
-
     esp_err_t ret;
     spi_bus_config_t buscfg = {
         .mosi_io_num = TFT_MOSI,
@@ -731,10 +1108,10 @@ bool TFT_eSPI::initDMA(void)
         .duty_cycle_pos = 0,
         .cs_ena_pretrans = 0,
         .cs_ena_posttrans = 0,
-        .clock_speed_hz = SPI_FREQUENCY,
+        .clock_speed_hz = drv.tft_spi_freq,     // lewis add. Mark : Used to set different models
         .input_delay_ns = 0,
         .spics_io_num = TFT_CS,
-        .flags = 0,
+        .flags = SPI_DEVICE_NO_DUMMY,
         .queue_size = 7,
         .pre_cb = dc_callback, //Callback to handle D/C line
         .post_cb = 0
@@ -756,7 +1133,7 @@ bool TFT_eSPI::initDMA(void)
 void TFT_eSPI::deInitDMA(void)
 {
     if (!DMA_Enabled) return;
-
+    spi_bus_remove_device(dmaHAL);
     spi_bus_free(spi_host);
     DMA_Enabled = false;
 }
@@ -764,8 +1141,8 @@ void TFT_eSPI::deInitDMA(void)
 ////////////////////////////////////////////////////////////////////////////////////////
 #endif // End of DMA FUNCTIONS    
 ////////////////////////////////////////////////////////////////////////////////////////
-#endif
 
+#endif
 
 /***************************************************************************************
 ** Function name:           begin_tft_write (was called spi_begin)
@@ -776,7 +1153,7 @@ inline void TFT_eSPI::begin_tft_write(void)
 #if defined (SPI_HAS_TRANSACTION) && defined (SUPPORT_TRANSACTIONS) && !defined(TFT_PARALLEL_8_BIT)
     if (locked) {
         locked = false;
-        spi.beginTransaction(SPISettings(SPI_FREQUENCY, MSBFIRST, TFT_SPI_MODE));
+        spi.beginTransaction(SPISettings(drv.tft_spi_freq, MSBFIRST, TFT_SPI_MODE));
         CS_L;
     }
 #else
@@ -846,7 +1223,7 @@ inline void TFT_eSPI::end_tft_read(void)
     }
 #else
 #if !defined(TFT_PARALLEL_8_BIT)
-    spi.setFrequency(SPI_FREQUENCY);
+    spi.setFrequency(drv.tft_spi_freq);
 #endif
     if (!inTransaction) {
         CS_H;
@@ -882,6 +1259,9 @@ void TFT_eSPI::spi_end_read()
 ***************************************************************************************/
 TFT_eSPI::TFT_eSPI(int16_t w, int16_t h)
 {
+
+    // lewis add. Mark : Used to set different models
+    memset(&drv, 0, sizeof(drv));
 
 // The control pins are deliberately set to the inactive state (CS high) as setup()
 // might call and initialise other SPI peripherals which would could cause conflicts
@@ -933,6 +1313,8 @@ TFT_eSPI::TFT_eSPI(int16_t w, int16_t h)
     CONSTRUCTOR_INIT_TFT_DATA_BUS;
 
 #endif
+    drv.tft_height = _height;
+    drv.tft_width = _width;
 
     _init_width  = _width  = w; // Set by specific xxxxx_Defines.h file or by users sketch
     _init_height = _height = h; // Set by specific xxxxx_Defines.h file or by users sketch
@@ -1048,9 +1430,9 @@ void TFT_eSPI::init(uint8_t tc)
 #endif
 
 #if defined (TFT_SPI_OVERLAP) && defined (ESP8266)
-        // Overlap mode SD0=MISO, SD1=MOSI, CLK=SCLK must use D3 as CS
-        //    pins(int8_t sck, int8_t miso, int8_t mosi, int8_t ss);
-        //spi.pins(        6,          7,           8,          0);
+// Overlap mode SD0=MISO, SD1=MOSI, CLK=SCLK must use D3 as CS
+//    pins(int8_t sck, int8_t miso, int8_t mosi, int8_t ss);
+//spi.pins(        6,          7,           8,          0);
         spi.pins(6, 7, 8, 0);
 #endif
 
@@ -1074,7 +1456,7 @@ void TFT_eSPI::init(uint8_t tc)
 
 
 #ifdef TFT_CS
-        // Set to output once again in case D6 (MISO) is used for CS
+// Set to output once again in case D6 (MISO) is used for CS
         pinMode(TFT_CS, OUTPUT);
         digitalWrite(TFT_CS, HIGH); // Chip select high (inactive)
 #elif defined (ESP8266) && !defined (TFT_PARALLEL_8_BIT)
@@ -1116,48 +1498,20 @@ void TFT_eSPI::init(uint8_t tc)
 
     tc = tc; // Supress warning
 
-    // This loads the driver specific initialisation code  <<<<<<<<<<<<<<<<<<<<< ADD NEW DRIVERS TO THE LIST HERE <<<<<<<<<<<<<<<<<<<<<<<
-#if   defined (ILI9341_DRIVER)
-#include "TFT_Drivers/ILI9341_Init.h"
-
-#elif defined (ST7735_DRIVER)
-    tabcolor = tc;
-#include "TFT_Drivers/ST7735_Init.h"
-
-#elif defined (ILI9163_DRIVER)
-#include "TFT_Drivers/ILI9163_Init.h"
-
-#elif defined (S6D02A1_DRIVER)
-#include "TFT_Drivers/S6D02A1_Init.h"
-
-#elif defined (ST7796_DRIVER)
-#include "TFT_Drivers/ST7796_Init.h"
-
-#elif defined (ILI9486_DRIVER)
-#include "TFT_Drivers/ILI9486_Init.h"
-
-#elif defined (ILI9481_DRIVER)
-#include "TFT_Drivers/ILI9481_Init.h"
-
-#elif defined (ILI9488_DRIVER)
-#include "TFT_Drivers/ILI9488_Init.h"
-
-#elif defined (HX8357D_DRIVER)
-#include "TFT_Drivers/HX8357D_Init.h"
-
-#elif defined (ST7789_DRIVER)
+    // lewis add. Mark : Used to set different models
+    switch (drv.tft_driver) {
+    case 0x7789:/*ST7789_DRIVER*/
 #include "TFT_Drivers/ST7789_Init.h"
-
-#elif defined (R61581_DRIVER)
-#include "TFT_Drivers/R61581_Init.h"
-
-#elif defined (RM68140_DRIVER)
-#include "TFT_Drivers/RM68140_Init.h"
-
-#elif defined (ST7789_2_DRIVER)
-#include "TFT_Drivers/ST7789_2_Init.h"
-
-#endif
+        break;
+    case 0x7796:/*ST7796_DRIVER*/
+#include "TFT_Drivers/ST7796_Init.h"
+        break;
+    case 0x9488:/*ILI9488_DRIVER*/
+#include "TFT_Drivers/ILI9488_Init.h"
+        break;
+    default:
+        break;
+    }
 
 #ifdef TFT_INVERSION_ON
     writecommand(TFT_INVON);
@@ -1193,48 +1547,20 @@ void TFT_eSPI::setRotation(uint8_t m)
 
     begin_tft_write();
 
-    // This loads the driver specific rotation code  <<<<<<<<<<<<<<<<<<<<< ADD NEW DRIVERS TO THE LIST HERE <<<<<<<<<<<<<<<<<<<<<<<
-#if   defined (ILI9341_DRIVER)
-#include "TFT_Drivers/ILI9341_Rotation.h"
-
-#elif defined (ST7735_DRIVER)
-#include "TFT_Drivers/ST7735_Rotation.h"
-
-#elif defined (ILI9163_DRIVER)
-#include "TFT_Drivers/ILI9163_Rotation.h"
-
-#elif defined (S6D02A1_DRIVER)
-#include "TFT_Drivers/S6D02A1_Rotation.h"
-
-#elif defined (ST7796_DRIVER)
-#include "TFT_Drivers/ST7796_Rotation.h"
-
-#elif defined (ILI9486_DRIVER)
-#include "TFT_Drivers/ILI9486_Rotation.h"
-
-#elif defined (ILI9481_DRIVER)
-#include "TFT_Drivers/ILI9481_Rotation.h"
-
-#elif defined (ILI9488_DRIVER)
-#include "TFT_Drivers/ILI9488_Rotation.h"
-
-#elif defined (HX8357D_DRIVER)
-#include "TFT_Drivers/HX8357D_Rotation.h"
-
-#elif defined (ST7789_DRIVER)
+    // lewis add. Mark : Used to set different models
+    switch (drv.tft_driver) {
+    case 0x7789:/*ST7789_DRIVER*/
 #include "TFT_Drivers/ST7789_Rotation.h"
-
-#elif defined (R61581_DRIVER)
-#include "TFT_Drivers/R61581_Rotation.h"
-
-#elif defined (RM68140_DRIVER)
-#include "TFT_Drivers/RM68140_Rotation.h"
-
-#elif defined (ST7789_2_DRIVER)
-#include "TFT_Drivers/ST7789_2_Rotation.h"
-
-#endif
-
+        break;
+    case 0x7796:/*ST7796_DRIVER*/
+#include "TFT_Drivers/ST7796_Rotation.h"
+        break;
+    case 0x9488:/*ILI9488_DRIVER*/
+#include "TFT_Drivers/ILI9488_Rotation.h"
+        break;
+    default:
+        break;
+    }
     delayMicroseconds(10);
 
     end_tft_write();
@@ -1482,11 +1808,11 @@ uint16_t TFT_eSPI::readPixel(int32_t x0, int32_t y0)
     /*
 #else
 
-        // The 6 colour bits are in MS 6 bits of each byte, but the ILI9488 needs an extra clock pulse
-        // so bits appear shifted right 1 bit, so mask the middle 6 bits then shift 1 place left
-        uint8_t r = (tft_Read_8()&0x7E)<<1;
-        uint8_t g = (tft_Read_8()&0x7E)<<1;
-        uint8_t b = (tft_Read_8()&0x7E)<<1;
+    // The 6 colour bits are in MS 6 bits of each byte, but the ILI9488 needs an extra clock pulse
+    // so bits appear shifted right 1 bit, so mask the middle 6 bits then shift 1 place left
+    uint8_t r = (tft_Read_8()&0x7E)<<1;
+    uint8_t g = (tft_Read_8()&0x7E)<<1;
+    uint8_t b = (tft_Read_8()&0x7E)<<1;
 
 #endif
     */
@@ -1621,14 +1947,14 @@ void TFT_eSPI::readRect(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t *da
 
 
 /***************************************************************************************
-** Function name:           push rectangle (for SPI Interface II i.e. IM [3:0] = "1101")
+** Function name:           push rectangle
 ** Description:             push 565 pixel colours into a defined area
 ***************************************************************************************/
 void TFT_eSPI::pushRect(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t *data)
 {
-    // Function deprecated, remains for backwards compatibility
-    // New pushImage() is better as it will crop partly off-screen image blocks
+    bool swap = _swapBytes; _swapBytes = false;
     pushImage(x, y, w, h, data);
+    _swapBytes = swap;
 }
 
 
@@ -3407,9 +3733,6 @@ void TFT_eSPI::setWindow(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
 {
     //begin_tft_write(); // Must be called before setWindow
 
-    addr_col = 0xFFFF;
-    addr_row = 0xFFFF;
-
 #ifdef CGRAM_OFFSET
     x0 += colstart;
     x1 += colstart;
@@ -3417,16 +3740,29 @@ void TFT_eSPI::setWindow(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
     y1 += rowstart;
 #endif
 
-    // Column addr set
+#ifdef MULTI_TFT_SUPPORT
+    // No optimisation to permit multiple screens
     DC_C; tft_Write_8(TFT_CASET);
     DC_D; tft_Write_32C(x0, x1);
-
-    // Row addr set
     DC_C; tft_Write_8(TFT_PASET);
     DC_D; tft_Write_32C(y0, y1);
+#else
+    // No need to send x if it has not changed (speeds things up)
+    if (addr_col != (x0 << 16 | x1)) {
+        DC_C; tft_Write_8(TFT_CASET);
+        DC_D; tft_Write_32C(x0, x1);
+        addr_col = (x0 << 16 | x1);
+    }
+
+    // No need to send y if it has not changed (speeds things up)
+    if (addr_row != (y0 << 16 | y1)) {
+        DC_C; tft_Write_8(TFT_PASET);
+        DC_D; tft_Write_32C(y0, y1);
+        addr_row = (y0 << 16 | y1);
+    }
+#endif
 
     DC_C; tft_Write_8(TFT_RAMWR);
-
     DC_D;
 
     //end_tft_write(); // Must be called after setWindow
@@ -3487,19 +3823,27 @@ void TFT_eSPI::drawPixel(int32_t x, int32_t y, uint32_t color)
 
     begin_tft_write();
 
+#ifdef MULTI_TFT_SUPPORT
+    // No optimisation
+    DC_C; tft_Write_8(TFT_CASET);
+    DC_D; tft_Write_32D(x);
+    DC_C; tft_Write_8(TFT_PASET);
+    DC_D; tft_Write_32D(y);
+#else
     // No need to send x if it has not changed (speeds things up)
-    if (addr_col != x) {
+    if (addr_col != (x << 16 | x)) {
         DC_C; tft_Write_8(TFT_CASET);
         DC_D; tft_Write_32D(x);
-        addr_col = x;
+        addr_col = (x << 16 | x);
     }
 
     // No need to send y if it has not changed (speeds things up)
-    if (addr_row != y) {
+    if (addr_row != (y << 16 | y)) {
         DC_C; tft_Write_8(TFT_PASET);
         DC_D; tft_Write_32D(y);
-        addr_row = y;
+        addr_row = (y << 16 | y);
     }
+#endif
 
     DC_C; tft_Write_8(TFT_RAMWR);
     DC_D; tft_Write_16(color);
@@ -4381,20 +4725,53 @@ int16_t TFT_eSPI::drawChar(uint16_t uniCode, int32_t x, int32_t y, uint8_t font)
                     pc += line;
                 }
             }
-        } else { // Text colour != background && textsize = 1
+        } else {
+            // Text colour != background && textsize = 1 and character is within screen area
             // so use faster drawing of characters and background using block write
-            setWindow(x, y, x + width - 1, y + height - 1);
+            if ((x >= 0) && (x + width <= _width) && (y >= 0) && (y + height <= _height)) {
+                setWindow(x, y, x + width - 1, y + height - 1);
 
-            // Maximum font size is equivalent to 180x180 pixels in area
-            while (w > 0) {
-                line = pgm_read_byte((uint8_t *)flash_address++); // 8 bytes smaller when incrementing here
-                if (line & 0x80) {
-                    line &= 0x7F;
-                    line++; w -= line;
-                    pushBlock(textcolor, line);
-                } else {
-                    line++; w -= line;
-                    pushBlock(textbgcolor, line);
+                // Maximum font size is equivalent to 180x180 pixels in area
+                while (w > 0) {
+                    line = pgm_read_byte((uint8_t *)flash_address++); // 8 bytes smaller when incrementing here
+                    if (line & 0x80) {
+                        line &= 0x7F;
+                        line++; w -= line;
+                        pushBlock(textcolor, line);
+                    } else {
+                        line++; w -= line;
+                        pushBlock(textbgcolor, line);
+                    }
+                }
+            } else {
+                int32_t px = x, py = y;  // To hold character block start and end column and row values
+                int32_t pc = 0;          // Pixel count
+                int32_t pl = 0;          // Pixel line length
+                uint16_t pcol = 0;       // Pixel color
+
+                while (pc < w) {
+                    line = pgm_read_byte((uint8_t *)flash_address);
+                    flash_address++;
+                    if (line & 0x80) {
+                        pcol = textcolor;
+                        line &= 0x7F;
+                    } else pcol = textbgcolor;
+                    line++;
+                    px = x + pc % width;
+                    py = y + pc / width;
+
+                    pl = 0;
+                    pc += line;
+                    while (line--) { // In this case the while(line--) is faster
+                        pl++;
+                        if ((px + pl) >= (x + width)) {
+                            drawFastHLine(px, py, pl, pcol);
+                            pl = 0;
+                            px = x;
+                            py ++;
+                        }
+                    }
+                    if (pl)drawFastHLine(px, py, pl, pcol);
                 }
             }
         }
@@ -4914,7 +5291,7 @@ void TFT_eSPI::getSetup(setup_t &tft_settings)
     tft_settings.overlap = false;
 #endif
 
-    tft_settings.tft_driver = TFT_DRIVER;
+    tft_settings.tft_driver = drv.tft_driver;
     tft_settings.tft_width  = _init_width;
     tft_settings.tft_height = _init_height;
 
@@ -5006,6 +5383,14 @@ void TFT_eSPI::getSetup(setup_t &tft_settings)
     tft_settings.pin_tft_d7 = -1;
 #endif
 
+#if defined (TFT_BL)
+    tft_settings.pin_tft_led = TFT_BL;
+#endif
+
+#if defined (TFT_BACKLIGHT_ON)
+    tft_settings.pin_tft_led_on = TFT_BACKLIGHT_ON;
+#endif
+
 #if defined (TOUCH_CS)
     tft_settings.pin_tch_cs   = TOUCH_CS;
     tft_settings.tch_spi_freq = SPI_TOUCH_FREQUENCY / 100000;
@@ -5030,6 +5415,7 @@ void TFT_eSPI::getSetup(setup_t &tft_settings)
 // Color bytes are swapped when writing to RAM, this introduces a small overhead but
 // there is a nett performance gain by using swapped bytes.
 ***************************************************************************************/
+
 /***************************************************************************************
 ** Function name:           TFT_eSprite
 ** Description:             Class constructor
@@ -5079,8 +5465,6 @@ void *TFT_eSprite::createSprite(int16_t w, int16_t h, uint8_t frames)
     _iwidth  = _dwidth  = _bitwidth = w;
     _iheight = _dheight = h;
 
-    _colorMap = nullptr;
-
     this->cursor_x = 0;
     this->cursor_y = 0;
 
@@ -5114,6 +5498,8 @@ void *TFT_eSprite::createSprite(int16_t w, int16_t h, uint8_t frames)
         _img8_2 = _img8 + (w * h + 1);
     }
 
+    if ( (_bpp == 4) && (_colorMap == nullptr)) createPalette(default_4bit_palette);
+
     // This is to make it clear what pointer size is expected to be used
     // but casting in the user sketch is needed due to the use of void*
     if ( (_bpp == 1) && (frames > 1) ) {
@@ -5127,6 +5513,16 @@ void *TFT_eSprite::createSprite(int16_t w, int16_t h, uint8_t frames)
     }
 
     return NULL;
+}
+
+
+/***************************************************************************************
+** Function name:           created
+** Description:             Returns true is sprite has been created
+*************************************************************************************x*/
+bool TFT_eSprite::created(void)
+{
+    return _created;
 }
 
 
@@ -5209,21 +5605,25 @@ void *TFT_eSprite::callocSprite(int16_t w, int16_t h, uint8_t frames)
 ** Description:             Set a palette for a 4-bit per pixel sprite
 *************************************************************************************x*/
 
-void TFT_eSprite::createPalette(uint16_t colorMap[], int colors)
+void TFT_eSprite::createPalette(uint16_t colorMap[], uint8_t colors)
 {
     if (_colorMap != nullptr) {
         free(_colorMap);
     }
 
     if (colorMap == nullptr) {
-        return; // do nothing other than clear the existing map
+        // Create a color map using the default FLASH map
+        createPalette(default_4bit_palette);
+        return;
     }
 
-    // allocate color map
+    // Allocate and clear memory for 16 color map
     _colorMap = (uint16_t *)calloc(16, sizeof(uint16_t));
-    if (colors > 16)
-        colors = 16;
-    for (auto i = 0; i < colors; i++) {
+
+    if (colors > 16) colors = 16;
+
+    // Copy map colors
+    for (uint8_t i = 0; i < colors; i++) {
         _colorMap[i] = colorMap[i];
     }
 }
@@ -5233,21 +5633,24 @@ void TFT_eSprite::createPalette(uint16_t colorMap[], int colors)
 ** Description:             Set a palette for a 4-bit per pixel sprite
 *************************************************************************************x*/
 
-void TFT_eSprite::createPalette(const uint16_t colorMap[], int colors)
+void TFT_eSprite::createPalette(const uint16_t colorMap[], uint8_t colors)
 {
     if (_colorMap != nullptr) {
         free(_colorMap);
     }
 
     if (colorMap == nullptr) {
-        return; // do nothing other than clear the existing map
+        // Create a color map using the default FLASH map
+        colorMap = default_4bit_palette;
     }
 
-    // allocate color map
+    // Allocate and clear memory for 16 color map
     _colorMap = (uint16_t *)calloc(16, sizeof(uint16_t));
-    if (colors > 16)
-        colors = 16;
-    for (auto i = 0; i < colors; i++) {
+
+    if (colors > 16) colors = 16;
+
+    // Copy map colors
+    for (uint8_t i = 0; i < colors; i++) {
         _colorMap[i] = pgm_read_word(colorMap++);
     }
 }
@@ -5313,7 +5716,7 @@ int8_t TFT_eSprite::getColorDepth(void)
 
 /***************************************************************************************
 ** Function name:           setBitmapColor
-** Description:             Set the foreground foreground and background colour
+** Description:             Set the 1bpp foreground foreground and background colour
 ***************************************************************************************/
 void TFT_eSprite::setBitmapColor(uint16_t c, uint16_t b)
 {
@@ -5324,23 +5727,22 @@ void TFT_eSprite::setBitmapColor(uint16_t c, uint16_t b)
 
 /***************************************************************************************
 ** Function name:           setPaletteColor
-** Description:             Set the palette color at the given index
+** Description:             Set the 4bpp palette color at the given index
 ***************************************************************************************/
 void TFT_eSprite::setPaletteColor(uint8_t index, uint16_t color)
 {
-    if (_colorMap == nullptr || index > 15)
-        return; // out of bounds
+    if (_colorMap == nullptr || index > 15) return; // out of bounds
+
     _colorMap[index] = color;
 }
 
 /***************************************************************************************
 ** Function name:           getPaletteColor
-** Description:             Return the palette color at index, or 0 (black) on error.
+** Description:             Return the palette color at 4bpp index, or 0 on error.
 ***************************************************************************************/
 uint16_t TFT_eSprite::getPaletteColor(uint8_t index)
 {
-    if (_colorMap == nullptr || index > 15)
-        return 0;
+    if (_colorMap == nullptr || index > 15) return 0; // out of bounds
 
     return _colorMap[index];
 }
@@ -5401,7 +5803,7 @@ int16_t TFT_eSprite::getPivotY(void)
 #define FP_SCALE 10
 bool TFT_eSprite::pushRotated(int16_t angle, int32_t transp)
 {
-    if ( !_created || _bpp == 4) return false;
+    if ( !_created) return false;
 
     // Bounding box parameters
     int16_t min_x;
@@ -5419,6 +5821,7 @@ bool TFT_eSprite::pushRotated(int16_t angle, int32_t transp)
     uint32_t xe = _iwidth << FP_SCALE;
     uint32_t ye = _iheight << FP_SCALE;
     uint32_t tpcolor = transp;  // convert to unsigned
+    if (_bpp == 4) tpcolor = _colorMap[transp & 0x0F];
 
     _tft->startWrite(); // Avoid transaction overhead for every tft pixel
 
@@ -5472,9 +5875,10 @@ bool TFT_eSprite::pushRotated(int16_t angle, int32_t transp)
 ** Function name:           pushRotated - Fast fixed point integer maths version
 ** Description:             Push a rotated copy of the Sprite to another Sprite
 *************************************************************************************x*/
+// Not compatible with 4bpp
 bool TFT_eSprite::pushRotated(TFT_eSprite *spr, int16_t angle, int32_t transp)
 {
-    if ( !_created  || _bpp == 4) return false;       // Check this Sprite is created
+    if ( !_created  || _bpp == 4) return false; // Check this Sprite is created
     if ( !spr->_created  || spr->_bpp == 4) return false;  // Ckeck destination Sprite is created
 
     // Bounding box parameters
@@ -5671,13 +6075,8 @@ void TFT_eSprite::pushSprite(int32_t x, int32_t y)
         _tft->pushImage(x, y, _iwidth, _iheight, _img );
         _tft->setSwapBytes(oldSwapBytes);
     } else if (_bpp == 4) {
-        if (_colorMap == nullptr) {
-            return;
-        }
         _tft->pushImage(x, y, _dwidth, _dheight, _img4, false, _colorMap);
-    }
-
-    else _tft->pushImage(x, y, _dwidth, _dheight, _img8, (bool)(_bpp == 8));
+    } else _tft->pushImage(x, y, _dwidth, _dheight, _img8, (bool)(_bpp == 8));
 }
 
 
@@ -5856,12 +6255,39 @@ void  TFT_eSprite::pushImage(int32_t x, int32_t y, int32_t w, int32_t h, uint16_
             ys++;
         }
     } else if (_bpp == 4) {
-        // not supported.  The image is unlikely to have the correct colors for the color map.
-        // we could implement a way to push a 4-bit image using the color map?
-#ifdef TFT_eSPI_DEBUG
-        Serial.println("pushImage(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t *data) not implemented");
-#endif
-        return;
+        // the image is assumed to be 4 bit, where each byte corresponds to two pixels.
+        // much faster when aligned to a byte boundary, because the alternative is slower, requiring
+        // tedious bit operations.
+
+        const uint8_t *dataBuf = (uint8_t *)data;
+        int sWidth = (_iwidth >> 1);
+
+        if ((xs & 0x01) == 0 && (xo & 0x01) == 0 && (ws & 0x01) == 0) {
+            if ((ws & 0x01) == 0) { // use memcpy for better perf.
+                xs = (xs >> 1) + ys * sWidth;
+                ws = (ws >> 1);
+                xo = (xo >> 1) + yo * (w >> 1);
+                while (hs--) {
+                    memcpy(_img4 + xs, dataBuf + xo, ws);
+                    xo += (w >> 1);
+                    xs += sWidth;
+                }
+            }
+        } else { // not optimized
+            for (int32_t yp = yo; yp < yo + hs; yp++) {
+                x = xs;
+                for (int32_t xp = xo; xp < xo + ws; xp++) {
+                    uint32_t color;
+                    if ((xp & 0x01) == 0)
+                        color = (dataBuf[((xp + yp * w) >> 1)] & 0xF0) >> 4; // even index = bits 7 .. 4
+                    else
+                        color = dataBuf[((xp - 1 + yp * w) >> 1)] & 0x0F; // odd index = bits 3 .. 0.
+                    drawPixel(x, ys, color);
+                    x++;
+                }
+                ys++;
+            }
+        }
     }
 
     else { // 1bpp
@@ -6638,19 +7064,19 @@ void TFT_eSprite::fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t 
         } else if ((w & 0x01) == 1) {
             yp = (yp + 1) >> 1;
             while (h--) {
-                drawPixel(x, y + h - 1, color & 0x0F);
+                drawPixel(x, y + h, color & 0x0F);
                 if (w > 1)
-                    memset(_img4 + (yp + ((x - 1) >> 1)), c2, (w - 1) >> 1);
+                    memset(_img4 + yp, c2, (w - 1) >> 1);
                 // same as above but you have a hangover on the left instead
                 yp += (_iwidth >> 1);
             }
         } else {
             yp = (yp + 1) >> 1;
             while (h--) {
-                drawPixel(x, y + h - 1, color & 0x0F);
-                drawPixel(x + w - 1, y + h - 1, color & 0x0F);
+                drawPixel(x, y + h, color & 0x0F);
+                if (w > 1) drawPixel(x + w - 1, y + h, color & 0x0F);
                 if (w > 2)
-                    memset(_img4 + (yp + ((x - 1) >> 1)), c2, (w - 2) >> 1);
+                    memset(_img4 + yp, c2, (w - 2) >> 1);
                 // maximal hacking, single pixels on left and right.
                 yp += (_iwidth >> 1);
             }
@@ -7323,10 +7749,8 @@ int16_t TFT_eSprite::printToSprite(int16_t x, int16_t y, uint16_t index)
 }
 #endif
 
+
 #ifdef SMOOTH_FONT
-// #include "Extensions/Smooth_font.cpp"
-// Coded by Bodmer 10/2/18, see license in root directory.
-// This is part of the TFT_eSPI class and is associated with anti-aliased font functions
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // New anti-aliased (smoothed) font functions added below
@@ -7817,9 +8241,16 @@ void TFT_eSPI::showFont(uint32_t td)
     delay(timeDelay);
     fillScreen(textbgcolor);
     //fontFile.close();
+
 }
 
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
+// lewis add. Mark : Used to set different models
+void TFT_eSPI::setDriver(uint32_t model, uint32_t freq)
+{
+    drv.tft_driver = model;
+    drv.tft_spi_freq = freq;
+}

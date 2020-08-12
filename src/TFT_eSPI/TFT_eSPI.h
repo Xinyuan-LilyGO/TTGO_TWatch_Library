@@ -16,7 +16,7 @@
 #ifndef _TFT_eSPIH_
 #define _TFT_eSPIH_
 
-#define TFT_ESPI_VERSION "2.2.6"
+#define TFT_ESPI_VERSION "2.2.15"
 
 /***************************************************************************************
 **                         Section 1: Load required header files
@@ -27,15 +27,31 @@
 #include <Print.h>
 #include <SPI.h>
 
-/***************************************************************************************
-**                         Section 2: Load library and processor specific header files
-***************************************************************************************/
-// Include header file that defines the fonts loaded, the TFT drivers
-// available and the pins to be used, etc, etc
-// #include "User_Setup_Select.h"
-#include "User_Setups/Setup45_TTGO_T_Watch.h"     // Setup file for ESP32 and TTGO T-Watch ST7789 SPI bus TFT  240x240
+// False definition, no practical use, resolution has been set in TTGO.h
+#define TFT_WIDTH           240
+#define TFT_HEIGHT          240
+
+#define TFT_MISO            0   //IO0 is not used, just to remove errors
+#define TFT_MOSI            19
+#define TFT_SCLK            18
+#define TFT_CS              5
+#define TFT_DC              27
+
+#define SPI_FREQUENCY    27000000 // Actually sets it to 26.67MHz = 80/3
+// #define SPI_FREQUENCY       40000000
+// #define ILI9488_DRIVER
+// ST7796 is compatible with ST7789 instructions
 #include "TFT_Drivers/ST7789_Defines.h"
-#define  TFT_DRIVER 0x7789
+
+
+#define LOAD_GLCD   // Font 1. Original Adafruit 8 pixel font needs ~1820 bytes in FLASH
+#define LOAD_FONT2  // Font 2. Small 16 pixel high font, needs ~3534 bytes in FLASH, 96 characters
+#define LOAD_FONT4  // Font 4. Medium 26 pixel high font, needs ~5848 bytes in FLASH, 96 characters
+#define LOAD_FONT6  // Font 6. Large 48 pixel font, needs ~2666 bytes in FLASH, only characters 1234567890:-.apm
+#define LOAD_FONT7  // Font 7. 7 segment 48 pixel font, needs ~2438 bytes in FLASH, only characters 1234567890:.
+#define LOAD_FONT8  // Font 8. Large 75 pixel font needs ~3256 bytes in FLASH, only characters 1234567890:-.
+#define LOAD_GFXFF  // FreeFonts. Include access to the 48 Adafruit_GFX free fonts FF1 to FF48 and custom fonts
+#define SMOOTH_FONT
 
 // Handle FLASH based storage e.g. PROGMEM
 #ifdef __AVR__
@@ -46,9 +62,19 @@
 #define PROGMEM
 #endif
 
+/***************************************************************************************
+**                         Section 2: Load library and processor specific header files
+***************************************************************************************/
+// Include header file that defines the fonts loaded, the TFT drivers
+// available and the pins to be used, etc, etc
 // Include the processor specific drivers
-// #include "TFT_eSPI_ESP32.h"
-#ifdef ESP32
+#if defined (ESP32)
+////////////////////////////////////////////////////
+// TFT_eSPI driver functions for ESP32 processors //
+////////////////////////////////////////////////////
+
+#ifndef _TFT_eSPI_ESP32H_
+#define _TFT_eSPI_ESP32H_
 
 // Processor ID reported by getSetup()
 #define PROCESSOR_ID 0x32
@@ -84,14 +110,23 @@
 
 // Define a generic flag for 8 bit parallel
 #if defined (ESP32_PARALLEL) // Specific to ESP32 for backwards compatibility
+#if !defined (TFT_PARALLEL_8_BIT)
 #define TFT_PARALLEL_8_BIT // Generic parallel flag
+#endif
+#endif
+
+// Ensure ESP32 specific flag is defined for 8 bit parallel
+#if defined (TFT_PARALLEL_8_BIT)
+#if !defined (ESP32_PARALLEL)
+#define ESP32_PARALLEL
+#endif
 #endif
 
 // Code to check if DMA is busy, used by SPI bus transaction transaction and endWrite functions
 #if !defined(TFT_PARALLEL_8_BIT) && !defined(ILI9488_DRIVER) && !defined (RPI_DISPLAY_TYPE)
 #define ESP32_DMA
 // Code to check if DMA is busy, used by SPI DMA + transaction + endWrite functions
-#define DMA_BUSY_CHECK  { if (spiBusyCheck) dmaWait(); }
+#define DMA_BUSY_CHECK  dmaWait()
 #else
 #define DMA_BUSY_CHECK
 #endif
@@ -151,8 +186,9 @@
 // Define the CS (TFT chip select) pin drive code
 ////////////////////////////////////////////////////////////////////////////////////////
 #ifndef TFT_CS
-#define CS_L // No macro allocated so it generates no code
-#define CS_H // No macro allocated so it generates no code
+#define TFT_CS -1  // Keep DMA code happy
+#define CS_L       // No macro allocated so it generates no code
+#define CS_H       // No macro allocated so it generates no code
 #else
 #if defined (TFT_PARALLEL_8_BIT)
 #if TFT_CS >= 32
@@ -211,17 +247,70 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
-// Make sure TFT_MISO is defined if not used to avoid an error message
+// Make sure SPI default pins are assigned if not specified by user or set to -1
 ////////////////////////////////////////////////////////////////////////////////////////
 #if !defined (TFT_PARALLEL_8_BIT)
+
+#ifdef USE_HSPI_PORT
+
 #ifndef TFT_MISO
-#define TFT_MISO -1
+#define TFT_MISO 12
 #endif
+#if (TFT_MISO == -1)
+#undef TFT_MISO
+#define TFT_MISO 12
+#endif
+
+#ifndef TFT_MOSI
+#define TFT_MOSI 13
+#endif
+#if (TFT_MOSI == -1)
+#undef TFT_MOSI
+#define TFT_MOSI 13
+#endif
+
+#ifndef TFT_SCLK
+#define TFT_SCLK 14
+#endif
+#if (TFT_SCLK == -1)
+#undef TFT_SCLK
+#define TFT_SCLK 14
+#endif
+
+#else // VSPI port
+
+#ifndef TFT_MISO
+#define TFT_MISO 19
+#endif
+#if (TFT_MISO == -1)
+#undef TFT_MISO
+#define TFT_MISO 19
+#endif
+
+#ifndef TFT_MOSI
+#define TFT_MOSI 23
+#endif
+#if (TFT_MOSI == -1)
+#undef TFT_MOSI
+#define TFT_MOSI 23
+#endif
+
+#ifndef TFT_SCLK
+#define TFT_SCLK 18
+#endif
+#if (TFT_SCLK == -1)
+#undef TFT_SCLK
+#define TFT_SCLK 18
+#endif
+
+#endif
+
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Define the parallel bus interface chip pin drive code
 ////////////////////////////////////////////////////////////////////////////////////////
+#if 0
 #if defined (TFT_PARALLEL_8_BIT)
 
 // Create a bit set lookup table for data bus - wastes 1kbyte of RAM but speeds things up dramatically
@@ -382,7 +471,7 @@
 #define tft_Write_32D(C) TFT_WRITE_BITS((uint16_t)((C)<<8 | (C)>>8)<<16 | (uint16_t)((C)<<8 | (C)>>8), 32)
 
 #endif
-
+#endif /*0*/
 ////////////////////////////////////////////////////////////////////////////////////////
 // Macros to read from display using SPI or software SPI
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -395,8 +484,9 @@
 // Concatenate a byte sequence A,B,C,D to CDAB, P is a uint8_t pointer
 #define DAT8TO32(P) ( (uint32_t)P[0]<<8 | P[1] | P[2]<<24 | P[3]<<16 )
 
-#endif
+#endif // Header end
 
+#endif
 
 /***************************************************************************************
 **                         Section 3: Interface setup
@@ -441,40 +531,40 @@
 // Only load the fonts defined in User_Setup.h (to save space)
 // Set flag so RLE rendering code is optionally compiled
 #ifdef LOAD_GLCD
-#include  "Fonts/glcdfont.c"
+#include "Fonts/glcdfont.c"
 #endif
 
 #ifdef LOAD_FONT2
-#include  "Fonts/Font16.h"
+#include "Fonts/Font16.h"
 #endif
 
 #ifdef LOAD_FONT4
-#include  "Fonts/Font32rle.h"
+#include "Fonts/Font32rle.h"
 #define LOAD_RLE
 #endif
 
 #ifdef LOAD_FONT6
-#include  "Fonts/Font64rle.h"
+#include "Fonts/Font64rle.h"
 #ifndef LOAD_RLE
 #define LOAD_RLE
 #endif
 #endif
 
 #ifdef LOAD_FONT7
-#include  "Fonts/Font7srle.h"
+#include "Fonts/Font7srle.h"
 #ifndef LOAD_RLE
 #define LOAD_RLE
 #endif
 #endif
 
 #ifdef LOAD_FONT8
-#include  "Fonts/Font72rle.h"
+#include "Fonts/Font72rle.h"
 #ifndef LOAD_RLE
 #define LOAD_RLE
 #endif
 #elif defined LOAD_FONT8N // Optional narrower version
 #define LOAD_FONT8
-#include  "Fonts/Font72x53rle.h"
+#include "Fonts/Font72x53rle.h"
 #ifndef LOAD_RLE
 #define LOAD_RLE
 #endif
@@ -483,9 +573,9 @@
 #ifdef LOAD_GFXFF
 // We can include all the free fonts and they will only be built into
 // the sketch if they are used
-#include  "Fonts/GFXFF/gfxfont.h"
+#include "Fonts/GFXFF/gfxfont.h"
 // Call up any user custom fonts
-#include  "User_Setups/User_Custom_Fonts.h"
+#include "User_Setups/User_Custom_Fonts.h"
 #endif // #ifdef LOAD_GFXFF
 
 // Create a null default font in case some fonts not used (to prevent crash)
@@ -678,9 +768,12 @@ typedef struct {
     int8_t pin_tft_d6;
     int8_t pin_tft_d7;
 
+    int8_t pin_tft_led;
+    int8_t pin_tft_led_on;
+
     int8_t pin_tch_cs;   // Touch chip select pin
 
-    int16_t tft_spi_freq;// TFT write SPI frequency
+    int32_t tft_spi_freq;// TFT write SPI frequency
     int16_t tft_rd_freq; // TFT read  SPI frequency
     int16_t tch_spi_freq;// Touch controller read/write SPI frequency
 } setup_t;
@@ -712,6 +805,10 @@ public:
     // init() and begin() are equivalent, begin() included for backwards compatibility
     // Sketch defined tab colour option is for ST7735 displays only
     void     init(uint8_t tc = TAB_COLOUR), begin(uint8_t tc = TAB_COLOUR);
+
+    // lewis add. Mark : Used to set different models
+    void    setDriver(uint32_t model, uint32_t freq );
+
 
     // These are virtual so the TFT_eSprite class can override them with sprite specific functions
     virtual void     drawPixel(int32_t x, int32_t y, uint32_t color),
@@ -799,7 +896,7 @@ public:
     // The next functions can be used as a pair to copy screen blocks (or horizontal/vertical lines) to another location
     // Read a block of pixels to a data buffer, buffer is 16 bit and the size must be at least w * h
     void     readRect(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t *data);
-    // Write a block of pixels to the screen - this is a deprecated alternative to pushImage()
+    // Write a block of pixels to the screen which have been read by readRect()
     void     pushRect(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t *data);
 
     // These are used to render images or sprites stored in RAM arrays (used by Sprite class for 16bpp Sprites)
@@ -1011,6 +1108,29 @@ public:
 
 //--------------------------------------- private ------------------------------------//
 private:
+
+    void inline  tft_Write_8(uint8_t C);
+
+    void inline  tft_Write_16(uint16_t C);
+
+    void inline  tft_Write_16S(uint16_t C);
+
+    void inline  tft_Write_32(uint32_t C);
+
+    void inline  tft_Write_32C(uint32_t C, uint32_t D);
+
+    void inline  tft_Write_32D(uint32_t C);
+
+
+
+    void ILI9488_pushBlock(uint16_t color, uint32_t len);
+    void ILI9488_pushPixels(const void *data_in, uint32_t len);
+    void ILI9488_pushSwapBytePixels(const void *data_in, uint32_t len);
+    void General_pushBlock(uint16_t color, uint32_t len);
+    void General_pushSwapBytePixels(const void *data_in, uint32_t len);
+    void General_pushPixels(const void *data_in, uint32_t len);
+
+
     // Legacy begin and end prototypes - deprecated TODO: delete
     void     spi_begin();
     void     spi_end();
@@ -1100,16 +1220,17 @@ protected:
     /***************************************************************************************
     **                         Section 9: TFT_eSPI class conditional extensions
     ***************************************************************************************/
+// Load the Touch extension
 
 
 // Load the Anti-aliased font extension
 #ifdef SMOOTH_FONT
-// #include "Extensions/Smooth_font.h"  // Loaded if SMOOTH_FONT is defined by user
-// #include "Smooth_font.h"
+// Coded by Bodmer 10/2/18, see license in root directory.
+// This is part of the TFT_eSPI class and is associated with anti-aliased font functions
 
 public:
 
-// These are for the new antialiased fonts
+    // These are for the new antialiased fonts
     void     loadFont(const uint8_t array[]);
 #ifdef FONT_FS_AVAILABLE
     void     loadFont(String fontName, fs::FS &ffs);
@@ -1136,7 +1257,7 @@ public:
 
     fontMetrics gFont = { nullptr, 0, 0, 0, 0, 0, 0, 0 };
 
-// These are for the metrics for each individual glyph (so we don't need to seek this in file and waste time)
+    // These are for the metrics for each individual glyph (so we don't need to seek this in file and waste time)
     uint16_t *gUnicode = NULL;  //UTF-16 code, the codes are searched so do not need to be sequential
     uint8_t  *gHeight = NULL;   //cheight
     uint8_t  *gWidth = NULL;    //cwidth
@@ -1164,6 +1285,7 @@ private:
 
     uint8_t *fontPtr = nullptr;
 
+    setup_t drv;
 
 #endif
 
@@ -1171,6 +1293,14 @@ private:
 
 /***************************************************************************************
 **                         Section 10: Additional extension classes
+***************************************************************************************/
+
+// Load the Sprite Class
+/***************************************************************************************
+// The following class creates Sprites in RAM, graphics can then be drawn in the Sprite
+// and rendered quickly onto the TFT screen. The class inherits the graphics functions
+// from the TFT_eSPI class. Some functions are overridden by this class so that the
+// graphics are written to the Sprite rather than the TFT.
 ***************************************************************************************/
 
 class TFT_eSprite : public TFT_eSPI
@@ -1184,11 +1314,15 @@ public:
     // Sketch can cast returned value to (uint16_t*) for 16 bit depth if needed
     // RAM required is:
     //  - 1 bit per pixel for 1 bit colour depth
+    //  - 1 nibble per pixel for 4 bit colour
     //  - 1 byte per pixel for 8 bit colour
     //  - 2 bytes per pixel for 16 bit color depth
     ~TFT_eSprite(void);
 
     void    *createSprite(int16_t width, int16_t height, uint8_t frames = 1);
+
+    // Returns true if sprite has been created
+    bool     created(void);
 
     // Delete the sprite to free up the RAM
     void     deleteSprite(void);
@@ -1203,8 +1337,8 @@ public:
     int8_t   getColorDepth(void);
 
     // Set the palette for a 4 bit depth sprite.  Only the first 16 colours in the map are used.
-    void     createPalette(uint16_t *palette, int colors = 16);       // Palette in RAM
-    void     createPalette(const uint16_t *palette, int colors = 16); // Palette in FLASH
+    void     createPalette(uint16_t *palette = nullptr, uint8_t colors = 16);       // Palette in RAM
+    void     createPalette(const uint16_t *palette = nullptr, uint8_t colors = 16); // Palette in FLASH
 
     // Set a single palette index to the given color
     void     setPaletteColor(uint8_t index, uint16_t color);
@@ -1283,7 +1417,7 @@ public:
     // 16bpp = colour, 8bpp = byte, 4bpp = colour index, 1bpp = 1 or 0
     uint16_t readPixelValue(int32_t x, int32_t y);
 
-    // Write an image (colour bitmap) to the sprite.  Not implemented for _bpp == 4.
+    // Write an image (colour bitmap) to the sprite.
     void     pushImage(int32_t x0, int32_t y0, int32_t w, int32_t h, uint16_t *data);
     void     pushImage(int32_t x0, int32_t y0, int32_t w, int32_t h, const uint16_t *data);
 
@@ -1352,5 +1486,6 @@ protected:
     int32_t  _bitwidth;         // Sprite image bit width for drawPixel (for <8bpp Sprites, not swapped)
 
 };
+
 
 #endif // ends #ifndef _TFT_eSPIH_
