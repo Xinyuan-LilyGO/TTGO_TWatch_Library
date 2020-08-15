@@ -689,7 +689,7 @@ private:
 
     void initTFT()
     {
-#ifdef LILYGO_WATCH_HAS_DISPLAY
+#if defined LILYGO_WATCH_HAS_DISPLAY && !defined(LILYGO_EINK_TOUCHSCREEN)
 
 #ifdef LILYGO_WATCH_2020_V1
         //In the 2020V1 version, the ST7789 chip power supply

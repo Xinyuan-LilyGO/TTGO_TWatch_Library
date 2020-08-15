@@ -22,7 +22,10 @@ git clone https://github.com/olikraus/U8g2_for_Adafruit_GFX.git
 extern const unsigned char logoIcon[280];
 
 #include <GxEPD.h>
-#include <GxGDEP015OC1/GxGDEP015OC1.h>    // 1.54" b/w
+// #include <GxGDEP015OC1/GxGDEP015OC1.h>    // 1.54" b/w
+
+// TTGO uses GDEP015OC1 by default in the early stage, and later changed to GDEH0154D67
+#include <GxGDEH0154D67/GxGDEH0154D67.h>  // 1.54" b/w
 #include <GxIO/GxIO_SPI/GxIO_SPI.h>
 #include <GxIO/GxIO.h>
 
