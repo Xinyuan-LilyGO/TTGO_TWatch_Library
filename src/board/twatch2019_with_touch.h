@@ -3,7 +3,7 @@
 
 #define TFT_WIDTH           240
 #define TFT_HEIGHT          240
-#define TWATCH_TFT_MISO            (gpio_num_t)-1
+#define TWATCH_TFT_MISO            (gpio_num_t)0
 #define TWATCH_TFT_MOSI            (gpio_num_t)19
 #define TWATCH_TFT_SCLK            (gpio_num_t)18
 #define TWATCH_TFT_CS              (gpio_num_t)5

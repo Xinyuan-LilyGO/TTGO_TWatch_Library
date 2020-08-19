@@ -31,11 +31,11 @@
 #define TFT_WIDTH           240
 #define TFT_HEIGHT          240
 
-#define TFT_MISO            0   //IO0 is not used, just to remove errors
-#define TFT_MOSI            19
-#define TFT_SCLK            18
-#define TFT_CS              5
-#define TFT_DC              27
+// #define TFT_MISO            0   //IO0 is not used, just to remove errors
+// #define TFT_MOSI            19
+// #define TFT_SCLK            18
+// #define TFT_CS              5
+// #define TFT_DC              27
 
 #define SPI_FREQUENCY    27000000 // Actually sets it to 26.67MHz = 80/3
 // #define SPI_FREQUENCY       40000000
@@ -143,89 +143,89 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 // Define the DC (TFT Data/Command or Register Select (RS))pin drive code
 ////////////////////////////////////////////////////////////////////////////////////////
-#ifndef TFT_DC
-#define DC_C // No macro allocated so it generates no code
-#define DC_D // No macro allocated so it generates no code
-#else
-#if defined (TFT_PARALLEL_8_BIT)
-#define DC_C GPIO.out_w1tc = (1 << TFT_DC)
-#define DC_D GPIO.out_w1ts = (1 << TFT_DC)
-#else
-#if TFT_DC >= 32
-#ifdef RPI_DISPLAY_TYPE  // RPi displays need a slower DC change
-#define DC_C GPIO.out1_w1ts.val = (1 << (TFT_DC - 32)); \
-                     GPIO.out1_w1tc.val = (1 << (TFT_DC - 32))
-#define DC_D GPIO.out1_w1tc.val = (1 << (TFT_DC - 32)); \
-                     GPIO.out1_w1ts.val = (1 << (TFT_DC - 32))
-#else
-#define DC_C GPIO.out1_w1tc.val = (1 << (TFT_DC - 32))//;GPIO.out1_w1tc.val = (1 << (TFT_DC - 32))
-#define DC_D GPIO.out1_w1ts.val = (1 << (TFT_DC - 32))//;GPIO.out1_w1ts.val = (1 << (TFT_DC - 32))
-#endif
-#elif TFT_DC >= 0
-#ifdef RPI_DISPLAY_TYPE  // RPi ILI9486 display needs a slower DC change
-#define DC_C GPIO.out_w1tc = (1 << TFT_DC); \
-                     GPIO.out_w1tc = (1 << TFT_DC)
-#define DC_D GPIO.out_w1tc = (1 << TFT_DC); \
-                     GPIO.out_w1ts = (1 << TFT_DC)
-#elif defined (RPI_DISPLAY_TYPE)  // Other RPi displays need a slower C->D change
-#define DC_C GPIO.out_w1tc = (1 << TFT_DC)
-#define DC_D GPIO.out_w1tc = (1 << TFT_DC); \
-                     GPIO.out_w1ts = (1 << TFT_DC)
-#else
-#define DC_C GPIO.out_w1tc = (1 << TFT_DC)//;GPIO.out_w1tc = (1 << TFT_DC)
-#define DC_D GPIO.out_w1ts = (1 << TFT_DC)//;GPIO.out_w1ts = (1 << TFT_DC)
-#endif
-#else
-#define DC_C
-#define DC_D
-#endif
-#endif
-#endif
+// #ifndef TFT_DC
+// #define DC_C // No macro allocated so it generates no code
+// #define DC_D // No macro allocated so it generates no code
+// #else
+// #if defined (TFT_PARALLEL_8_BIT)
+// #define DC_C GPIO.out_w1tc = (1 << TFT_DC)
+// #define DC_D GPIO.out_w1ts = (1 << TFT_DC)
+// #else
+// #if TFT_DC >= 32
+// #ifdef RPI_DISPLAY_TYPE  // RPi displays need a slower DC change
+// #define DC_C GPIO.out1_w1ts.val = (1 << (TFT_DC - 32));
+//                      GPIO.out1_w1tc.val = (1 << (TFT_DC - 32))
+// #define DC_D GPIO.out1_w1tc.val = (1 << (TFT_DC - 32));
+//                      GPIO.out1_w1ts.val = (1 << (TFT_DC - 32))
+// #else
+// #define DC_C GPIO.out1_w1tc.val = (1 << (TFT_DC - 32))//;GPIO.out1_w1tc.val = (1 << (TFT_DC - 32))
+// #define DC_D GPIO.out1_w1ts.val = (1 << (TFT_DC - 32))//;GPIO.out1_w1ts.val = (1 << (TFT_DC - 32))
+// #endif
+// #elif TFT_DC >= 0
+// #ifdef RPI_DISPLAY_TYPE  // RPi ILI9486 display needs a slower DC change
+// #define DC_C GPIO.out_w1tc = (1 << TFT_DC);
+//                      GPIO.out_w1tc = (1 << TFT_DC)
+// #define DC_D GPIO.out_w1tc = (1 << TFT_DC);
+//                      GPIO.out_w1ts = (1 << TFT_DC)
+// #elif defined (RPI_DISPLAY_TYPE)  // Other RPi displays need a slower C->D change
+// #define DC_C GPIO.out_w1tc = (1 << TFT_DC)
+// #define DC_D GPIO.out_w1tc = (1 << TFT_DC);
+//                      GPIO.out_w1ts = (1 << TFT_DC)
+// #else
+#define DC_C GPIO.out_w1tc = (1 << tft_dc_pin)//;GPIO.out_w1tc = (1 << TFT_DC)
+#define DC_D GPIO.out_w1ts = (1 << tft_dc_pin)//;GPIO.out_w1ts = (1 << TFT_DC)
+// #endif
+// #else
+// #define DC_C
+// #define DC_D
+// #endif
+// #endif
+// #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Define the CS (TFT chip select) pin drive code
 ////////////////////////////////////////////////////////////////////////////////////////
-#ifndef TFT_CS
-#define TFT_CS -1  // Keep DMA code happy
-#define CS_L       // No macro allocated so it generates no code
-#define CS_H       // No macro allocated so it generates no code
-#else
-#if defined (TFT_PARALLEL_8_BIT)
-#if TFT_CS >= 32
-#define CS_L GPIO.out1_w1tc.val = (1 << (TFT_CS - 32))
-#define CS_H GPIO.out1_w1ts.val = (1 << (TFT_CS - 32))
-#elif TFT_CS >= 0
-#define CS_L GPIO.out_w1tc = (1 << TFT_CS)
-#define CS_H GPIO.out_w1ts = (1 << TFT_CS)
-#else
-#define CS_L
-#define CS_H
-#endif
-#else
-#if TFT_CS >= 32
-#ifdef RPI_DISPLAY_TYPE  // RPi ILI9486 display needs a slower CS change
-#define CS_L GPIO.out1_w1ts.val = (1 << (TFT_CS - 32)); \
-                     GPIO.out1_w1tc.val = (1 << (TFT_CS - 32))
-#define CS_H GPIO.out1_w1tc.val = (1 << (TFT_CS - 32)); \
-                     GPIO.out1_w1ts.val = (1 << (TFT_CS - 32))
-#else
-#define CS_L GPIO.out1_w1tc.val = (1 << (TFT_CS - 32)); GPIO.out1_w1tc.val = (1 << (TFT_CS - 32))
-#define CS_H GPIO.out1_w1ts.val = (1 << (TFT_CS - 32))//;GPIO.out1_w1ts.val = (1 << (TFT_CS - 32))
-#endif
-#elif TFT_CS >= 0
-#ifdef RPI_DISPLAY_TYPE  // RPi ILI9486 display needs a slower CS change
-#define CS_L GPIO.out_w1ts = (1 << TFT_CS); GPIO.out_w1tc = (1 << TFT_CS)
-#define CS_H GPIO.out_w1tc = (1 << TFT_CS); GPIO.out_w1ts = (1 << TFT_CS)
-#else
-#define CS_L GPIO.out_w1tc = (1 << TFT_CS);GPIO.out_w1tc = (1 << TFT_CS)
-#define CS_H GPIO.out_w1ts = (1 << TFT_CS)//;GPIO.out_w1ts = (1 << TFT_CS)
-#endif
-#else
-#define CS_L
-#define CS_H
-#endif
-#endif
-#endif
+// #ifndef TFT_CS
+// #define TFT_CS -1  // Keep DMA code happy
+// #define CS_L       // No macro allocated so it generates no code
+// #define CS_H       // No macro allocated so it generates no code
+// #else
+// #if defined (TFT_PARALLEL_8_BIT)
+// #if TFT_CS >= 32
+// #define CS_L GPIO.out1_w1tc.val = (1 << (TFT_CS - 32))
+// #define CS_H GPIO.out1_w1ts.val = (1 << (TFT_CS - 32))
+// #elif TFT_CS >= 0
+// #define CS_L GPIO.out_w1tc = (1 << TFT_CS)
+// #define CS_H GPIO.out_w1ts = (1 << TFT_CS)
+// #else
+// #define CS_L
+// #define CS_H
+// #endif
+// #else
+// #if TFT_CS >= 32
+// #ifdef RPI_DISPLAY_TYPE  // RPi ILI9486 display needs a slower CS change
+// #define CS_L GPIO.out1_w1ts.val = (1 << (TFT_CS - 32));
+//                      GPIO.out1_w1tc.val = (1 << (TFT_CS - 32))
+// #define CS_H GPIO.out1_w1tc.val = (1 << (TFT_CS - 32));
+//                      GPIO.out1_w1ts.val = (1 << (TFT_CS - 32))
+// #else
+// #define CS_L GPIO.out1_w1tc.val = (1 << (TFT_CS - 32)); GPIO.out1_w1tc.val = (1 << (TFT_CS - 32))
+// #define CS_H GPIO.out1_w1ts.val = (1 << (TFT_CS - 32))//;GPIO.out1_w1ts.val = (1 << (TFT_CS - 32))
+// #endif
+// #elif TFT_CS >= 0
+// #ifdef RPI_DISPLAY_TYPE  // RPi ILI9486 display needs a slower CS change
+// #define CS_L GPIO.out_w1ts = (1 << TFT_CS); GPIO.out_w1tc = (1 << TFT_CS)
+// #define CS_H GPIO.out_w1tc = (1 << TFT_CS); GPIO.out_w1ts = (1 << TFT_CS)
+// #else
+#define CS_L GPIO.out_w1tc = (1 << drv.pin_tft_cs);GPIO.out_w1tc = (1 << drv.pin_tft_cs)
+#define CS_H GPIO.out_w1ts = (1 << drv.pin_tft_cs)//;GPIO.out_w1ts = (1 << TFT_CS)
+// #endif
+// #else
+// #define CS_L
+// #define CS_H
+// #endif
+// #endif
+// #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Define the WR (TFT Write) pin drive code
@@ -249,63 +249,59 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 // Make sure SPI default pins are assigned if not specified by user or set to -1
 ////////////////////////////////////////////////////////////////////////////////////////
-#if !defined (TFT_PARALLEL_8_BIT)
+// #if !defined (TFT_PARALLEL_8_BIT)
+// #ifdef USE_HSPI_PORT
+// #ifndef TFT_MISO
+// #define TFT_MISO 12
+// #endif
+// #if (TFT_MISO == -1)
+// #undef TFT_MISO
+// #define TFT_MISO 12
+// #endif
 
-#ifdef USE_HSPI_PORT
+// #ifndef TFT_MOSI
+// #define TFT_MOSI 13
+// #endif
+// #if (TFT_MOSI == -1)
+// #undef TFT_MOSI
+// #define TFT_MOSI 13
+// #endif
 
-#ifndef TFT_MISO
-#define TFT_MISO 12
-#endif
-#if (TFT_MISO == -1)
-#undef TFT_MISO
-#define TFT_MISO 12
-#endif
+// #ifndef TFT_SCLK
+// #define TFT_SCLK 14
+// #endif
+// #if (TFT_SCLK == -1)
+// #undef TFT_SCLK
+// #define TFT_SCLK 14
+// #endif
 
-#ifndef TFT_MOSI
-#define TFT_MOSI 13
-#endif
-#if (TFT_MOSI == -1)
-#undef TFT_MOSI
-#define TFT_MOSI 13
-#endif
+// #else // VSPI port
 
-#ifndef TFT_SCLK
-#define TFT_SCLK 14
-#endif
-#if (TFT_SCLK == -1)
-#undef TFT_SCLK
-#define TFT_SCLK 14
-#endif
+// #ifndef TFT_MISO
+// #define TFT_MISO 19
+// #endif
+// #if (TFT_MISO == -1)
+// #undef TFT_MISO
+// #define TFT_MISO 19
+// #endif
 
-#else // VSPI port
+// #ifndef TFT_MOSI
+// #define TFT_MOSI 23
+// #endif
+// #if (TFT_MOSI == -1)
+// #undef TFT_MOSI
+// #define TFT_MOSI 23
+// #endif
 
-#ifndef TFT_MISO
-#define TFT_MISO 19
-#endif
-#if (TFT_MISO == -1)
-#undef TFT_MISO
-#define TFT_MISO 19
-#endif
-
-#ifndef TFT_MOSI
-#define TFT_MOSI 23
-#endif
-#if (TFT_MOSI == -1)
-#undef TFT_MOSI
-#define TFT_MOSI 23
-#endif
-
-#ifndef TFT_SCLK
-#define TFT_SCLK 18
-#endif
-#if (TFT_SCLK == -1)
-#undef TFT_SCLK
-#define TFT_SCLK 18
-#endif
-
-#endif
-
-#endif
+// #ifndef TFT_SCLK
+// #define TFT_SCLK 18
+// #endif
+// #if (TFT_SCLK == -1)
+// #undef TFT_SCLK
+// #define TFT_SCLK 18
+// #endif
+// #endif
+// #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Define the parallel bus interface chip pin drive code
@@ -749,10 +745,10 @@ typedef struct {
     uint8_t r3_x_offset;
     uint8_t r3_y_offset;
 
-    int8_t pin_tft_mosi; // SPI pins
-    int8_t pin_tft_miso;
-    int8_t pin_tft_clk;
-    int8_t pin_tft_cs;
+    uint8_t pin_tft_mosi; // SPI pins
+    uint8_t pin_tft_miso;
+    uint8_t pin_tft_clk;
+    uint8_t pin_tft_cs;
 
     int8_t pin_tft_dc;   // Control pins
     int8_t pin_tft_rd;
@@ -808,6 +804,7 @@ public:
 
     // lewis add. Mark : Used to set different models
     void    setDriver(uint32_t model, uint32_t freq );
+    void    setPins(uint8_t mosi, uint8_t miso, uint8_t sclk, uint8_t cs, uint8_t dc);
 
 
     // These are virtual so the TFT_eSprite class can override them with sprite specific functions
@@ -1120,7 +1117,6 @@ private:
     void inline  tft_Write_32C(uint32_t C, uint32_t D);
 
     void inline  tft_Write_32D(uint32_t C);
-
 
 
     void ILI9488_pushBlock(uint16_t color, uint32_t len);

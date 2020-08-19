@@ -1075,6 +1075,7 @@ void TFT_eSPI::pushImageDMA(int32_t x, int32_t y, int32_t w, int32_t h, uint16_t
 ** Description:             Toggles DC line during transaction
 ***************************************************************************************/
 extern "C" void dc_callback();
+static uint8_t tft_dc_pin;
 
 void IRAM_ATTR dc_callback(spi_transaction_t *spi_tx)
 {
@@ -1091,9 +1092,9 @@ bool TFT_eSPI::initDMA(void)
     if (DMA_Enabled) return false;
     esp_err_t ret;
     spi_bus_config_t buscfg = {
-        .mosi_io_num = TFT_MOSI,
-        .miso_io_num = TFT_MISO,
-        .sclk_io_num = TFT_SCLK,
+        .mosi_io_num = drv.pin_tft_mosi,
+        .miso_io_num = drv.pin_tft_miso,
+        .sclk_io_num = drv.pin_tft_clk,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
         .max_transfer_sz = TFT_WIDTH * TFT_HEIGHT * 2 + 8, // TFT screen size
@@ -1110,7 +1111,7 @@ bool TFT_eSPI::initDMA(void)
         .cs_ena_posttrans = 0,
         .clock_speed_hz = drv.tft_spi_freq,     // lewis add. Mark : Used to set different models
         .input_delay_ns = 0,
-        .spics_io_num = TFT_CS,
+        .spics_io_num = drv.pin_tft_cs,
         .flags = SPI_DEVICE_NO_DUMMY,
         .queue_size = 7,
         .pre_cb = dc_callback, //Callback to handle D/C line
@@ -1412,64 +1413,21 @@ void TFT_eSPI::begin(uint8_t tc)
 void TFT_eSPI::init(uint8_t tc)
 {
     if (_booted) {
-#if !defined (ESP32) && !defined(TFT_PARALLEL_8_BIT)
-#if defined (TFT_CS) && (TFT_CS >= 0)
-        cspinmask = (uint32_t) digitalPinToBitMask(TFT_CS);
-#endif
 
-#if defined (TFT_DC) && (TFT_DC >= 0)
-        dcpinmask = (uint32_t) digitalPinToBitMask(TFT_DC);
-#endif
-
-#if defined (TFT_WR) && (TFT_WR >= 0)
-        wrpinmask = (uint32_t) digitalPinToBitMask(TFT_WR);
-#endif
-
-#if defined (TFT_SCLK) && (TFT_SCLK >= 0)
-        sclkpinmask = (uint32_t) digitalPinToBitMask(TFT_SCLK);
-#endif
-
-#if defined (TFT_SPI_OVERLAP) && defined (ESP8266)
-// Overlap mode SD0=MISO, SD1=MOSI, CLK=SCLK must use D3 as CS
-//    pins(int8_t sck, int8_t miso, int8_t mosi, int8_t ss);
-//spi.pins(        6,          7,           8,          0);
-        spi.pins(6, 7, 8, 0);
-#endif
-
-        spi.begin(); // This will set HMISO to input
-
-#else
-#if !defined(TFT_PARALLEL_8_BIT)
-#if defined (TFT_MOSI) && !defined (TFT_SPI_OVERLAP)
-        spi.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, -1);
-#else
-        spi.begin();
-#endif
-#endif
-#endif
+        spi.begin(drv.pin_tft_clk, drv.pin_tft_miso, drv.pin_tft_mosi);
 
         inTransaction = false;
         locked = true;
 
         INIT_TFT_DATA_BUS;
 
-
-
-#ifdef TFT_CS
-// Set to output once again in case D6 (MISO) is used for CS
-        pinMode(TFT_CS, OUTPUT);
-        digitalWrite(TFT_CS, HIGH); // Chip select high (inactive)
-#elif defined (ESP8266) && !defined (TFT_PARALLEL_8_BIT)
-        spi.setHwCs(1); // Use hardware SS toggling
-#endif
-
-
+        // Set to output once again in case D6 (MISO) is used for CS
+        pinMode(drv.pin_tft_cs, OUTPUT);
+        digitalWrite(drv.pin_tft_cs, HIGH); // Chip select high (inactive)
 
         // Set to output once again in case D6 (MISO) is used for DC
-#ifdef TFT_DC
-        pinMode(TFT_DC, OUTPUT);
-        digitalWrite(TFT_DC, HIGH); // Data/Command high = data mode
-#endif
+        pinMode(drv.pin_tft_dc, OUTPUT);
+        digitalWrite(drv.pin_tft_dc, HIGH); // Data/Command high = data mode
 
         _booted = false;
         end_tft_write();
@@ -5295,6 +5253,12 @@ void TFT_eSPI::getSetup(setup_t &tft_settings)
     tft_settings.tft_width  = _init_width;
     tft_settings.tft_height = _init_height;
 
+    tft_settings.pin_tft_mosi = drv.pin_tft_mosi;
+    tft_settings.pin_tft_miso = drv.pin_tft_miso;
+    tft_settings.pin_tft_clk  = drv.pin_tft_clk;
+    tft_settings.pin_tft_cs   = drv.pin_tft_cs;
+    tft_settings.pin_tft_dc  = drv.pin_tft_dc;
+
 #ifdef CGRAM_OFFSET
     tft_settings.r0_x_offset = colstart;
     tft_settings.r0_y_offset = rowstart;
@@ -5313,36 +5277,6 @@ void TFT_eSPI::getSetup(setup_t &tft_settings)
     tft_settings.r2_y_offset = 0;
     tft_settings.r3_x_offset = 0;
     tft_settings.r3_y_offset = 0;
-#endif
-
-#if defined (TFT_MOSI)
-    tft_settings.pin_tft_mosi = TFT_MOSI;
-#else
-    tft_settings.pin_tft_mosi = -1;
-#endif
-
-#if defined (TFT_MISO)
-    tft_settings.pin_tft_miso = TFT_MISO;
-#else
-    tft_settings.pin_tft_miso = -1;
-#endif
-
-#if defined (TFT_SCLK)
-    tft_settings.pin_tft_clk  = TFT_SCLK;
-#else
-    tft_settings.pin_tft_clk  = -1;
-#endif
-
-#if defined (TFT_CS)
-    tft_settings.pin_tft_cs   = TFT_CS;
-#else
-    tft_settings.pin_tft_cs   = -1;
-#endif
-
-#if defined (TFT_DC)
-    tft_settings.pin_tft_dc  = TFT_DC;
-#else
-    tft_settings.pin_tft_dc  = -1;
 #endif
 
 #if defined (TFT_RD)
@@ -8254,3 +8188,20 @@ void TFT_eSPI::setDriver(uint32_t model, uint32_t freq)
     drv.tft_driver = model;
     drv.tft_spi_freq = freq;
 }
+
+
+void TFT_eSPI::setPins(uint8_t mosi, uint8_t miso, uint8_t sclk, uint8_t cs, uint8_t dc)
+{
+    drv.pin_tft_mosi = mosi;
+    drv.pin_tft_miso = miso;
+    drv.pin_tft_clk = sclk;
+    drv.pin_tft_cs = cs;
+    drv.pin_tft_dc = dc;
+    tft_dc_pin = dc;
+}
+
+
+
+
+
+

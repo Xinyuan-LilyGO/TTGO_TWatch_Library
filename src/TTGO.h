@@ -687,9 +687,10 @@ private:
     }
 
 
+
     void initTFT()
     {
-#if defined LILYGO_WATCH_HAS_DISPLAY && !defined(LILYGO_EINK_TOUCHSCREEN)
+#if (defined(LILYGO_WATCH_HAS_DISPLAY) && !defined(LILYGO_EINK_TOUCHSCREEN)) || defined(LILYGO_BLOCK_ILI9488_MODULE) || defined(LILYGO_BLOCK_ST7796S_MODULE)
 
 #ifdef LILYGO_WATCH_2020_V1
         //In the 2020V1 version, the ST7789 chip power supply
@@ -717,10 +718,10 @@ private:
         h = 480;
         drv = 0x9488;
         freq = 27000000;
-#endif
-
+#endif  /* (LILYGO_BLOCK_ST7796S_MODULE) && defined(LILYGO_WATCH_BLOCK) */
         tft = new TFT_eSPI(w, h);
         tft->setDriver(drv, freq);
+        tft->setPins(TWATCH_TFT_MOSI, TWATCH_TFT_MISO, TWATCH_TFT_SCLK, TWATCH_TFT_CS, TWATCH_TFT_DC);
 #endif  /*EXTERNAL_TFT_ESPI_LIBRARY*/
 
         tft->init();
@@ -744,13 +745,13 @@ private:
 
     void initTouch()
     {
-#if defined(LILYGO_WATCH_HAS_TOUCH) && !defined(LILYGO_EINK_TOUCHSCREEN)
+#if defined(LILYGO_WATCH_HAS_TOUCH) && !defined(LILYGO_EINK_TOUCHSCREEN) &&  !defined(LILYGO_BLOCK_ST7796S_MODULE) &&  !defined(LILYGO_BLOCK_ILI9488_MODULE)
         touch = new FT5206_Class();
         Wire1.begin(TOUCH_SDA, TOUCH_SCL);
         if (!touch->begin(Wire1)) {
             DBGX("Begin touch FAIL");
         }
-#elif defined(LILYGO_EINK_TOUCHSCREEN) || defined(LILYGO_BLOCK_ST7796S_MODULE)
+#elif defined(LILYGO_EINK_TOUCHSCREEN) || defined(LILYGO_BLOCK_ST7796S_MODULE) || defined(LILYGO_BLOCK_ILI9488_MODULE)
         touch = new FT5206_Class();
         if (!touch->begin(axpReadBytes, axpWriteBytes)) {
             DBGX("Begin touch FAIL");
