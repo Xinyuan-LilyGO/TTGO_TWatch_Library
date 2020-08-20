@@ -19,6 +19,7 @@ extern "C" {
 #include "../lv_misc/lv_area.h"
 #include "../lv_misc/lv_anim.h"
 #include "../lv_misc/lv_types.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_draw/lv_draw_blend.h"
 
 /*********************
@@ -80,13 +81,10 @@ enum {
 
 typedef uint8_t lv_text_decor_t;
 
-typedef union {
-    struct {
-        uint8_t state       : 7; /* To which state the property refers to*/
-        uint8_t inherit     : 1; /*1: The property can be inherited*/
-    } bits;
-    uint8_t full;
-} lv_style_attr_t;
+typedef uint8_t lv_style_attr_t;
+
+#define LV_STYLE_ATTR_GET_INHERIT(f) ((f)&0x80)
+#define LV_STYLE_ATTR_GET_STATE(f) ((f)&0x7F)
 
 #define LV_STYLE_ID_VALUE 0x0   /*max 9 pcs*/
 #define LV_STYLE_ID_COLOR 0x9   /*max 3 pcs*/
@@ -101,7 +99,7 @@ enum {
     LV_STYLE_PROP_INIT(LV_STYLE_TRANSFORM_WIDTH,    0x0, LV_STYLE_ID_VALUE + 4, LV_STYLE_ATTR_NONE),
     LV_STYLE_PROP_INIT(LV_STYLE_TRANSFORM_HEIGHT,   0x0, LV_STYLE_ID_VALUE + 5, LV_STYLE_ATTR_NONE),
     LV_STYLE_PROP_INIT(LV_STYLE_TRANSFORM_ANGLE,    0x0, LV_STYLE_ID_VALUE + 6, LV_STYLE_ATTR_NONE),
-    LV_STYLE_PROP_INIT(LV_STYLE_TRANSFORM_ZOOM,   0x0, LV_STYLE_ID_VALUE + 7, LV_STYLE_ATTR_NONE),
+    LV_STYLE_PROP_INIT(LV_STYLE_TRANSFORM_ZOOM,     0x0, LV_STYLE_ID_VALUE + 7, LV_STYLE_ATTR_NONE),
     LV_STYLE_PROP_INIT(LV_STYLE_OPA_SCALE,          0x0, LV_STYLE_ID_OPA + 0,   LV_STYLE_ATTR_INHERIT),
 
     LV_STYLE_PROP_INIT(LV_STYLE_PAD_TOP,            0x1, LV_STYLE_ID_VALUE + 0, LV_STYLE_ATTR_NONE),
@@ -136,8 +134,8 @@ enum {
     LV_STYLE_PROP_INIT(LV_STYLE_OUTLINE_OPA,         0x4, LV_STYLE_ID_OPA   + 0, LV_STYLE_ATTR_NONE),
 
     LV_STYLE_PROP_INIT(LV_STYLE_SHADOW_WIDTH,       0x5, LV_STYLE_ID_VALUE + 0, LV_STYLE_ATTR_NONE),
-    LV_STYLE_PROP_INIT(LV_STYLE_SHADOW_OFS_X,    0x5, LV_STYLE_ID_VALUE + 1, LV_STYLE_ATTR_NONE),
-    LV_STYLE_PROP_INIT(LV_STYLE_SHADOW_OFS_Y,    0x5, LV_STYLE_ID_VALUE + 2, LV_STYLE_ATTR_NONE),
+    LV_STYLE_PROP_INIT(LV_STYLE_SHADOW_OFS_X,       0x5, LV_STYLE_ID_VALUE + 1, LV_STYLE_ATTR_NONE),
+    LV_STYLE_PROP_INIT(LV_STYLE_SHADOW_OFS_Y,       0x5, LV_STYLE_ID_VALUE + 2, LV_STYLE_ATTR_NONE),
     LV_STYLE_PROP_INIT(LV_STYLE_SHADOW_SPREAD,      0x5, LV_STYLE_ID_VALUE + 3, LV_STYLE_ATTR_NONE),
     LV_STYLE_PROP_INIT(LV_STYLE_SHADOW_BLEND_MODE,  0x5, LV_STYLE_ID_VALUE + 4, LV_STYLE_ATTR_NONE),
     LV_STYLE_PROP_INIT(LV_STYLE_SHADOW_COLOR,       0x5, LV_STYLE_ID_COLOR + 0, LV_STYLE_ATTR_NONE),
@@ -193,12 +191,12 @@ enum {
     LV_STYLE_PROP_INIT(LV_STYLE_TRANSITION_PROP_6,  0xB, LV_STYLE_ID_VALUE + 7, LV_STYLE_ATTR_NONE),
     LV_STYLE_PROP_INIT(LV_STYLE_TRANSITION_PATH,    0xB, LV_STYLE_ID_PTR + 0, LV_STYLE_ATTR_NONE),
 
-    LV_STYLE_PROP_INIT(LV_STYLE_SCALE_WIDTH,         0xC, LV_STYLE_ID_VALUE + 0, LV_STYLE_ATTR_NONE),
+    LV_STYLE_PROP_INIT(LV_STYLE_SCALE_WIDTH,            0xC, LV_STYLE_ID_VALUE + 0, LV_STYLE_ATTR_NONE),
     LV_STYLE_PROP_INIT(LV_STYLE_SCALE_BORDER_WIDTH,     0xC, LV_STYLE_ID_VALUE + 1, LV_STYLE_ATTR_NONE),
     LV_STYLE_PROP_INIT(LV_STYLE_SCALE_END_BORDER_WIDTH, 0xC, LV_STYLE_ID_VALUE + 2, LV_STYLE_ATTR_NONE),
-    LV_STYLE_PROP_INIT(LV_STYLE_SCALE_END_LINE_WIDTH, 0xC, LV_STYLE_ID_VALUE + 3, LV_STYLE_ATTR_NONE),
-    LV_STYLE_PROP_INIT(LV_STYLE_SCALE_GRAD_COLOR,     0xC, LV_STYLE_ID_COLOR + 0, LV_STYLE_ATTR_NONE),
-    LV_STYLE_PROP_INIT(LV_STYLE_SCALE_END_COLOR,      0xC, LV_STYLE_ID_COLOR + 1, LV_STYLE_ATTR_NONE),
+    LV_STYLE_PROP_INIT(LV_STYLE_SCALE_END_LINE_WIDTH,   0xC, LV_STYLE_ID_VALUE + 3, LV_STYLE_ATTR_NONE),
+    LV_STYLE_PROP_INIT(LV_STYLE_SCALE_GRAD_COLOR,       0xC, LV_STYLE_ID_COLOR + 0, LV_STYLE_ATTR_NONE),
+    LV_STYLE_PROP_INIT(LV_STYLE_SCALE_END_COLOR,        0xC, LV_STYLE_ID_COLOR + 1, LV_STYLE_ATTR_NONE),
 };
 
 typedef uint16_t lv_style_property_t;
@@ -541,6 +539,19 @@ lv_res_t _lv_style_list_get_opa(lv_style_list_t * list, lv_style_property_t prop
  */
 lv_res_t _lv_style_list_get_ptr(lv_style_list_t * list, lv_style_property_t prop, const void ** res);
 
+/**
+ * Check whether a style is valid (initialized correctly)
+ * @param style pointer to a style
+ * @return true: valid
+ */
+bool lv_debug_check_style(const lv_style_t * style);
+
+/**
+ * Check whether a style list is valid (initialized correctly)
+ * @param style pointer to a style
+ * @return true: valid
+ */
+bool lv_debug_check_style_list(const lv_style_list_t * list);
 
 /*************************
  *    GLOBAL VARIABLES
@@ -559,8 +570,36 @@ lv_res_t _lv_style_list_get_ptr(lv_style_list_t * list, lv_style_property_t prop
  *     lv_style_init(&my_style);
  *     lv_style_copy(&my_style, &style_to_copy);
  */
-#define LV_STYLE_CREATE(name, copy_p) static lv_style_t name; lv_style_init(&name); lv_style_copy(&name, copy);
+#define LV_STYLE_CREATE(name, copy_p) static lv_style_t name; lv_style_init(&name); lv_style_copy(&name, copy_p);
 
+
+
+#if LV_USE_DEBUG
+
+# ifndef LV_DEBUG_IS_STYLE
+#  define LV_DEBUG_IS_STYLE(style_p) (lv_debug_check_style(style_p))
+# endif
+
+# ifndef LV_DEBUG_IS_STYLE_LIST
+#  define LV_DEBUG_IS_STYLE_LIST(list_p) (lv_debug_check_style_list(list_p))
+# endif
+
+# if LV_USE_ASSERT_STYLE
+#  ifndef LV_ASSERT_STYLE
+#   define LV_ASSERT_STYLE(style_p) LV_DEBUG_ASSERT(LV_DEBUG_IS_STYLE(style_p), "Invalid style", style_p);
+#  endif
+#  ifndef LV_ASSERT_STYLE_LIST
+#   define LV_ASSERT_STYLE_LIST(list_p) LV_DEBUG_ASSERT(LV_DEBUG_IS_STYLE_LIST(list_p), "Invalid style list", list_p);
+#  endif
+# else
+#   define LV_ASSERT_STYLE(style_p) true
+#   define LV_ASSERT_STYLE_LIST(list_p) true
+# endif
+
+#else
+# define LV_ASSERT_STYLE(p) true
+# define LV_ASSERT_STYLE_LIST(p) true
+#endif
 
 #ifdef __cplusplus
 } /* extern "C" */

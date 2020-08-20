@@ -8,7 +8,7 @@
  *********************/
 #include <stdlib.h>
 #include "lv_canvas.h"
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_misc/lv_math.h"
 #include "../lv_draw/lv_draw.h"
 #include "../lv_core/lv_refr.h"
@@ -364,6 +364,15 @@ void lv_canvas_transform(lv_obj_t * canvas, lv_img_dsc_t * img, int16_t angle, u
 
     lv_obj_invalidate(canvas);
 #else
+    LV_UNUSED(canvas);
+    LV_UNUSED(img);
+    LV_UNUSED(angle);
+    LV_UNUSED(zoom);
+    LV_UNUSED(offset_x);
+    LV_UNUSED(offset_y);
+    LV_UNUSED(pivot_x);
+    LV_UNUSED(pivot_y);
+    LV_UNUSED(antialias);
     LV_LOG_WARN("LV_USE_IMG_TRANSFORM is disabled in lv_conf.h");
 #endif
 }
@@ -648,6 +657,7 @@ void lv_canvas_blur_ver(lv_obj_t * canvas, const lv_area_t * area, uint16_t r)
  * Fill the canvas with color
  * @param canvas pointer to a canvas
  * @param color the background color
+ * @param opa the desired opacity
  */
 void lv_canvas_fill_bg(lv_obj_t * canvas, lv_color_t color, lv_opa_t opa)
 {
@@ -685,10 +695,10 @@ void lv_canvas_fill_bg(lv_obj_t * canvas, lv_color_t color, lv_opa_t opa)
  * @param y top coordinate of the rectangle
  * @param w width of the rectangle
  * @param h height of the rectangle
- * @param style style of the rectangle (`body` properties are used except `padding`)
+ * @param rect_dsc descriptor of the rectangle
  */
 void lv_canvas_draw_rect(lv_obj_t * canvas, lv_coord_t x, lv_coord_t y, lv_coord_t w, lv_coord_t h,
-                         lv_draw_rect_dsc_t * rect_dsc)
+                         const lv_draw_rect_dsc_t * rect_dsc)
 {
     LV_ASSERT_OBJ(canvas, LV_OBJX_NAME);
 
@@ -754,7 +764,7 @@ void lv_canvas_draw_rect(lv_obj_t * canvas, lv_coord_t x, lv_coord_t y, lv_coord
  * @param x left coordinate of the text
  * @param y top coordinate of the text
  * @param max_w max width of the text. The text will be wrapped to fit into this size
- * @param style style of the text (`text` properties are used)
+ * @param label_draw_dsc pointer to a valid label descriptor `lv_draw_label_dsc_t`
  * @param txt text to display
  * @param align align of the text (`LV_LABEL_ALIGN_LEFT/RIGHT/CENTER`)
  */
@@ -832,10 +842,10 @@ void lv_canvas_draw_text(lv_obj_t * canvas, lv_coord_t x, lv_coord_t y, lv_coord
  * Draw an image on the canvas
  * @param canvas pointer to a canvas object
  * @param src image source. Can be a pointer an `lv_img_dsc_t` variable or a path an image.
- * @param style style of the image (`image` properties are used)
+ * @param img_draw_dsc pointer to a valid label descriptor `lv_draw_img_dsc_t`
  */
 void lv_canvas_draw_img(lv_obj_t * canvas, lv_coord_t x, lv_coord_t y, const void * src,
-                        lv_draw_img_dsc_t * img_draw_dsc)
+                        const lv_draw_img_dsc_t * img_draw_dsc)
 {
     LV_ASSERT_OBJ(canvas, LV_OBJX_NAME);
 
@@ -897,10 +907,10 @@ void lv_canvas_draw_img(lv_obj_t * canvas, lv_coord_t x, lv_coord_t y, const voi
  * @param canvas pointer to a canvas object
  * @param points point of the line
  * @param point_cnt number of points
- * @param style style of the line (`line` properties are used)
+ * @param line_draw_dsc pointer to an initialized `lv_draw_line_dsc_t` variable
  */
 void lv_canvas_draw_line(lv_obj_t * canvas, const lv_point_t points[], uint32_t point_cnt,
-                         lv_draw_line_dsc_t * line_draw_dsc)
+                         const lv_draw_line_dsc_t * line_draw_dsc)
 {
     LV_ASSERT_OBJ(canvas, LV_OBJX_NAME);
 
@@ -960,10 +970,10 @@ void lv_canvas_draw_line(lv_obj_t * canvas, const lv_point_t points[], uint32_t 
  * @param canvas pointer to a canvas object
  * @param points point of the polygon
  * @param point_cnt number of points
- * @param style style of the polygon (`body.main_color` and `body.opa` is used)
+ * @param poly_draw_dsc pointer to an initialized `lv_draw_rect_dsc_t` variable
  */
 void lv_canvas_draw_polygon(lv_obj_t * canvas, const lv_point_t points[], uint32_t point_cnt,
-                            lv_draw_rect_dsc_t * poly_draw_dsc)
+                            const lv_draw_rect_dsc_t * poly_draw_dsc)
 {
     LV_ASSERT_OBJ(canvas, LV_OBJX_NAME);
 
@@ -1009,7 +1019,7 @@ void lv_canvas_draw_polygon(lv_obj_t * canvas, const lv_point_t points[], uint32
     lv_disp_t * refr_ori = _lv_refr_get_disp_refreshing();
     _lv_refr_set_disp_refreshing(&disp);
 
-    //    lv_draw_polygon(points, point_cnt, &mask, poly_draw_dsc);
+    lv_draw_polygon(points, point_cnt, &mask, poly_draw_dsc);
 
     _lv_refr_set_disp_refreshing(refr_ori);
 
@@ -1024,10 +1034,10 @@ void lv_canvas_draw_polygon(lv_obj_t * canvas, const lv_point_t points[], uint32
  * @param r radius of the arc
  * @param start_angle start angle in degrees
  * @param end_angle end angle in degrees
- * @param style style of the polygon (`body.main_color` and `body.opa` is used)
+ * @param arc_draw_dsc pointer to an initialized `lv_draw_line_dsc_t` variable
  */
 void lv_canvas_draw_arc(lv_obj_t * canvas, lv_coord_t x, lv_coord_t y, lv_coord_t r, int32_t start_angle,
-                        int32_t end_angle, lv_draw_line_dsc_t * arc_draw_dsc)
+                        int32_t end_angle, const lv_draw_line_dsc_t * arc_draw_dsc)
 {
     LV_ASSERT_OBJ(canvas, LV_OBJX_NAME);
 

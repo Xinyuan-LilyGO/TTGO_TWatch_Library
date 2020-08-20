@@ -8,7 +8,7 @@
 /*********************
  *      INCLUDES
  *********************/
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_hal/lv_hal_indev.h"
 #include "../lv_core/lv_indev.h"
 #include "../lv_misc/lv_mem.h"
@@ -73,7 +73,7 @@ lv_indev_t * lv_indev_drv_register(lv_indev_drv_t * driver)
     if(driver->disp == NULL) driver->disp = lv_disp_get_default();
 
     if(driver->disp == NULL) {
-        LV_LOG_WARN("lv_indev_drv_register: no display registered hence can't attache the indev to "
+        LV_LOG_WARN("lv_indev_drv_register: no display registered hence can't attach the indev to "
                     "a display");
         return NULL;
     }
@@ -142,6 +142,11 @@ bool _lv_indev_read(lv_indev_t * indev, lv_indev_data_t * data)
     /*Similarly set at least the last key in case of the  the user doesn't set it  on release*/
     else if(indev->driver.type == LV_INDEV_TYPE_KEYPAD) {
         data->key = indev->proc.types.keypad.last_key;
+    }
+    /*For compatibility assume that used button was enter (encoder push) */
+    else if(indev->driver.type == LV_INDEV_TYPE_ENCODER) {
+        data->key = LV_KEY_ENTER;
+        data->enc_diff = 0;
     }
 
     if(indev->driver.read_cb) {

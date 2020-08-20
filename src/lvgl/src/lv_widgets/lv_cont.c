@@ -14,7 +14,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_draw/lv_draw.h"
 #include "../lv_draw/lv_draw_mask.h"
 #include "../lv_themes/lv_theme.h"
@@ -560,42 +560,6 @@ static void lv_cont_layout_pretty(lv_obj_t * cont)
                          0,
                          act_y + lv_obj_get_style_margin_top(child_rs, LV_OBJ_PART_MAIN));
         }
-        /*If there are two object in the row then align them proportionally*/
-        else if(obj_num == 2 && 0) {
-            lv_obj_t * obj1 = child_rs;
-            lv_obj_t * obj2 = _lv_ll_get_prev(&cont->child_ll, child_rs);
-            w_row           = lv_obj_get_width(obj1) + lv_obj_get_width(obj2);
-            lv_coord_t pad  = (w_obj - w_row) / 3;
-
-            switch(type) {
-                case LV_LAYOUT_PRETTY_TOP:
-                    lv_obj_align(obj1, cont, LV_ALIGN_IN_TOP_LEFT,
-                                 pad + lv_obj_get_style_margin_left(obj1, LV_OBJ_PART_MAIN),
-                                 act_y + lv_obj_get_style_margin_top(obj1, LV_OBJ_PART_MAIN));
-                    lv_obj_align(obj2, cont, LV_ALIGN_IN_TOP_RIGHT,
-                                 -pad - lv_obj_get_style_margin_right(obj2, LV_OBJ_PART_MAIN),
-                                 act_y + lv_obj_get_style_margin_top(obj2, LV_OBJ_PART_MAIN));
-                    break;
-                case LV_LAYOUT_PRETTY_MID:
-                    lv_obj_align(obj1, cont, LV_ALIGN_IN_TOP_LEFT,
-                                 pad + lv_obj_get_style_margin_left(obj1, LV_OBJ_PART_MAIN),
-                                 act_y + (h_row - lv_obj_get_height(obj1)) / 2 + lv_obj_get_style_margin_top(obj1, LV_OBJ_PART_MAIN));
-                    lv_obj_align(obj2, cont, LV_ALIGN_IN_TOP_RIGHT,
-                                 -pad - lv_obj_get_style_margin_right(obj2, LV_OBJ_PART_MAIN),
-                                 act_y + (h_row - lv_obj_get_height(obj2)) / 2 + lv_obj_get_style_margin_top(obj2, LV_OBJ_PART_MAIN));
-                    break;
-                case LV_LAYOUT_PRETTY_BOTTOM:
-                    lv_obj_align(obj1, cont, LV_ALIGN_IN_TOP_LEFT,
-                                 pad + lv_obj_get_style_margin_left(obj1, LV_OBJ_PART_MAIN),
-                                 act_y + h_row - lv_obj_get_height(obj1) - lv_obj_get_style_margin_bottom(obj1, LV_OBJ_PART_MAIN));
-                    lv_obj_align(obj2, cont, LV_ALIGN_IN_TOP_RIGHT,
-                                 -pad - lv_obj_get_style_margin_right(obj2, LV_OBJ_PART_MAIN),
-                                 act_y + h_row - lv_obj_get_height(obj2) - lv_obj_get_style_margin_bottom(obj2, LV_OBJ_PART_MAIN));
-                    break;
-                default:
-                    break;
-            }
-        }
         /* Align the children (from child_rs to child_rc)*/
         else {
             w_row -= pinner * obj_num;
@@ -664,7 +628,7 @@ static void lv_cont_layout_grid(lv_obj_t * cont)
     _LV_LL_READ_BACK(cont->child_ll, child) {
         if(lv_obj_get_hidden(child) != false || lv_obj_is_protected(child, LV_PROTECT_POS) != false) continue;
         lv_coord_t obj_w = lv_obj_get_width(child);
-        if(act_x + inner + obj_w > w_fit) {
+        if(act_x + obj_w > w_fit + left) {
             act_x = left;
             act_y += y_ofs;
         }

@@ -17,6 +17,7 @@
 #include "../lv_misc/lv_gc.h"
 #include "../lv_draw/lv_draw.h"
 #include "../lv_font/lv_font_fmt_txt.h"
+#include "../lv_gpu/lv_gpu_stm32_dma2d.h"
 
 #if LV_USE_PERF_MONITOR
     #include "../lv_widgets/lv_label.h"
@@ -158,7 +159,7 @@ lv_disp_t * _lv_refr_get_disp_refreshing(void)
 
 /**
  * Set the display which is being refreshed.
- * It shouldn1t be used directly by the user.
+ * It shouldn't be used directly by the user.
  * It can be used to trick the drawing functions about there is an active display.
  * @param the display being refreshed
  */
@@ -201,35 +202,59 @@ void _lv_disp_refr_task(lv_task_t * task)
     if(disp_refr->inv_p != 0) {
         /* In true double buffered mode copy the refreshed areas to the new VDB to keep it up to date.
          * With set_px_cb we don't know anything about the buffer (even it's size) so skip copying.*/
-        if(lv_disp_is_true_double_buf(disp_refr) && disp_refr->driver.set_px_cb == NULL) {
-            lv_disp_buf_t * vdb = lv_disp_get_buf(disp_refr);
+        if(lv_disp_is_true_double_buf(disp_refr)) {
+            if(disp_refr->driver.set_px_cb) {
+                LV_LOG_WARN("Can't handle 2 screen sized buffers with set_px_cb. Display is not refreshed.");
+            }
+            else {
+                lv_disp_buf_t * vdb = lv_disp_get_buf(disp_refr);
 
-            /*Flush the content of the VDB*/
-            lv_refr_vdb_flush();
+                /*Flush the content of the VDB*/
+                lv_refr_vdb_flush();
 
-            /* With true double buffering the flushing should be only the address change of the
-             * current frame buffer. Wait until the address change is ready and copy the changed
-             * content to the other frame buffer (new active VDB) to keep the buffers synchronized*/
-            while(vdb->flushing)
-                ;
+                /* With true double buffering the flushing should be only the address change of the
+                 * current frame buffer. Wait until the address change is ready and copy the changed
+                 * content to the other frame buffer (new active VDB) to keep the buffers synchronized*/
+                while(vdb->flushing);
 
-            uint8_t * buf_act = (uint8_t *)vdb->buf_act;
-            uint8_t * buf_ina = (uint8_t *)vdb->buf_act == vdb->buf1 ? vdb->buf2 : vdb->buf1;
+                lv_color_t * copy_buf = NULL;
+#if LV_USE_GPU_STM32_DMA2D
+                LV_UNUSED(copy_buf);
+#else
+                copy_buf = _lv_mem_buf_get(disp_refr->driver.hor_res * sizeof(lv_color_t));
+#endif
 
-            lv_coord_t hres = lv_disp_get_hor_res(disp_refr);
-            uint16_t a;
-            for(a = 0; a < disp_refr->inv_p; a++) {
-                if(disp_refr->inv_area_joined[a] == 0) {
-                    lv_coord_t y;
-                    uint32_t start_offs =
-                        (hres * disp_refr->inv_areas[a].y1 + disp_refr->inv_areas[a].x1) * sizeof(lv_color_t);
-                    uint32_t line_length = lv_area_get_width(&disp_refr->inv_areas[a]) * sizeof(lv_color_t);
+                uint8_t * buf_act = (uint8_t *)vdb->buf_act;
+                uint8_t * buf_ina = (uint8_t *)vdb->buf_act == vdb->buf1 ? vdb->buf2 : vdb->buf1;
 
-                    for(y = disp_refr->inv_areas[a].y1; y <= disp_refr->inv_areas[a].y2; y++) {
-                        _lv_memcpy(buf_act + start_offs, buf_ina + start_offs, line_length);
-                        start_offs += hres * sizeof(lv_color_t);
+                lv_coord_t hres = lv_disp_get_hor_res(disp_refr);
+                uint16_t a;
+                for(a = 0; a < disp_refr->inv_p; a++) {
+                    if(disp_refr->inv_area_joined[a] == 0) {
+                        uint32_t start_offs =
+                            (hres * disp_refr->inv_areas[a].y1 + disp_refr->inv_areas[a].x1) * sizeof(lv_color_t);
+#if LV_USE_GPU_STM32_DMA2D
+                        lv_gpu_stm32_dma2d_copy((lv_color_t *)(buf_act + start_offs), disp_refr->driver.hor_res,
+                                                (lv_color_t *)(buf_ina + start_offs), disp_refr->driver.hor_res,
+                                                lv_area_get_width(&disp_refr->inv_areas[a]),
+                                                lv_area_get_height(&disp_refr->inv_areas[a]));
+#else
+
+                        lv_coord_t y;
+                        uint32_t line_length = lv_area_get_width(&disp_refr->inv_areas[a]) * sizeof(lv_color_t);
+
+                        for(y = disp_refr->inv_areas[a].y1; y <= disp_refr->inv_areas[a].y2; y++) {
+                            /* The frame buffer is probably in an external RAM where sequential access is much faster.
+                             * So first copy a line into a buffer and write it back the ext. RAM */
+                            _lv_memcpy(copy_buf, buf_ina + start_offs, line_length);
+                            _lv_memcpy(buf_act + start_offs, copy_buf, line_length);
+                            start_offs += hres * sizeof(lv_color_t);
+                        }
+#endif
                     }
                 }
+
+                if(copy_buf) _lv_mem_buf_release(copy_buf);
             }
         } /*End of true double buffer handling*/
 
@@ -465,7 +490,8 @@ static void lv_refr_area_part(const lv_area_t * area_p)
         }
     }
 
-    lv_obj_t * top_p;
+    lv_obj_t * top_act_scr = NULL;
+    lv_obj_t * top_prev_scr = NULL;
 
     /*Get the new mask from the original area and the act. VDB
      It will be a part of 'area_p'*/
@@ -473,10 +499,55 @@ static void lv_refr_area_part(const lv_area_t * area_p)
     _lv_area_intersect(&start_mask, area_p, &vdb->area);
 
     /*Get the most top object which is not covered by others*/
-    top_p = lv_refr_get_top_obj(&start_mask, lv_disp_get_scr_act(disp_refr));
+    top_act_scr = lv_refr_get_top_obj(&start_mask, lv_disp_get_scr_act(disp_refr));
+    if(disp_refr->prev_scr) {
+        top_prev_scr = lv_refr_get_top_obj(&start_mask, disp_refr->prev_scr);
+    }
 
+    /*Draw a display background if there is no top object*/
+    if(top_act_scr == NULL && top_prev_scr == NULL) {
+        if(disp_refr->bg_img) {
+            lv_draw_img_dsc_t dsc;
+            lv_draw_img_dsc_init(&dsc);
+            dsc.opa = disp_refr->bg_opa;
+            lv_img_header_t header;
+            lv_res_t res;
+            res = lv_img_decoder_get_info(disp_refr->bg_img, &header);
+            if(res == LV_RES_OK) {
+                lv_area_t a;
+                lv_area_set(&a, 0, 0, header.w - 1, header.h - 1);
+                lv_draw_img(&a, &start_mask, disp_refr->bg_img, &dsc);
+            }
+            else {
+                LV_LOG_WARN("Can't draw the background image")
+            }
+        }
+        else {
+            lv_draw_rect_dsc_t dsc;
+            lv_draw_rect_dsc_init(&dsc);
+            dsc.bg_color = disp_refr->bg_color;
+            dsc.bg_opa = disp_refr->bg_opa;
+            lv_draw_rect(&start_mask, &start_mask, &dsc);
+
+        }
+    }
+    /*Refresh the previous screen if any*/
+    if(disp_refr->prev_scr) {
+        /*Get the most top object which is not covered by others*/
+        if(top_prev_scr == NULL) {
+            top_prev_scr = disp_refr->prev_scr;
+        }
+        /*Do the refreshing from the top object*/
+        lv_refr_obj_and_children(top_prev_scr, &start_mask);
+
+    }
+
+
+    if(top_act_scr == NULL) {
+        top_act_scr = disp_refr->act_scr;
+    }
     /*Do the refreshing from the top object*/
-    lv_refr_obj_and_children(top_p, &start_mask);
+    lv_refr_obj_and_children(top_act_scr, &start_mask);
 
     /*Also refresh top and sys layer unconditionally*/
     lv_refr_obj_and_children(lv_disp_get_layer_top(disp_refr), &start_mask);

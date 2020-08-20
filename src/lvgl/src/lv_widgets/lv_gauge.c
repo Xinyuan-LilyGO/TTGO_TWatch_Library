@@ -9,7 +9,7 @@
 #include "lv_gauge.h"
 #if LV_USE_GAUGE != 0
 
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_draw/lv_draw.h"
 #include "../lv_themes/lv_theme.h"
 #include "../lv_misc/lv_txt.h"
@@ -359,7 +359,7 @@ uint8_t lv_gauge_get_label_count(const lv_obj_t * gauge)
  * @return pointer to an `lv_img_dsc_t` variable or a path to an image
  *        (not an `lv_img` object). `NULL` if not used.
  */
-const void * lv_gauge_get_needle_img(lv_obj_t * gauge, const void * img, lv_coord_t pivot_x, lv_coord_t pivot_y)
+const void * lv_gauge_get_needle_img(lv_obj_t * gauge)
 {
     LV_ASSERT_OBJ(gauge, LV_OBJX_NAME);
 
@@ -519,7 +519,7 @@ static void lv_gauge_draw_labels(lv_obj_t * gauge, const lv_area_t * mask)
     lv_coord_t y_ofs         = gauge->coords.y1 + r + top + scale_width + txt_pad;
     int16_t scale_angle      = lv_linemeter_get_scale_angle(gauge);
     uint16_t label_num       = ext->label_count;
-    int16_t angle_ofs        = 90 + (360 - scale_angle) / 2;
+    int16_t angle_ofs        = 90 + (360 - scale_angle) / 2 + lv_gauge_get_angle_offset(gauge);
     int32_t min              = lv_gauge_get_min_value(gauge);
     int32_t max              = lv_gauge_get_max_value(gauge);
 
@@ -578,7 +578,7 @@ static void lv_gauge_draw_needle(lv_obj_t * gauge, const lv_area_t * clip_area)
     lv_coord_t x_ofs  = gauge->coords.x1 + r + left + pad;
     lv_coord_t y_ofs  = gauge->coords.y1 + r + top + pad;
     uint16_t angle    = lv_linemeter_get_scale_angle(gauge);
-    int16_t angle_ofs = 90 + (360 - angle) / 2;
+    int16_t angle_ofs = 90 + (360 - angle) / 2 + lv_gauge_get_angle_offset(gauge);
     int16_t min       = lv_gauge_get_min_value(gauge);
     int16_t max       = lv_gauge_get_max_value(gauge);
     lv_point_t p_mid;
@@ -588,15 +588,6 @@ static void lv_gauge_draw_needle(lv_obj_t * gauge, const lv_area_t * clip_area)
     lv_draw_line_dsc_t line_dsc;
     lv_draw_line_dsc_init(&line_dsc);
     lv_obj_init_draw_line_dsc(gauge, LV_GAUGE_PART_NEEDLE, &line_dsc);
-
-    lv_draw_img_dsc_t img_dsc;
-    if(ext->needle_img == NULL) {
-        lv_draw_img_dsc_init(&img_dsc);
-        lv_obj_init_draw_img_dsc(gauge, LV_GAUGE_PART_MAIN, &img_dsc);
-        img_dsc.recolor_opa = LV_OPA_COVER;
-        img_dsc.pivot.x = ext->needle_img_pivot.x;
-        img_dsc.pivot.y = ext->needle_img_pivot.y;
-    }
 
     p_mid.x = x_ofs;
     p_mid.y = y_ofs;
@@ -625,10 +616,18 @@ static void lv_gauge_draw_needle(lv_obj_t * gauge, const lv_area_t * clip_area)
             a.y1 = gauge->coords.y1 + lv_area_get_height(&gauge->coords) / 2  - ext->needle_img_pivot.y;
             a.x2 = a.x1 + info.w - 1;
             a.y2 = a.y1 + info.h - 1;
+            lv_draw_img_dsc_t img_dsc;
+            lv_draw_img_dsc_init(&img_dsc);
+            lv_obj_init_draw_img_dsc(gauge, LV_GAUGE_PART_MAIN, &img_dsc);
+            img_dsc.recolor_opa = LV_OPA_COVER;
+            img_dsc.pivot.x = ext->needle_img_pivot.x;
+            img_dsc.pivot.y = ext->needle_img_pivot.y;
 
             if(ext->needle_colors != NULL)
                 img_dsc.recolor = ext->needle_colors[i];
 
+            needle_angle = (needle_angle * 10);
+            if(needle_angle > 3600) needle_angle -= 3600;
             img_dsc.angle = needle_angle;
             lv_draw_img(&a, clip_area, ext->needle_img, &img_dsc);
         }

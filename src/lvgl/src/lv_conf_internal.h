@@ -40,7 +40,7 @@
 
 /* Color depth:
  * - 1:  1 byte per pixel
- * - 8:  RGB233
+ * - 8:  RGB332
  * - 16: RGB565
  * - 32: ARGB8888
  */
@@ -147,6 +147,12 @@
 #endif
 #endif     /*LV_MEM_CUSTOM*/
 
+/* Use the standard memcpy and memset instead of LVGL's own functions.
+ * The standard functions might or might not be faster depending on their implementation. */
+#ifndef LV_MEMCPY_MEMSET_STD
+#define LV_MEMCPY_MEMSET_STD    0
+#endif
+
 /* Garbage Collector settings
  * Used if lvgl is binded to higher level language and the memory is managed by that language */
 #ifndef LV_ENABLE_GC
@@ -223,7 +229,7 @@
 
 #endif
 
-/* 1: Enable shadow drawing*/
+/* 1: Enable shadow drawing on rectangles*/
 #ifndef LV_USE_SHADOW
 #define LV_USE_SHADOW           1
 #endif
@@ -235,6 +241,21 @@
 #ifndef LV_SHADOW_CACHE_SIZE
 #define LV_SHADOW_CACHE_SIZE    0
 #endif
+#endif
+
+/*1: enable outline drawing on rectangles*/
+#ifndef LV_USE_OUTLINE
+#define LV_USE_OUTLINE  1
+#endif
+
+/*1: enable pattern drawing on rectangles*/
+#ifndef LV_USE_PATTERN
+#define LV_USE_PATTERN  1
+#endif
+
+/*1: enable value string drawing on rectangles*/
+#ifndef LV_USE_VALUE_STR
+#define LV_USE_VALUE_STR    1
 #endif
 
 /* 1: Use other blend modes than normal (`LV_BLEND_MODE_...`)*/
@@ -266,6 +287,11 @@
 #ifndef LV_USE_GPU_STM32_DMA2D
 #define LV_USE_GPU_STM32_DMA2D  0
 #endif
+/*If enabling LV_USE_GPU_STM32_DMA2D, LV_GPU_DMA2D_CMSIS_INCLUDE must be defined to include path of CMSIS header of target processor
+e.g. "stm32f769xx.h" or "stm32f429xx.h" */
+#ifndef LV_GPU_DMA2D_CMSIS_INCLUDE
+#define LV_GPU_DMA2D_CMSIS_INCLUDE
+#endif
 
 /* 1: Enable file system (might be required for images */
 #ifndef LV_USE_FILESYSTEM
@@ -288,6 +314,9 @@
 /*1: Use the functions and types from the older API if possible */
 #ifndef LV_USE_API_EXTENSION_V6
 #define LV_USE_API_EXTENSION_V6  1
+#endif
+#ifndef LV_USE_API_EXTENSION_V7
+#define LV_USE_API_EXTENSION_V7  1
 #endif
 
 /*========================
@@ -319,6 +348,12 @@
 /*=====================
  *  Compiler settings
  *====================*/
+
+/* For big endian systems set to 1 */
+#ifndef LV_BIG_ENDIAN_SYSTEM
+#define LV_BIG_ENDIAN_SYSTEM    0
+#endif
+
 /* Define a custom attribute to `lv_tick_inc` function */
 #ifndef LV_ATTRIBUTE_TICK_INC
 #define LV_ATTRIBUTE_TICK_INC
@@ -363,6 +398,12 @@
 #define LV_EXPORT_CONST_INT(int_value) struct _silence_gcc_warning
 #endif
 
+/* Prefix variables that are used in GPU accelerated operations, often these need to be
+ * placed in RAM sections that are DMA accessible */
+#ifndef LV_ATTRIBUTE_DMA
+#define LV_ATTRIBUTE_DMA
+#endif
+
 /*===================
  *  HAL settings
  *==================*/
@@ -374,10 +415,10 @@
 #endif
 #if LV_TICK_CUSTOM == 1
 #ifndef LV_TICK_CUSTOM_INCLUDE
-#define LV_TICK_CUSTOM_INCLUDE  "something.h"       /*Header for the sys time function*/
+#define LV_TICK_CUSTOM_INCLUDE  "Arduino.h"         /*Header for the system time function*/
 #endif
 #ifndef LV_TICK_CUSTOM_SYS_TIME_EXPR
-#define LV_TICK_CUSTOM_SYS_TIME_EXPR (millis())     /*Expression evaluating to current systime in ms*/
+#define LV_TICK_CUSTOM_SYS_TIME_EXPR (millis())     /*Expression evaluating to current system time in ms*/
 #endif
 #endif   /*LV_TICK_CUSTOM*/
 
@@ -468,7 +509,7 @@
 
 /* The built-in fonts contains the ASCII range and some Symbols with  4 bit-per-pixel.
  * The symbols are available via `LV_SYMBOL_...` defines
- * More info about fonts: https://docs.lvgl.com/#Fonts
+ * More info about fonts: https://docs.lvgl.io/v7/en/html/overview/font.html
  * To create a new font go to: https://lvgl.com/ttf-font-to-c-array
  */
 
@@ -478,10 +519,10 @@
 #define LV_FONT_MONTSERRAT_12    0
 #endif
 #ifndef LV_FONT_MONTSERRAT_14
-#define LV_FONT_MONTSERRAT_14    0
+#define LV_FONT_MONTSERRAT_14    1
 #endif
 #ifndef LV_FONT_MONTSERRAT_16
-#define LV_FONT_MONTSERRAT_16    1
+#define LV_FONT_MONTSERRAT_16    0
 #endif
 #ifndef LV_FONT_MONTSERRAT_18
 #define LV_FONT_MONTSERRAT_18    0
@@ -569,12 +610,25 @@
 #define LV_FONT_FMT_TXT_LARGE   0
 #endif
 
+/* Enables/disables support for compressed fonts. If it's disabled, compressed
+ * glyphs cannot be processed by the library and won't be rendered.
+ */
+#ifndef LV_USE_FONT_COMPRESSED
+#define LV_USE_FONT_COMPRESSED 1
+#endif
+
+/* Enable subpixel rendering */
+#ifndef LV_USE_FONT_SUBPX
+#define LV_USE_FONT_SUBPX 1
+#endif
+#if LV_USE_FONT_SUBPX
 /* Set the pixel order of the display.
  * Important only if "subpx fonts" are used.
  * With "normal" font it doesn't matter.
  */
 #ifndef LV_FONT_SUBPX_BGR
 #define LV_FONT_SUBPX_BGR    0
+#endif
 #endif
 
 /*Declare the type of the user data of fonts (can be e.g. `void *`, `int`, `struct`)*/
@@ -600,7 +654,10 @@
 /* A fast and impressive theme.
  * Flags:
  * LV_THEME_MATERIAL_FLAG_LIGHT: light theme
- * LV_THEME_MATERIAL_FLAG_DARK: dark theme*/
+ * LV_THEME_MATERIAL_FLAG_DARK: dark theme
+ * LV_THEME_MATERIAL_FLAG_NO_TRANSITION: disable transitions (state change animations)
+ * LV_THEME_MATERIAL_FLAG_NO_FOCUS: disable indication of focused state)
+ * */
 #ifndef LV_USE_THEME_MATERIAL
  #define LV_USE_THEME_MATERIAL    1
 #endif
@@ -621,25 +678,25 @@
 #define LV_THEME_DEFAULT_INIT               lv_theme_material_init
 #endif
 #ifndef LV_THEME_DEFAULT_COLOR_PRIMARY
-#define LV_THEME_DEFAULT_COLOR_PRIMARY      LV_COLOR_RED
+#define LV_THEME_DEFAULT_COLOR_PRIMARY      lv_color_hex(0x01a2b1)
 #endif
 #ifndef LV_THEME_DEFAULT_COLOR_SECONDARY
-#define LV_THEME_DEFAULT_COLOR_SECONDARY    LV_COLOR_BLUE
+#define LV_THEME_DEFAULT_COLOR_SECONDARY    lv_color_hex(0x44d1b6)
 #endif
 #ifndef LV_THEME_DEFAULT_FLAG
 #define LV_THEME_DEFAULT_FLAG               LV_THEME_MATERIAL_FLAG_LIGHT
 #endif
 #ifndef LV_THEME_DEFAULT_FONT_SMALL
-#define LV_THEME_DEFAULT_FONT_SMALL         &lv_font_montserrat_16
+#define LV_THEME_DEFAULT_FONT_SMALL         &lv_font_montserrat_14
 #endif
 #ifndef LV_THEME_DEFAULT_FONT_NORMAL
-#define LV_THEME_DEFAULT_FONT_NORMAL        &lv_font_montserrat_16
+#define LV_THEME_DEFAULT_FONT_NORMAL        &lv_font_montserrat_14
 #endif
 #ifndef LV_THEME_DEFAULT_FONT_SUBTITLE
-#define LV_THEME_DEFAULT_FONT_SUBTITLE      &lv_font_montserrat_16
+#define LV_THEME_DEFAULT_FONT_SUBTITLE      &lv_font_montserrat_14
 #endif
 #ifndef LV_THEME_DEFAULT_FONT_TITLE
-#define LV_THEME_DEFAULT_FONT_TITLE         &lv_font_montserrat_16
+#define LV_THEME_DEFAULT_FONT_TITLE         &lv_font_montserrat_14
 #endif
 
 /*=================
@@ -721,6 +778,10 @@
 #ifndef lv_vsnprintf
 #  define lv_vsnprintf    vsnprintf
 #endif
+#else   /*!LV_SPRINTF_CUSTOM*/
+#ifndef LV_SPRINTF_DISABLE_FLOAT
+#  define LV_SPRINTF_DISABLE_FLOAT 1
+#endif
 #endif  /*LV_SPRINTF_CUSTOM*/
 
 /*===================
@@ -744,7 +805,7 @@
 #endif
 #endif
 
-/*1: enable `lv_obj_realaign()` based on `lv_obj_align()` parameters*/
+/*1: enable `lv_obj_realign()` based on `lv_obj_align()` parameters*/
 #ifndef LV_USE_OBJ_REALIGN
 #define LV_USE_OBJ_REALIGN          1
 #endif
@@ -788,6 +849,11 @@
 /*Calendar (dependencies: -)*/
 #ifndef LV_USE_CALENDAR
 #define LV_USE_CALENDAR 1
+#endif
+#if LV_USE_CALENDAR
+#ifndef LV_CALENDAR_WEEK_STARTS_MONDAY
+#  define LV_CALENDAR_WEEK_STARTS_MONDAY    0
+#endif
 #endif
 
 /*Canvas (dependencies: lv_img)*/

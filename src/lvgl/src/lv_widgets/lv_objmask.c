@@ -7,7 +7,7 @@
  *      INCLUDES
  *********************/
 #include "lv_objmask.h"
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_draw/lv_draw.h"
 #include "../lv_themes/lv_theme.h"
 
@@ -171,6 +171,7 @@ void lv_objmask_remove_mask(lv_obj_t * objmask, lv_objmask_mask_t * mask)
     else {
         lv_mem_free(mask->param);
         _lv_ll_remove(&ext->mask_ll, mask);
+        lv_mem_free(mask);
     }
 
     lv_obj_invalidate(objmask);

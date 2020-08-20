@@ -9,7 +9,7 @@
 #include "lv_msgbox.h"
 #if LV_USE_MSGBOX != 0
 
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_core/lv_group.h"
 #include "../lv_core/lv_disp.h"
 #include "../lv_themes/lv_theme.h"
@@ -281,7 +281,7 @@ void lv_msgbox_stop_auto_close(lv_obj_t * mbox)
 
 /**
  * Set whether recoloring is enabled
- * @param btnm pointer to button matrix object
+ * @param mbox pointer to message box object
  * @param en whether recoloring is enabled
  */
 void lv_msgbox_set_recolor(lv_obj_t * mbox, bool en)
@@ -314,7 +314,7 @@ const char * lv_msgbox_get_text(const lv_obj_t * mbox)
 /**
  * Get the index of the lastly "activated" button by the user (pressed, released etc)
  * Useful in the the `event_cb`.
- * @param btnm pointer to button matrix object
+ * @param mbox pointer to message box object
  * @return  index of the last released button (LV_BTNMATRIX_BTN_NONE: if unset)
  */
 uint16_t lv_msgbox_get_active_btn(lv_obj_t * mbox)
@@ -335,7 +335,7 @@ uint16_t lv_msgbox_get_active_btn(lv_obj_t * mbox)
 /**
  * Get the text of the lastly "activated" button by the user (pressed, released etc)
  * Useful in the the `event_cb`.
- * @param btnm pointer to button matrix object
+ * @param mbox pointer to message box object
  * @return text of the last released button (NULL: if unset)
  */
 const char * lv_msgbox_get_active_btn_text(lv_obj_t * mbox)
@@ -412,6 +412,7 @@ static lv_res_t lv_msgbox_signal(lv_obj_t * mbox, lv_signal_t sign, void * param
 {
     lv_res_t res;
 
+#if LV_USE_GROUP
     /*Translate LV_KEY_UP/DOWN to LV_KEY_LEFT/RIGHT */
     char c_trans = 0;
     if(sign == LV_SIGNAL_CONTROL) {
@@ -421,6 +422,7 @@ static lv_res_t lv_msgbox_signal(lv_obj_t * mbox, lv_signal_t sign, void * param
 
         param = &c_trans;
     }
+#endif
 
     if(sign == LV_SIGNAL_GET_STYLE) {
         lv_get_style_info_t * info = param;
@@ -460,8 +462,11 @@ static lv_res_t lv_msgbox_signal(lv_obj_t * mbox, lv_signal_t sign, void * param
             if(btn_id != LV_BTNMATRIX_BTN_NONE) lv_event_send(mbox, LV_EVENT_VALUE_CHANGED, &btn_id);
         }
     }
-    else if(sign == LV_SIGNAL_FOCUS || sign == LV_SIGNAL_DEFOCUS || sign == LV_SIGNAL_CONTROL ||
-            sign == LV_SIGNAL_GET_EDITABLE) {
+    else if(
+#if LV_USE_GROUP
+        sign == LV_SIGNAL_CONTROL || sign == LV_SIGNAL_GET_EDITABLE ||
+#endif
+        sign == LV_SIGNAL_FOCUS || sign == LV_SIGNAL_DEFOCUS) {
         if(ext->btnm) {
             ext->btnm->signal_cb(ext->btnm, sign, param);
         }

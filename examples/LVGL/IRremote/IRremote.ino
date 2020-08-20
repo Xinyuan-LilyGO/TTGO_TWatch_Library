@@ -117,7 +117,6 @@ void setup()
     lv_obj_align(text, gContainer, LV_ALIGN_IN_TOP_MID, 0, 20);
 
     imgbtn1 = lv_imgbtn_create(gContainer, NULL);
-    lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_ACTIVE, &Add2PNG);
     lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_RELEASED, &Add1PNG);
     lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_PRESSED, &Add2PNG);
     lv_imgbtn_set_src(imgbtn1, LV_BTN_STATE_CHECKED_RELEASED, &Add2PNG);
@@ -127,7 +126,6 @@ void setup()
     lv_obj_set_event_cb(imgbtn1, click_event);
 
     imgbtn2 = lv_imgbtn_create(gContainer, NULL);
-    lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_ACTIVE, &Less2PNG);
     lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_RELEASED, &Less1PNG);
     lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_PRESSED, &Less2PNG);
     lv_imgbtn_set_src(imgbtn2, LV_BTN_STATE_CHECKED_RELEASED, &Less2PNG);

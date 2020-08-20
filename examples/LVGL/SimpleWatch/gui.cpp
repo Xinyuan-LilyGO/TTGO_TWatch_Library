@@ -399,7 +399,6 @@ void setupGui()
 
     menuBtn = lv_imgbtn_create(mainBar, NULL);
 
-    lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_ACTIVE, &menu);
     lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_RELEASED, &menu);
     lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_PRESSED, &menu);
     lv_imgbtn_set_src(menuBtn, LV_BTN_STATE_CHECKED_RELEASED, &menu);
@@ -741,7 +740,6 @@ public:
             lv_label_set_text(la1, cfg[i].name);
             i == 0 ? lv_obj_align(la1, NULL, LV_ALIGN_IN_TOP_LEFT, 30, 20) : lv_obj_align(la1, prev, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
             _sw[i] = lv_imgbtn_create(_swCont, NULL);
-            lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_ACTIVE, &off);
             lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_RELEASED, &off);
             lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_PRESSED, &off);
             lv_imgbtn_set_src(_sw[i], LV_BTN_STATE_CHECKED_RELEASED, &off);
@@ -754,7 +752,6 @@ public:
         }
 
         _exitBtn = lv_imgbtn_create(_swCont, NULL);
-        lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_ACTIVE, &iexit);
         lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_RELEASED, &iexit);
         lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_PRESSED, &iexit);
         lv_imgbtn_set_src(_exitBtn, LV_BTN_STATE_CHECKED_RELEASED, &iexit);
@@ -797,7 +794,6 @@ public:
                     const void *src =  lv_imgbtn_get_src(sw, LV_BTN_STATE_RELEASED);
                     const void *dst = src == &off ? &on : &off;
                     bool en = src == &off;
-                    lv_imgbtn_set_src(sw, LV_BTN_STATE_ACTIVE, dst);
                     lv_imgbtn_set_src(sw, LV_BTN_STATE_RELEASED, dst);
                     lv_imgbtn_set_src(sw, LV_BTN_STATE_PRESSED, dst);
                     lv_imgbtn_set_src(sw, LV_BTN_STATE_CHECKED_RELEASED, dst);
@@ -816,7 +812,6 @@ public:
         if (index > _count)return;
         lv_obj_t *sw = _sw[index];
         const void *dst =  en ? &on : &off;
-        lv_imgbtn_set_src(sw, LV_BTN_STATE_ACTIVE, dst);
         lv_imgbtn_set_src(sw, LV_BTN_STATE_RELEASED, dst);
         lv_imgbtn_set_src(sw, LV_BTN_STATE_PRESSED, dst);
         lv_imgbtn_set_src(sw, LV_BTN_STATE_CHECKED_RELEASED, dst);

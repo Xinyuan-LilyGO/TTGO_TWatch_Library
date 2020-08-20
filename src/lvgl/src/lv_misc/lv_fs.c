@@ -9,7 +9,7 @@
 #include "lv_fs.h"
 #if LV_USE_FILESYSTEM
 
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "lv_ll.h"
 #include <string.h>
 #include "lv_gc.h"
@@ -60,7 +60,7 @@ void _lv_fs_init(void)
 }
 
 /**
- * Test if a drive is rady or not. If the `ready` function was not initialized `true` will be
+ * Test if a drive is ready or not. If the `ready` function was not initialized `true` will be
  * returned.
  * @param letter letter of the drive
  * @return true: drive is ready; false: drive is not ready

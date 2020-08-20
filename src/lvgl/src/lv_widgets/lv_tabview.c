@@ -10,7 +10,7 @@
 #if LV_USE_TABVIEW != 0
 
 #include "lv_btnmatrix.h"
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_themes/lv_theme.h"
 #include "../lv_misc/lv_anim.h"
 #include "../lv_core/lv_disp.h"
@@ -129,16 +129,16 @@ lv_obj_t * lv_tabview_create(lv_obj_t * par, const lv_obj_t * copy)
         ext->btns    = lv_btnmatrix_create(tabview, NULL);
         ext->indic   = lv_obj_create(ext->btns, NULL);
 
-        if(ancestor_scrl_signal == NULL) ancestor_scrl_signal = lv_obj_get_signal_cb(lv_page_get_scrllable(ext->content));
-        lv_obj_set_signal_cb(lv_page_get_scrllable(ext->content), tabview_scrl_signal);
+        if(ancestor_scrl_signal == NULL) ancestor_scrl_signal = lv_obj_get_signal_cb(lv_page_get_scrollable(ext->content));
+        lv_obj_set_signal_cb(lv_page_get_scrollable(ext->content), tabview_scrl_signal);
 
         lv_btnmatrix_set_map(ext->btns, tab_def);
         lv_obj_set_event_cb(ext->btns, tab_btnm_event_cb);
 
         lv_obj_set_click(ext->indic, false);
-        lv_obj_set_drag_dir(lv_page_get_scrllable(ext->content), LV_DRAG_DIR_ONE);
+        lv_obj_set_drag_dir(lv_page_get_scrollable(ext->content), LV_DRAG_DIR_ONE);
 
-        lv_page_set_scrllable_fit2(ext->content, LV_FIT_TIGHT, LV_FIT_PARENT);
+        lv_page_set_scrollable_fit2(ext->content, LV_FIT_TIGHT, LV_FIT_PARENT);
         lv_page_set_scrl_layout(ext->content, LV_LAYOUT_ROW_TOP);
         lv_page_set_scrollbar_mode(ext->content, LV_SCROLLBAR_MODE_OFF);
 
@@ -216,6 +216,7 @@ lv_obj_t * lv_tabview_add_tab(lv_obj_t * tabview, const char * name)
     lv_obj_set_size(h, lv_obj_get_width(tabview), lv_obj_get_height(ext->content));
     lv_page_set_scrollbar_mode(h, LV_SCROLLBAR_MODE_AUTO);
     lv_page_set_scroll_propagation(h, true);
+    lv_page_set_scrollable_fit4(h, LV_FIT_NONE, LV_FIT_MAX, LV_FIT_NONE, LV_FIT_MAX);
     lv_theme_apply(h, LV_THEME_TABVIEW_PAGE);
 
     if(page_signal == NULL) page_signal = lv_obj_get_signal_cb(h);
@@ -228,20 +229,6 @@ lv_obj_t * lv_tabview_add_tab(lv_obj_t * tabview, const char * name)
     strcpy(name_dm, name);
 
     ext->tab_cnt++;
-
-    switch(ext->btns_pos) {
-        case LV_TABVIEW_TAB_POS_TOP:
-        case LV_TABVIEW_TAB_POS_BOTTOM:
-            ext->tab_name_ptr = lv_mem_realloc((void *)ext->tab_name_ptr, sizeof(char *) * (ext->tab_cnt + 1));
-            break;
-        case LV_TABVIEW_TAB_POS_LEFT:
-        case LV_TABVIEW_TAB_POS_RIGHT:
-            ext->tab_name_ptr = lv_mem_realloc((void *)ext->tab_name_ptr, sizeof(char *) * (ext->tab_cnt * 2));
-            break;
-    }
-
-    LV_ASSERT_MEM(ext->tab_name_ptr);
-    if(ext->tab_name_ptr == NULL) return NULL;
 
     /* FIXME: It is not possible yet to switch tab button position from/to top/bottom from/to left/right at runtime.
      * Method: clean extra \n when switch from LV_TABVIEW_BTNS_POS_LEFT or LV_TABVIEW_BTNS_POS_RIGHT
@@ -306,7 +293,7 @@ void lv_tabview_clean_tab(lv_obj_t * tab)
 {
     LV_ASSERT_OBJ(tab, "lv_page");
 
-    lv_obj_t * scrl = lv_page_get_scrllable(tab);
+    lv_obj_t * scrl = lv_page_get_scrollable(tab);
     lv_obj_clean(scrl);
 }
 
@@ -357,15 +344,15 @@ void lv_tabview_set_tab_act(lv_obj_t * tabview, uint16_t id, lv_anim_enable_t an
     }
 
     if(anim == LV_ANIM_OFF || lv_tabview_get_anim_time(tabview) == 0) {
-        lv_obj_set_x(lv_page_get_scrllable(ext->content), cont_x);
+        lv_obj_set_x(lv_page_get_scrollable(ext->content), cont_x);
     }
 #if LV_USE_ANIMATION
     else {
         lv_anim_t a;
         lv_anim_init(&a);
-        lv_anim_set_var(&a, lv_page_get_scrllable(ext->content));
+        lv_anim_set_var(&a, lv_page_get_scrollable(ext->content));
         lv_anim_set_exec_cb(&a, (lv_anim_exec_xcb_t)lv_obj_set_x);
-        lv_anim_set_values(&a, lv_obj_get_x(lv_page_get_scrllable(ext->content)), cont_x);
+        lv_anim_set_values(&a, lv_obj_get_x(lv_page_get_scrollable(ext->content)), cont_x);
         lv_anim_set_time(&a, ext->anim_time);
         lv_anim_start(&a);
     }
@@ -445,6 +432,35 @@ void lv_tabview_set_tab_act(lv_obj_t * tabview, uint16_t id, lv_anim_enable_t an
 #endif
 
     lv_btnmatrix_set_btn_ctrl(ext->btns, ext->tab_cur, LV_BTNMATRIX_CTRL_CHECK_STATE);
+}
+
+/**
+ * Set the name of a tab.
+ * @param tabview pointer to Tab view object
+ * @param id index of the tab the name should be set
+ * @param name new tab name
+ */
+void lv_tabview_set_tab_name(lv_obj_t * tabview, uint16_t id, char * name)
+{
+    LV_ASSERT_OBJ(tabview, LV_OBJX_NAME);
+
+    /* get tabview's ext pointer which contains the tab name pointer list */
+    lv_tabview_ext_t * ext = lv_obj_get_ext_attr(tabview);
+
+    /* check for valid tab index */
+    if(ext->tab_cnt > id) {
+        /* reallocate memory for new tab name (use reallocate due to mostly the size didn't change much) */
+        char * str = lv_mem_realloc((void *)ext->tab_name_ptr[id], strlen(name) + 1);
+        LV_ASSERT_MEM(str);
+
+        /* store new tab name at allocated memory */
+        strcpy(str, name);
+        /* update pointer  */
+        ext->tab_name_ptr[id] = str;
+
+        /* force redrawing of the tab headers */
+        lv_obj_invalidate(ext->btns);
+    }
 }
 
 /**
@@ -529,7 +545,7 @@ lv_obj_t * lv_tabview_get_tab(const lv_obj_t * tabview, uint16_t id)
     LV_ASSERT_OBJ(tabview, LV_OBJX_NAME);
 
     lv_tabview_ext_t * ext = lv_obj_get_ext_attr(tabview);
-    lv_obj_t * content_scrl = lv_page_get_scrllable(ext->content);
+    lv_obj_t * content_scrl = lv_page_get_scrollable(ext->content);
     uint16_t i             = 0;
     lv_obj_t * page        = lv_obj_get_child_back(content_scrl, NULL);
 
@@ -644,12 +660,17 @@ static lv_res_t lv_tabview_signal(lv_obj_t * tabview, lv_signal_t sign, void * p
 #endif
     }
     else if(sign == LV_SIGNAL_GET_EDITABLE) {
+#if LV_USE_GROUP
         bool * editable = (bool *)param;
         *editable       = true;
+#endif
     }
 
-    if(sign == LV_SIGNAL_FOCUS || sign == LV_SIGNAL_DEFOCUS || sign == LV_SIGNAL_CONTROL || sign == LV_SIGNAL_PRESSED  ||
-       sign == LV_SIGNAL_RELEASED) {
+    if(sign == LV_SIGNAL_FOCUS || sign == LV_SIGNAL_DEFOCUS ||
+#if LV_USE_GROUP
+       sign == LV_SIGNAL_CONTROL ||
+#endif
+       sign == LV_SIGNAL_PRESSED || sign == LV_SIGNAL_RELEASED) {
 
         /* The button matrix is not in a group (the tab view is in it) but it should handle the
          * group signals. So propagate the related signals to the button matrix manually*/
@@ -967,7 +988,7 @@ static void refr_content_size(lv_obj_t * tabview)
     lv_style_int_t bg_top = lv_obj_get_style_pad_top(tabview, LV_TABVIEW_PART_BG_SCRLLABLE);
     lv_style_int_t bg_bottom = lv_obj_get_style_pad_bottom(tabview, LV_TABVIEW_PART_BG_SCRLLABLE);
     cont_h -= bg_top + bg_bottom;
-    lv_obj_t * content_scrl = lv_page_get_scrllable(ext->content);
+    lv_obj_t * content_scrl = lv_page_get_scrollable(ext->content);
     lv_obj_t * pages = lv_obj_get_child(content_scrl, NULL);
     while(pages != NULL) {
         /*Be sure adjust only the pages (user can other things)*/

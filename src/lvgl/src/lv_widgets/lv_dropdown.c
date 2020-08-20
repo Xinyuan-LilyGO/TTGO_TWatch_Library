@@ -9,7 +9,7 @@
 #include "lv_dropdown.h"
 #if LV_USE_DROPDOWN != 0
 
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_draw/lv_draw.h"
 #include "../lv_core/lv_group.h"
 #include "../lv_core/lv_indev.h"
@@ -208,7 +208,7 @@ void lv_dropdown_set_options(lv_obj_t * ddlist, const char * options)
 
     /*Count the '\n'-s to determine the number of options*/
     ext->option_cnt = 0;
-    uint16_t i;
+    uint32_t i;
     for(i = 0; options[i] != '\0'; i++) {
         if(options[i] == '\n') ext->option_cnt++;
     }
@@ -237,7 +237,7 @@ void lv_dropdown_set_options(lv_obj_t * ddlist, const char * options)
 /**
  * Set the options in a drop down list from a string
  * @param ddlist pointer to drop down list object
- * @param options a staic string with '\n' separated options. E.g. "One\nTwo\nThree"
+ * @param options a static string with '\n' separated options. E.g. "One\nTwo\nThree"
  */
 void lv_dropdown_set_options_static(lv_obj_t * ddlist, const char * options)
 {
@@ -248,7 +248,7 @@ void lv_dropdown_set_options_static(lv_obj_t * ddlist, const char * options)
 
     /*Count the '\n'-s to determine the number of options*/
     ext->option_cnt = 0;
-    uint16_t i;
+    uint32_t i;
     for(i = 0; options[i] != '\0'; i++) {
         if(options[i] == '\n') ext->option_cnt++;
     }
@@ -271,7 +271,7 @@ void lv_dropdown_set_options_static(lv_obj_t * ddlist, const char * options)
  * @param option a string without '\n'. E.g. "Four"
  * @param pos the insert position, indexed from 0, LV_DROPDOWN_POS_LAST = end of string
  */
-void lv_dropdown_add_option(lv_obj_t * ddlist, const char * option, uint16_t pos)
+void lv_dropdown_add_option(lv_obj_t * ddlist, const char * option, uint32_t pos)
 {
     LV_ASSERT_OBJ(ddlist, LV_OBJX_NAME);
     LV_ASSERT_STR(option);
@@ -302,9 +302,9 @@ void lv_dropdown_add_option(lv_obj_t * ddlist, const char * option, uint16_t pos
     ext->options[old_len] = 0;
 
     /*Find the insert character position*/
-    uint16_t insert_pos = old_len;
+    uint32_t insert_pos = old_len;
     if(pos != LV_DROPDOWN_POS_LAST) {
-        int opcnt = 0;
+        uint32_t opcnt = 0;
         for(insert_pos = 0; ext->options[insert_pos] != 0; insert_pos++) {
             if(opcnt == pos)
                 break;
@@ -489,21 +489,21 @@ uint16_t lv_dropdown_get_option_cnt(const lv_obj_t * ddlist)
  * @param buf pointer to an array to store the string
  * @param buf_size size of `buf` in bytes. 0: to ignore it.
  */
-void lv_dropdown_get_selected_str(const lv_obj_t * ddlist, char * buf, uint16_t buf_size)
+void lv_dropdown_get_selected_str(const lv_obj_t * ddlist, char * buf, uint32_t buf_size)
 {
     LV_ASSERT_OBJ(ddlist, LV_OBJX_NAME);
 
     lv_dropdown_ext_t * ext = lv_obj_get_ext_attr(ddlist);
 
-    uint16_t i;
-    uint16_t line        = 0;
+    uint32_t i;
+    uint32_t line        = 0;
     size_t txt_len     = strlen(ext->options);
 
     for(i = 0; i < txt_len && line != ext->sel_opt_id_orig; i++) {
         if(ext->options[i] == '\n') line++;
     }
 
-    uint16_t c;
+    uint32_t c;
     for(c = 0; i < txt_len && ext->options[i] != '\n'; c++, i++) {
         if(buf_size && c >= buf_size - 1) {
             LV_LOG_WARN("lv_dropdown_get_selected_str: the buffer was too small")
@@ -586,10 +586,10 @@ void lv_dropdown_open(lv_obj_t * ddlist)
 
     ext->page = lv_page_create(lv_obj_get_screen(ddlist), NULL);
     lv_obj_add_protect(ext->page, LV_PROTECT_POS | LV_PROTECT_CLICK_FOCUS);
-    lv_obj_add_protect(lv_page_get_scrllable(ext->page), LV_PROTECT_CLICK_FOCUS);
+    lv_obj_add_protect(lv_page_get_scrollable(ext->page), LV_PROTECT_CLICK_FOCUS);
 
     if(ancestor_page_signal == NULL) ancestor_page_signal = lv_obj_get_signal_cb(ext->page);
-    if(ancestor_page_scrl_signal == NULL) ancestor_page_scrl_signal = lv_obj_get_signal_cb(lv_page_get_scrllable(
+    if(ancestor_page_scrl_signal == NULL) ancestor_page_scrl_signal = lv_obj_get_signal_cb(lv_page_get_scrollable(
                                                                                                    ext->page));
     if(ancestor_page_design == NULL) ancestor_page_design = lv_obj_get_design_cb(ext->page);
 
@@ -604,7 +604,7 @@ void lv_dropdown_open(lv_obj_t * ddlist)
 
     lv_obj_set_design_cb(ext->page, lv_dropdown_page_design);
     lv_obj_set_signal_cb(ext->page, lv_dropdown_page_signal);
-    lv_obj_set_signal_cb(lv_page_get_scrllable(ext->page), lv_dropdown_page_scrl_signal);
+    lv_obj_set_signal_cb(lv_page_get_scrollable(ext->page), lv_dropdown_page_scrl_signal);
 
     lv_style_list_copy(lv_obj_get_style_list(ext->page, LV_PAGE_PART_BG), &ext->style_page);
     lv_style_list_copy(lv_obj_get_style_list(ext->page, LV_PAGE_PART_SCROLLBAR), &ext->style_scrlbar);
@@ -935,6 +935,9 @@ static lv_res_t lv_dropdown_signal(lv_obj_t * ddlist, lv_signal_t sign, void * p
                 lv_dropdown_close(ddlist);
                 if(ext->sel_opt_id_orig != ext->sel_opt_id) {
                     ext->sel_opt_id_orig = ext->sel_opt_id;
+                    uint32_t id  = ext->sel_opt_id; /*Just to use uint32_t in event data*/
+                    res = lv_event_send(ddlist, LV_EVENT_VALUE_CHANGED, &id);
+                    if(res != LV_RES_OK) return res;
                     lv_obj_invalidate(ddlist);
                 }
 #if LV_USE_GROUP
@@ -965,6 +968,7 @@ static lv_res_t lv_dropdown_signal(lv_obj_t * ddlist, lv_signal_t sign, void * p
         if(ext->page) lv_obj_refresh_style(ext->page, LV_STYLE_PROP_ALL);
     }
     else if(sign == LV_SIGNAL_CONTROL) {
+#if LV_USE_GROUP
         char c = *((char *)param);
         if(c == LV_KEY_RIGHT || c == LV_KEY_DOWN) {
             if(ext->page == NULL) {
@@ -989,10 +993,13 @@ static lv_res_t lv_dropdown_signal(lv_obj_t * ddlist, lv_signal_t sign, void * p
             ext->sel_opt_id = ext->sel_opt_id_orig;
             lv_dropdown_close(ddlist);
         }
+#endif
     }
     else if(sign == LV_SIGNAL_GET_EDITABLE) {
+#if LV_USE_GROUP
         bool * editable = (bool *)param;
         *editable       = true;
+#endif
     }
 
     return res;
@@ -1020,10 +1027,10 @@ static lv_res_t lv_dropdown_page_signal(lv_obj_t * page, lv_signal_t sign, void 
     if(sign == LV_SIGNAL_REFR_EXT_DRAW_PAD) {
         /* Make possible to draw on the full width of the background to redraw the selected rectangle
          * when the ddlist is scrolled in fix height mode.
-         * (The scrollabel is scrolled the "select rectangle" is drawn on the bg too)*/
+         * (The scrollable is scrolled then "select rectangle" is drawn on the bg too)*/
         lv_style_int_t left = lv_obj_get_style_pad_left(ddlist, LV_DROPDOWN_PART_LIST);
         lv_style_int_t right = lv_obj_get_style_pad_right(ddlist, LV_DROPDOWN_PART_LIST);
-        lv_obj_t * scrl = lv_page_get_scrllable(page);
+        lv_obj_t * scrl = lv_page_get_scrollable(page);
         scrl->ext_draw_pad = LV_MATH_MAX3(scrl->ext_draw_pad, left, right);
     }
     else if(sign == LV_SIGNAL_RELEASED) {
@@ -1078,7 +1085,7 @@ static lv_res_t lv_dropdown_page_scrl_signal(lv_obj_t * scrl, lv_signal_t sign, 
     else  if(sign == LV_SIGNAL_REFR_EXT_DRAW_PAD) {
         /* Make possible to draw on the full width of the background to redraw the selected rectangle
          * when the ddlist is scrolled in fix height mode.
-         * (The scrollabel is scrolled the "select rectangle" is drawn on the bg too)*/
+         * (The scrollable is scrolled then "select rectangle" is drawn on the bg too)*/
         lv_style_int_t left = lv_obj_get_style_pad_left(ddlist, LV_DROPDOWN_PART_LIST);
         lv_style_int_t right = lv_obj_get_style_pad_right(ddlist, LV_DROPDOWN_PART_LIST);
         scrl->ext_draw_pad = LV_MATH_MAX3(scrl->ext_draw_pad, left, right);
@@ -1266,7 +1273,7 @@ static uint16_t get_id_on_point(lv_obj_t * ddlist, lv_coord_t x, lv_coord_t y)
     if(label == NULL) return 0;
     x -= label->coords.x1;
     y -= label->coords.y1;
-    uint16_t letter_i;
+    uint32_t letter_i;
 
     lv_point_t p = {x, y};
     letter_i = lv_label_get_letter_on(label, &p);
@@ -1297,7 +1304,7 @@ static void position_to_selected(lv_obj_t * ddlist)
 
     const lv_font_t * font         = lv_obj_get_style_text_font(ddlist, LV_DROPDOWN_PART_LIST);
     lv_coord_t font_h              = lv_font_get_line_height(font);
-    lv_obj_t * scrl                = lv_page_get_scrllable(ext->page);
+    lv_obj_t * scrl                = lv_page_get_scrollable(ext->page);
     lv_obj_t * label = get_label(ddlist);
     if(label == NULL) return;
 
@@ -1317,7 +1324,7 @@ static lv_obj_t * get_label(const lv_obj_t * ddlist)
     lv_dropdown_ext_t * ext = lv_obj_get_ext_attr(ddlist);
     if(ext->page == NULL) return NULL;
 
-    return lv_obj_get_child(lv_page_get_scrllable(ext->page), NULL);
+    return lv_obj_get_child(lv_page_get_scrollable(ext->page), NULL);
 }
 
 #endif

@@ -25,7 +25,7 @@
  *********************/
 /*Add memory junk on alloc (0xaa) and free(0xbb) (just for testing purposes)*/
 #ifndef LV_MEM_ADD_JUNK
-    #define LV_MEM_ADD_JUNK 1
+    #define LV_MEM_ADD_JUNK 0
 #endif
 
 #ifndef LV_MEM_FULL_DEFRAG_CNT
@@ -86,6 +86,9 @@ typedef struct {
 
 static uint32_t zero_mem; /*Give the address of this variable if 0 byte should be allocated*/
 
+#if LV_MEM_CUSTOM == 0
+    static uint32_t mem_max_size; /*Tracks the maximum total size of memory ever used from the internal heap*/
+#endif
 
 static uint8_t mem_buf1_32[MEM_BUF_SMALL_SIZE];
 static uint8_t mem_buf2_32[MEM_BUF_SMALL_SIZE];
@@ -108,7 +111,7 @@ static lv_mem_buf_t mem_buf_small[] = {{.p = mem_buf1_32, .size = MEM_BUF_SMALL_
  **********************/
 
 /**
- * Initiaiize the dyn_mem module (work memory and other variables)
+ * Initialize the dyn_mem module (work memory and other variables)
  */
 void _lv_mem_init(void)
 {
@@ -118,6 +121,7 @@ void _lv_mem_init(void)
     /*Allocate a large array to store the dynamically allocated data*/
     static LV_MEM_ATTR MEM_UNIT work_mem_int[LV_MEM_SIZE / sizeof(MEM_UNIT)];
     work_mem = (uint8_t *)work_mem_int;
+    mem_max_size = 0;
 #else
     work_mem = (uint8_t *)LV_MEM_ADR;
 #endif
@@ -157,16 +161,10 @@ void * lv_mem_alloc(size_t size)
 
 #ifdef LV_ARCH_64
     /*Round the size up to 8*/
-    if(size & 0x7) {
-        size = size & (~0x7);
-        size += 8;
-    }
+    size = (size + 7) & (~0x7);
 #else
     /*Round the size up to 4*/
-    if(size & 0x3) {
-        size = size & (~0x3);
-        size += 4;
-    }
+    size = (size + 3) & (~0x3);
 #endif
     void * alloc = NULL;
 
@@ -206,7 +204,19 @@ void * lv_mem_alloc(size_t size)
     if(alloc != NULL) _lv_memset(alloc, 0xaa, size);
 #endif
 
-    if(alloc == NULL) LV_LOG_WARN("Couldn't allocate memory");
+    if(alloc == NULL) {
+        LV_LOG_WARN("Couldn't allocate memory");
+    }
+    else {
+#if LV_MEM_CUSTOM == 0
+        /* just a safety check, should always be true */
+        if((uintptr_t) alloc > (uintptr_t) work_mem) {
+            if((((uintptr_t) alloc - (uintptr_t) work_mem) + size) > mem_max_size) {
+                mem_max_size = ((uintptr_t) alloc - (uintptr_t) work_mem) + size;
+            }
+        }
+#endif
+    }
 
     return alloc;
 }
@@ -281,16 +291,10 @@ void * lv_mem_realloc(void * data_p, size_t new_size)
 
 #ifdef LV_ARCH_64
     /*Round the size up to 8*/
-    if(new_size & 0x7) {
-        new_size = new_size & (~0x7);
-        new_size += 8;
-    }
+    new_size = (new_size + 7) & (~0x7);
 #else
     /*Round the size up to 4*/
-    if(new_size & 0x3) {
-        new_size = new_size & (~0x3);
-        new_size += 4;
-    }
+    new_size = (new_size + 3) & (~0x3);
 #endif
 
     /*data_p could be previously freed pointer (in this case it is invalid)*/
@@ -436,6 +440,7 @@ void lv_mem_monitor(lv_mem_monitor_t * mon_p)
         e = ent_get_next(e);
     }
     mon_p->total_size = LV_MEM_SIZE;
+    mon_p->max_used = mem_max_size;
     mon_p->used_pct   = 100 - (100U * mon_p->free_size) / mon_p->total_size;
     if(mon_p->free_size > 0) {
         mon_p->frag_pct   = (uint32_t)mon_p->free_biggest_size * 100U / mon_p->free_size;
@@ -525,14 +530,13 @@ void * _lv_mem_buf_get(uint32_t size)
             /*if this fails you probably need to increase your LV_MEM_SIZE/heap size*/
             LV_GC_ROOT(_lv_mem_buf[i]).p = lv_mem_realloc(LV_GC_ROOT(_lv_mem_buf[i]).p, size);
             if(LV_GC_ROOT(_lv_mem_buf[i]).p == NULL) {
-                LV_LOG_ERROR("lv_mem_buf_get: Out of memory, can't allocate a new  buffer (increase your LV_MEM_SIZE/heap size)")
+                LV_DEBUG_ASSERT(false, "Out of memory, can't allocate a new  buffer (increase your LV_MEM_SIZE/heap size", 0x00);
             }
             return  LV_GC_ROOT(_lv_mem_buf[i]).p;
         }
     }
 
-    LV_LOG_ERROR("lv_mem_buf_get: no free buffer. Increase LV_DRAW_BUF_MAX_NUM.");
-
+    LV_DEBUG_ASSERT(false, "No free buffer. Increase LV_DRAW_BUF_MAX_NUM.", 0x00);
     return NULL;
 }
 
@@ -582,6 +586,7 @@ void _lv_mem_buf_free_all(void)
     }
 }
 
+#if LV_MEMCPY_MEMSET_STD == 0
 /**
  * Same as `memcpy` but optimized for 4 byte operation.
  * @param dst pointer to the destination buffer
@@ -648,7 +653,6 @@ LV_ATTRIBUTE_FAST_MEM void * _lv_memcpy(void * dst, const void * src, size_t len
 
 /**
  * Same as `memset` but optimized for 4 byte operation.
- * `dst` should be word aligned else normal `memcpy` will be used
  * @param dst pointer to the destination buffer
  * @param v value to set [0..255]
  * @param len number of byte to set
@@ -703,7 +707,6 @@ LV_ATTRIBUTE_FAST_MEM void _lv_memset(void * dst, uint8_t v, size_t len)
 
 /**
  * Same as `memset(dst, 0x00, len)` but optimized for 4 byte operation.
- * `dst` should be word aligned else normal `memcpy` will be used
  * @param dst pointer to the destination buffer
  * @param len number of byte to set
  */
@@ -753,7 +756,6 @@ LV_ATTRIBUTE_FAST_MEM void _lv_memset_00(void * dst, size_t len)
 
 /**
  * Same as `memset(dst, 0xFF, len)` but optimized for 4 byte operation.
- * `dst` should be word aligned else normal `memcpy` will be used
  * @param dst pointer to the destination buffer
  * @param len number of byte to set
  */
@@ -801,6 +803,7 @@ LV_ATTRIBUTE_FAST_MEM void _lv_memset_ff(void * dst, size_t len)
     }
 }
 
+#endif /*LV_MEMCPY_MEMSET_STD*/
 
 /**********************
  *   STATIC FUNCTIONS
@@ -858,18 +861,13 @@ static void * ent_alloc(lv_mem_ent_t * e, size_t size)
  */
 static void ent_trunc(lv_mem_ent_t * e, size_t size)
 {
+
 #ifdef LV_ARCH_64
     /*Round the size up to 8*/
-    if(size & 0x7) {
-        size = size & (~0x7);
-        size += 8;
-    }
+    size = (size + 7) & (~0x7);
 #else
     /*Round the size up to 4*/
-    if(size & 0x3) {
-        size = size & (~0x3);
-        size += 4;
-    }
+    size = (size + 3) & (~0x3);
 #endif
 
     /*Don't let empty space only for a header without data*/

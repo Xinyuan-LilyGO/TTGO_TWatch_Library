@@ -10,7 +10,7 @@
 #include "lv_keyboard.h"
 #if LV_USE_KEYBOARD != 0
 
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_themes/lv_theme.h"
 #include "lv_textarea.h"
 
@@ -67,7 +67,7 @@ static const char * const default_kb_map_spec[] = {"0", "1", "2", "3", "4", "5",
                                                   };
 
 static const lv_btnmatrix_ctrl_t default_kb_ctrl_spec_map[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, LV_KEYBOARD_CTRL_BTN_FLAGS | 2,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
     LV_KEYBOARD_CTRL_BTN_FLAGS | 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     LV_KEYBOARD_CTRL_BTN_FLAGS | 2, 2, 6, 2, LV_KEYBOARD_CTRL_BTN_FLAGS | 2

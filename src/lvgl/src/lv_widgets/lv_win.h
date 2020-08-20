@@ -92,12 +92,20 @@ void lv_win_clean(lv_obj_t * win);
  *=====================*/
 
 /**
- * Add control button to the header of the window
+ * Add control button on the right side of the window header
  * @param win pointer to a window object
  * @param img_src an image source ('lv_img_t' variable, path to file or a symbol)
  * @return pointer to the created button object
  */
-lv_obj_t * lv_win_add_btn(lv_obj_t * win, const void * img_src);
+lv_obj_t * lv_win_add_btn_right(lv_obj_t * win, const void * img_src);
+
+/**
+ * Add control button on the left side of the window header
+ * @param win pointer to a window object
+ * @param img_src an image source ('lv_img_t' variable, path to file or a symbol)
+ * @return pointer to the created button object
+ */
+lv_obj_t * lv_win_add_btn_left(lv_obj_t * win, const void * img_src);
 
 /*=====================
  * Setter functions
@@ -105,7 +113,7 @@ lv_obj_t * lv_win_add_btn(lv_obj_t * win, const void * img_src);
 
 /**
  * Can be assigned to a window control button to close the window
- * @param btn pointer to the control button on teh widows header
+ * @param btn pointer to the control button on the widows header
  * @param evet the event type
  */
 void lv_win_close_event_cb(lv_obj_t * btn, lv_event_t event);

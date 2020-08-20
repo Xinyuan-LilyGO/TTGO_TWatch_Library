@@ -14,7 +14,7 @@
 #include "lv_hal.h"
 #include "../lv_misc/lv_mem.h"
 #include "../lv_misc/lv_gc.h"
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_core/lv_obj.h"
 #include "../lv_core/lv_refr.h"
 #include "../lv_themes/lv_theme.h"
@@ -144,6 +144,15 @@ lv_disp_t * lv_disp_drv_register(lv_disp_drv_t * driver)
     disp->inv_p = 0;
     disp->last_activity_time = 0;
 
+    disp->bg_color = LV_COLOR_WHITE;
+    disp->bg_img = NULL;
+#if LV_COLOR_SCREEN_TRANSP
+    disp->bg_opa = LV_OPA_TRANSP;
+#else
+    disp->bg_opa = LV_OPA_COVER;
+#endif
+
+    disp->prev_scr  = NULL;
     disp->act_scr   = lv_obj_create(NULL, NULL); /*Create a default screen on the display*/
     disp->top_layer = lv_obj_create(NULL, NULL); /*Create top layer on the display*/
     disp->sys_layer = lv_obj_create(NULL, NULL); /*Create sys layer on the display*/
@@ -157,6 +166,11 @@ lv_disp_t * lv_disp_drv_register(lv_disp_drv_t * driver)
     disp_def = disp_def_tmp; /*Revert the default display*/
 
     lv_task_ready(disp->refr_task); /*Be sure the screen will be refreshed immediately on start up*/
+
+    /*Can't handle this case later so add an error*/
+    if(lv_disp_is_true_double_buf(disp) && disp->driver.set_px_cb) {
+        LV_LOG_ERROR("Can't handle 2 screen sized buffers with set_px_cb. Display will not be refreshed.");
+    }
 
     return disp;
 }
@@ -257,6 +271,7 @@ lv_coord_t lv_disp_get_ver_res(lv_disp_t * disp)
 bool lv_disp_get_antialiasing(lv_disp_t * disp)
 {
 #if LV_ANTIALIAS == 0
+    LV_UNUSED(disp);
     return false;
 #else
     if(disp == NULL) disp = lv_disp_get_default();
@@ -271,7 +286,7 @@ bool lv_disp_get_antialiasing(lv_disp_t * disp)
  * @param disp pointer to a display (NULL to use the default display)
  * @return dpi of the display
  */
-uint32_t lv_disp_get_dpi(lv_disp_t * disp)
+lv_coord_t lv_disp_get_dpi(lv_disp_t * disp)
 {
     if(disp == NULL) disp = lv_disp_get_default();
     if(disp == NULL) return LV_DPI;  /*Do not return 0 because it might be a divider*/

@@ -10,7 +10,7 @@
 #include "lv_slider.h"
 #if LV_USE_SLIDER != 0
 
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_core/lv_group.h"
 #include "../lv_core/lv_indev.h"
 #include "../lv_draw/lv_draw.h"
@@ -260,15 +260,30 @@ static lv_res_t lv_slider_signal(lv_obj_t * slider, lv_signal_t sign, void * par
     if(res != LV_RES_OK) return res;
     if(sign == LV_SIGNAL_GET_TYPE) return lv_obj_handle_get_type_signal(param, LV_OBJX_NAME);
 
+    lv_slider_type_t type = lv_slider_get_type(slider);
     lv_slider_ext_t * ext = lv_obj_get_ext_attr(slider);
+
+    /* Advanced hit testing: react only on dragging the knob(s) */
+    if(sign == LV_SIGNAL_HIT_TEST) {
+        lv_hit_test_info_t * info = param;
+
+        /* Ordinary slider: was the knob area hit? */
+        info->result = _lv_area_is_point_on(&ext->right_knob_area, info->point, 0);
+
+        /* There's still a change we have a hit, if we have another knob */
+        if((info->result == false) && (type == LV_SLIDER_TYPE_RANGE)) {
+            info->result = _lv_area_is_point_on(&ext->left_knob_area, info->point, 0);
+        }
+    }
+
     lv_point_t p;
 
     if(sign == LV_SIGNAL_PRESSED) {
         ext->dragging = true;
-        if(lv_slider_get_type(slider) == LV_SLIDER_TYPE_NORMAL) {
+        if(type == LV_SLIDER_TYPE_NORMAL || type == LV_SLIDER_TYPE_SYMMETRICAL) {
             ext->value_to_set = &ext->bar.cur_value;
         }
-        else if(lv_slider_get_type(slider) == LV_SLIDER_TYPE_RANGE) {
+        else if(type == LV_SLIDER_TYPE_RANGE) {
             lv_indev_get_point(param, &p);
             bool hor = lv_obj_get_width(slider) >= lv_obj_get_height(slider);
             lv_bidi_dir_t base_dir = lv_obj_get_base_dir(slider);
@@ -407,6 +422,7 @@ static lv_res_t lv_slider_signal(lv_obj_t * slider, lv_signal_t sign, void * par
 
     }
     else if(sign == LV_SIGNAL_CONTROL) {
+#if LV_USE_GROUP
         char c = *((char *)param);
 
         if(c == LV_KEY_RIGHT || c == LV_KEY_UP) {
@@ -419,13 +435,16 @@ static lv_res_t lv_slider_signal(lv_obj_t * slider, lv_signal_t sign, void * par
             res = lv_event_send(slider, LV_EVENT_VALUE_CHANGED, NULL);
             if(res != LV_RES_OK) return res;
         }
+#endif
     }
     else if(sign == LV_SIGNAL_CLEANUP) {
         lv_obj_clean_style_list(slider, LV_SLIDER_PART_KNOB);
     }
     else if(sign == LV_SIGNAL_GET_EDITABLE) {
+#if LV_USE_GROUP
         bool * editable = (bool *)param;
         *editable       = true;
+#endif
     }
 
     return res;
@@ -461,13 +480,13 @@ static void lv_slider_position_knob(lv_obj_t * slider, lv_area_t * knob_area, lv
 
     if(hor) {
         knob_area->x1 -= (knob_size >> 1);
-        knob_area->x2 = knob_area->x1 + knob_size;
+        knob_area->x2 = knob_area->x1 + knob_size - 1;
         knob_area->y1 = slider->coords.y1;
         knob_area->y2 = slider->coords.y2;
     }
     else {
         knob_area->y1 -= (knob_size >> 1);
-        knob_area->y2 = knob_area->y1 + knob_size;
+        knob_area->y2 = knob_area->y1 + knob_size - 1;
         knob_area->x1 = slider->coords.x1;
         knob_area->x2 = slider->coords.x2;
     }

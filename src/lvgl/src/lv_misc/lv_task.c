@@ -9,7 +9,7 @@
  *********************/
 #include <stddef.h>
 #include "lv_task.h"
-#include "../lv_core/lv_debug.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_hal/lv_hal_tick.h"
 #include "lv_gc.h"
 
@@ -193,9 +193,9 @@ LV_ATTRIBUTE_TASK_HANDLER uint32_t lv_task_handler(void)
     return time_till_next;
 }
 /**
- * Create an "empty" task. It needs to initialzed with at least
+ * Create an "empty" task. It needs to initialized with at least
  * `lv_task_set_cb` and `lv_task_set_period`
- * @return pointer to the craeted task
+ * @return pointer to the created task
  */
 lv_task_t * lv_task_create_basic(void)
 {
@@ -256,13 +256,13 @@ lv_task_t * lv_task_create_basic(void)
  * @param user_data custom parameter
  * @return pointer to the new task
  */
-lv_task_t * lv_task_create(lv_task_cb_t task_cb, uint32_t period, lv_task_prio_t prio, void * user_data)
+lv_task_t * lv_task_create(lv_task_cb_t task_xcb, uint32_t period, lv_task_prio_t prio, void * user_data)
 {
     lv_task_t * new_task = lv_task_create_basic();
     LV_ASSERT_MEM(new_task);
     if(new_task == NULL) return NULL;
 
-    lv_task_set_cb(new_task, task_cb);
+    lv_task_set_cb(new_task, task_xcb);
     lv_task_set_period(new_task, period);
     lv_task_set_prio(new_task, prio);
     new_task->user_data = user_data;
@@ -273,7 +273,7 @@ lv_task_t * lv_task_create(lv_task_cb_t task_cb, uint32_t period, lv_task_prio_t
 /**
  * Set the callback the task (the function to call periodically)
  * @param task pointer to a task
- * @param task_cb teh function to call periodically
+ * @param task_cb the function to call periodically
  */
 void lv_task_set_cb(lv_task_t * task, lv_task_cb_t task_cb)
 {
@@ -376,6 +376,17 @@ void lv_task_enable(bool en)
 uint8_t lv_task_get_idle(void)
 {
     return idle_last;
+}
+
+/**
+ * Iterate through the tasks
+ * @param task NULL to start iteration or the previous return value to get the next task
+ * @return the next task or NULL if there is no more task
+ */
+lv_task_t * lv_task_get_next(lv_task_t * task)
+{
+    if(task == NULL) return _lv_ll_get_head(&LV_GC_ROOT(_lv_task_ll));
+    else return _lv_ll_get_next(&LV_GC_ROOT(_lv_task_ll), task);
 }
 
 /**********************
