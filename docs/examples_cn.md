@@ -52,7 +52,7 @@ examples/
 │   ├── S7xG_GPS                    #S76/78G GPS 示例
 │   ├── S7xG_LoRa                   #S76/78G LORA 示例
 │   ├── SIM800L                     #SIM800L 2G通信模块示例
-│   ├── SIM868                      #SIM800L 2G通信定位模块示例
+│   ├── SIM868                      #SIM868  2G通信定位模块示例
 │   └── SPM1423HM4H_Mic             #麦克风示例
 ├── T-Block                         #此目录只适用TBLOCK，不适用其他
 │   ├── CapTouch                    #MPR121 电容触摸传感器示例
@@ -65,6 +65,8 @@ examples/
 │   ├── MPU6050_gyro_simple         #MPU6050 陀螺仪示例
 │   ├── MPU6050_temperature         #MPU6050 内置温度传感器示例
 │   └── TouchScreen                 #ST7796S / ILI9488 显示屏模块示例
+├── LilyPi                          #此目录只适用LilyPi，不适用其他
+│   └── lv_demo_widgets             #lvgl 演示示例
 └── TFT_eSPI                        #TFT_eSPI 显示示例
     ├── All_Free_Fonts_Demo
     ├── Arduino_Life

@@ -52,7 +52,7 @@ examples/
 │   ├── S7xG_GPS                    #S76/78G GPS example
 │   ├── S7xG_LoRa                   #S76/78G LORA example
 │   ├── SIM800L                     #SIM800L 2G communication module example
-│   ├── SIM868                      #SIM800L 2G communication positioning module example
+│   ├── SIM868                      #SIM868  2G communication positioning module example
 │   └── SPM1423HM4H_Mic             #Microphone example
 ├── T-Block                         #This directory is only applicable to TBLOCK, not applicable to others
 │   ├── CapTouch                    #MPR121 Capacitive touch sensor example
@@ -65,6 +65,8 @@ examples/
 │   ├── MPU6050_gyro_simple         #MPU6050 Gyroscope example
 │   ├── MPU6050_temperature         #MPU6050 Example of built-in temperature sensor
 │   └── TouchScreen                 #ST7796S / ILI9488 Display module example
+├── LilyPi                          #This directory is only applicable to LilyPi, not applicable to others 
+│   └── lv_demo_widgets             #lvgl example
 └── TFT_eSPI                        #TFT_eSPI Display example
     ├── All_Free_Fonts_Demo
     ├── Arduino_Life
