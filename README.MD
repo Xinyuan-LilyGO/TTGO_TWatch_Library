@@ -78,6 +78,8 @@
 
  <h2 align = "left">🔶 More interesting projects</h2>
 
+- [sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch)
+- [Micropython-twatch2020](https://y0no.fr/posts/micropython-ttgo-twatch2020/)
 - [Flight Recorder](https://github.com/lyusupov/SoftRF/wiki/Flight-Recorder)
 - [TTGO_T_Watch_Baidu_Rec](https://github.com/lixy123/TTGO_T_Watch_Baidu_Rec)
 - [TTGO_T_Watch_Alarm_Clock](https://github.com/lixy123/TTGO_T_Watch_Alarm_Clock)
