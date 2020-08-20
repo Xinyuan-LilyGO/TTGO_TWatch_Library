@@ -13,7 +13,7 @@ Written by Lewis he //https://github.com/lewisxhe
 
 #pragma once
 
-#define LILYGO_DEBUG Serial
+// #define LILYGO_DEBUG Serial
 
 #ifdef LILYGO_DEBUG
 #define DBGX(...)        LILYGO_DEBUG.printf(__VA_ARGS__)
@@ -80,6 +80,10 @@ Written by Lewis he //https://github.com/lewisxhe
 #include "drive/mup6050/MPU6050.h"
 #endif
 
+#ifdef LILYGO_WATCH_HAS_ADC
+#include "esp_adc_cal.h"
+#endif  /*LILYGO_WATCH_HAS_ADC*/
+
 #include "drive/i2c/i2c_bus.h"
 #include "drive/tft/bl.h"
 
@@ -137,6 +141,7 @@ public:
         mpu = new MPU6050();
 #endif  /*LILYGO_WATCH_HAS_MPU6050*/
 
+        initHardware();
         initPower();
         initTFT();
         initTouch();
@@ -639,6 +644,43 @@ public:
         if (!i2c)return false;
         return i2c->deviceProbe(addr);
     }
+
+#ifdef LILYGO_WATCH_HAS_ADC
+    float getVoltage()
+    {
+        uint16_t v = analogRead(ADC_PIN);
+        return  ((float)v / 4095.0) * 2.0 * 3.3 * (adc_vref / 1000.0);
+    }
+#endif
+
+#ifdef LILYGO_LILYPI_V1
+
+    void turnOnUSB()
+    {
+        digitalWrite(EXTERN_USB_EN, HIGH);
+    }
+
+    void turnOffUSB()
+    {
+        digitalWrite(EXTERN_USB_EN, LOW);
+    }
+
+    void toggleRelay()
+    {
+        digitalWrite(RELAY_PIN, !digitalRead(RELAY_PIN));
+    }
+
+    void turnOnRelay()
+    {
+        digitalWrite(RELAY_PIN, HIGH);
+    }
+
+    void turnOffRelay()
+    {
+        digitalWrite(RELAY_PIN, LOW);
+    }
+#endif
+
 private:
     TTGOClass()
     {
@@ -649,11 +691,18 @@ private:
     };
 
 
+    void initHardware(void)
+    {
+#if defined(LILYGO_LILYPI_V1)
+        pinMode(EXTERN_USB_EN, OUTPUT);
+        pinMode(RELAY_PIN, OUTPUT);
+#endif
+    }
+
     bool initSensor()
     {
-#if   defined(LILYGO_WATCH_HAS_BMA423)
+#if defined(LILYGO_WATCH_HAS_BMA423)
         struct bma423_axes_remap remap_data;
-
         if (!bma->begin()) {
             DBGX("Begin BMA423 FAIL");
             return false;
@@ -677,7 +726,7 @@ private:
         bma->set_remap_axes(&remap_data);
 
 #elif defined(LILYGO_WATCH_HAS_MPU6050)
-        if (!mpu->begin(axpReadBytes, axpWriteBytes,
+        if (!mpu->begin(i2cReadBytes, i2cWriteBytes,
                         MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G)) {
             DBGX("Begin MPU6050 FAIL");
             return false;
@@ -692,28 +741,22 @@ private:
     {
 #if (defined(LILYGO_WATCH_HAS_DISPLAY) && !defined(LILYGO_EINK_TOUCHSCREEN)) || defined(LILYGO_BLOCK_ILI9488_MODULE) || defined(LILYGO_BLOCK_ST7796S_MODULE)
 
-#ifdef LILYGO_WATCH_2020_V1
-        //In the 2020V1 version, the ST7789 chip power supply
-        //is shared with the backlight, so LDO2 cannot be turned off
-        power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
-#endif
-
 #if defined(EXTERNAL_TFT_ESPI_LIBRARY)
         if (tft == nullptr) {
             DBGX("TFT Handler is NULL!!!");
             return;
         }
-#else
+#else   /* EXTERNAL_TFT_ESPI_LIBRARY */
         int16_t w = 240;
         int16_t h = 240;
         uint32_t drv = 0x7789;
         uint32_t freq = 40000000;
-#if defined(LILYGO_BLOCK_ST7796S_MODULE) && defined(LILYGO_WATCH_BLOCK)
+#if     defined(LILYGO_BLOCK_ST7796S_MODULE) && (defined(LILYGO_WATCH_BLOCK) || defined(LILYGO_LILYPI_V1))
         w = 320;
         h = 480;
         drv = 0x7796;
         freq = 27000000;
-#elif defined(LILYGO_BLOCK_ILI9488_MODULE) && defined(LILYGO_WATCH_BLOCK)
+#elif   defined(LILYGO_BLOCK_ILI9488_MODULE) && (defined(LILYGO_WATCH_BLOCK) || defined(LILYGO_LILYPI_V1))
         w = 320;
         h = 480;
         drv = 0x9488;
@@ -726,7 +769,7 @@ private:
 
         tft->init();
 
-#if defined(ENABLE_LVGL_FLUSH_DMA)
+#if     defined(ENABLE_LVGL_FLUSH_DMA)
         tft->initDMA(); // To use SPI DMA you must call initDMA() to setup the DMA engine
 #endif
 
@@ -751,20 +794,29 @@ private:
         if (!touch->begin(Wire1)) {
             DBGX("Begin touch FAIL");
         }
-#elif defined(LILYGO_EINK_TOUCHSCREEN) || defined(LILYGO_BLOCK_ST7796S_MODULE) || defined(LILYGO_BLOCK_ILI9488_MODULE)
+#elif defined(LILYGO_TOUCHSCREEN_CALLBACK_METHOD)
         touch = new FT5206_Class();
-        if (!touch->begin(axpReadBytes, axpWriteBytes)) {
+        if (!touch->begin(i2cReadBytes, i2cWriteBytes)) {
             DBGX("Begin touch FAIL");
-        } else {
-            DBGX("Begin touch PASS");
         }
 #endif
     }
 
     void initPower()
     {
+#ifdef LILYGO_WATCH_HAS_ADC
+        esp_adc_cal_characteristics_t adc_chars;
+        if (esp_adc_cal_characterize(HAL_ADC_UNIT,
+                                     ADC_ATTEN_DB_11,
+                                     ADC_WIDTH_BIT_12,
+                                     1100,
+                                     &adc_chars) == ESP_ADC_CAL_VAL_EFUSE_VREF) {
+            adc_vref = adc_chars.vref;
+        }
+#endif  /*LILYGO_WATCH_HAS_ADC*/
+
 #ifdef LILYGO_WATCH_HAS_AXP202
-        int ret = power->begin(axpReadBytes, axpWriteBytes);
+        int ret = power->begin(i2cReadBytes, i2cWriteBytes);
         if (ret == AXP_FAIL) {
             DBGX("AXP Power begin failed");
         } else {
@@ -777,12 +829,18 @@ private:
             //axp202 allows maximum charging current of 1800mA, minimum 300mA
             power->setChargeControlCur(300);
 
-#ifdef LILYGO_WATCH_HAS_SIM868
+#ifdef  LILYGO_WATCH_HAS_SIM868
+            //Setting gps power
             power->setPowerOutPut(AXP202_LDO3, false);
             power->setLDO3Mode(0);
             power->setLDO3Voltage(3300);
 #endif  /*LILYGO_WATCH_HAS_SIM868*/
 
+#ifdef  LILYGO_WATCH_2020_V1
+            //In the 2020V1 version, the ST7789 chip power supply
+            //is shared with the backlight, so LDO2 cannot be turned off
+            power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
+#endif  /*LILYGO_WATCH_2020_V1*/
         }
 #endif /*LILYGO_WATCH_HAS_AXP202*/
     }
@@ -794,19 +852,19 @@ private:
 #endif /*LILYGO_WATCH_HAS_BLACKLIGHT*/
     }
 
-#ifdef LILYGO_WATCH_HAS_AXP202
-    static uint8_t axpWriteBytes(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint8_t len)
+// #if defined(LILYGO_WATCH_HAS_AXP202)
+    static uint8_t i2cWriteBytes(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint8_t len)
     {
         _ttgo->writeBytes(devAddress, regAddress, data, len);
         return 0;
     }
 
-    static uint8_t axpReadBytes(uint8_t devAddress, uint8_t regAddress,  uint8_t *data, uint8_t len)
+    static uint8_t i2cReadBytes(uint8_t devAddress, uint8_t regAddress,  uint8_t *data, uint8_t len)
     {
         _ttgo->readBytes(devAddress, regAddress, data, len);
         return 0;
     }
-#endif  /*LILYGO_WATCH_HAS_AXP202*/
+// #endif  /*LILYGO_WATCH_HAS_AXP202*/
 
 
 #ifdef LILYGO_WATCH_HAS_NFC
@@ -838,6 +896,10 @@ private:
     lv_disp_drv_t disp_drv;
 #endif
 
+#ifdef LILYGO_WATCH_HAS_ADC
+    uint16_t adc_vref = 1100;
+#endif
+
 protected:
 
 
@@ -853,7 +915,7 @@ protected:
         }
         p = _ttgo->touch->getPoint();
 
-#if     defined(LILYGO_BLOCK_ST7796S_MODULE) && defined(LILYGO_WATCH_BLOCK)
+#if     defined(LILYGO_BLOCK_ST7796S_MODULE)
         uint8_t rotation = _ttgo->tft->getRotation();
         switch (rotation) {
         case 1:
