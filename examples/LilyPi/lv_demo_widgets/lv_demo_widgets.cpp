@@ -671,11 +671,13 @@ static void button_event_cb(lv_obj_t *obj, lv_event_t e)
             if (lv_obj_get_state(on_button, LV_BTN_PART_MAIN) & LV_STATE_CHECKED) {
                 lv_btn_toggle(obj);
                 lv_btn_toggle(on_button);
+                relayTurnOff();
             }
         } else {
             if (lv_obj_get_state(off_button, LV_BTN_PART_MAIN) & LV_STATE_CHECKED) {
                 lv_btn_toggle(off_button);
                 lv_btn_toggle(obj);
+                relayTurnOn();
             }
         }
     }
