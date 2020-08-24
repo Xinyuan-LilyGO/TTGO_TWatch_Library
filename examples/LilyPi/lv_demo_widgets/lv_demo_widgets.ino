@@ -47,12 +47,27 @@ void setup()
     // Initialize the hardware
     ttgo->begin();
 
+    // Turn on the backlight
+    ttgo->openBL();
+
+    if (!ttgo->sdcard_begin()) {
+        // if sd card mount fail . show it
+        Serial.println("SDCARD MOUNT FAILED");
+        ttgo->tft->setTextFont(4);
+        ttgo->tft->setRotation(3);
+        ttgo->tft->setCursor(0, 0);
+        ttgo->tft->setTextColor(TFT_RED);
+        ttgo->tft->println("SDCARD MOUNT FAILED");
+        delay(5000);
+    } else {
+        Serial.println("SDCARD MOUNT SUCCESS");
+    }
+
     ttgo->lvgl_begin();
 
     ttgo->lvgl_whirling(3);
 
-    // Turn on the backlight
-    ttgo->openBL();
+
 
     lv_demo_widgets();
 

@@ -226,7 +226,7 @@
 #define LILYGO_WATCH_HAS_PCF8563
 #define LILYGO_TOUCHSCREEN_CALLBACK_METHOD
 #define LILYGO_WATCH_HAS_ADC
-
+#define LILYGO_WATCH_HAS_SDCARD
 #else
 
 #error "Please define Watch model"
