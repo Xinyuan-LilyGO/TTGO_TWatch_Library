@@ -27,7 +27,7 @@
 
 #define USER_BUTTON         36
 
-#define TP_INT              38
+#define TOUCH_INT           38
 #define RTC_INT             37
 #define AXP202_INT          35
 #define BMA423_INT1         39
@@ -81,5 +81,10 @@
 #define TBLOCK_IMU_INT      39
 
 
-
-
+#define EINK_BUSY           34
+#define EINK_RESET          27
+#define EINK_DC             19
+#define EINK_SS             5
+#define EINK_SPI_MOSI       23
+#define EINK_SPI_MISO       -1 //elink no use
+#define EINK_SPI_CLK        18

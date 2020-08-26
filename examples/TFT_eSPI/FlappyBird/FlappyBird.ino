@@ -6,6 +6,7 @@
 
 TTGOClass *ttgo;
 TFT_eSPI *tft;
+
 #define TFTW            240     // screen width
 #define TFTH            240     // screen height
 #define TFTW2           160     // half screen width
@@ -94,14 +95,25 @@ static short tmpx, tmpy;
 // using macro to force inlining
 #define drawPixel(a, b, c) tft->setAddrWindow(a, b, a, b); tft->pushColor(c)
 
+void game_start();
+void game_loop();
+void game_over();
+void game_init();
+void resetMaxScore();
+void EEPROM_Write(int *num, int MemPos);
+void EEPROM_Read(int *num, int MemPos);
 
 void setup()
 {
+    Serial.begin(115200);
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
     tft = ttgo->tft;
     resetMaxScore();
+    // while (1) {
+    //     Serial.println(ttgo->touched());
+    // }
 }
 
 void loop()
@@ -152,11 +164,10 @@ void game_loop()
             // ===============
             // input
             // ===============
-            if (ttgo->button->isPressed()) {
+            if (ttgo->touched()) {
                 if (bird.y > BIRDH2 * 0.5) bird.vel_y = -JUMP_FORCE;
                 else bird.vel_y = 0;
             }
-            ttgo->button->loop();
 
             // ===============
             // update
@@ -299,11 +310,9 @@ void game_start()
     while (1) {
         delay(1000);
         // wait for push button
-        if (ttgo->button->isPressed()) {
+        if (ttgo->touched()) {
             break;
         }
-        ttgo->button->loop();
-
     }
     // init game settings
     game_init();
@@ -361,10 +370,9 @@ void game_over()
     tft->print(maxScore);
     while (1) {
         // wait for push button
-        if (ttgo->button->isPressed()) {
+        if (ttgo->touched()) {
             break;
         }
-        ttgo->button->loop();
     }
 }
 

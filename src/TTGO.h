@@ -38,7 +38,7 @@ Written by Lewis he //https://github.com/lewisxhe
 
 #if !defined(EXTERNAL_TFT_ESPI_LIBRARY)
 #if defined(LILYGO_WATCH_HAS_DISPLAY)   || defined(LILYGO_EINK_TOUCHSCREEN) || defined(LILYGO_WATCH_HAS_EINK)
-#include "TFT_eSPI/TFT_eSPI.h"
+#include "libraries/TFT_eSPI/TFT_eSPI.h"
 #endif
 #else   //EXTERNAL_TFT_ESPI_LIBRARY
 #include <TFT_eSPI.h>
@@ -87,6 +87,11 @@ Written by Lewis he //https://github.com/lewisxhe
 #include "drive/i2c/i2c_bus.h"
 #include "drive/tft/bl.h"
 
+#ifdef LILYGO_EINK_GDEW0371W7
+#define GDEW0371W7_WIDTH    416
+#define GDEW0371W7_HEIGHT   240
+#include "libraries/ePaperDriverLib/src/ePaperDriver.h"
+#endif
 
 #if !defined(EXTERNAL_TFT_ESPI_LIBRARY) && !defined(LILYGO_BLOCK_ILI9488_MODULE)
 #define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
@@ -150,10 +155,16 @@ public:
     }
 
 #ifdef LILYGO_WATCH_HAS_TOUCH
+    bool touched()
+    {
+        return (touch->touched() > 0);
+    }
+
     /**
      * @brief  Get the touch screen coordinates,
      *  return true if pressed, false otherwise
      */
+
     bool getTouch(int16_t &x, int16_t &y)
     {
         if (touch == nullptr) {
@@ -163,8 +174,33 @@ public:
             return false;
         }
         TP_Point p = touch->getPoint();
+
+#if defined(LILYGO_EINK_GDEW0371W7)
+        uint8_t r = ePaper->getRotation();
+        switch (r) {
+        case 0:
+            x = p.x;
+            y = p.y;
+            break;
+        case 1:
+            x =  p.y;
+            y = GDEW0371W7_HEIGHT - p.x;
+            break;
+        case 2:
+            x = GDEW0371W7_HEIGHT - p.x;
+            y = GDEW0371W7_WIDTH - p.y;
+            break;
+        case 3:
+            x = GDEW0371W7_WIDTH - p.y;
+            y = p.x;
+            break;
+        default:
+            break;
+        }
+#else
         x = p.x;
         y = p.y;
+#endif
         return true;
     }
 
@@ -451,6 +487,10 @@ public:
     MPU6050 *mpu = nullptr;
 #endif
 
+#if defined(LILYGO_EINK_GDEW0371W7)
+    ePaperDisplay *ePaper = nullptr;
+#endif
+
 #ifdef LILYGO_WATCH_HAS_MOTOR
     Motor *motor = nullptr;
     void motor_begin()
@@ -697,6 +737,9 @@ private:
         pinMode(EXTERN_USB_EN, OUTPUT);
         pinMode(RELAY_PIN, OUTPUT);
 #endif
+#if defined(TOUCH_INT)
+        pinMode(TOUCH_INT, INPUT);
+#endif
     }
 
     bool initSensor()
@@ -739,7 +782,7 @@ private:
 
     void initTFT()
     {
-#if (defined(LILYGO_WATCH_HAS_DISPLAY) && !defined(LILYGO_EINK_TOUCHSCREEN)) || defined(LILYGO_BLOCK_ILI9488_MODULE) || defined(LILYGO_BLOCK_ST7796S_MODULE)
+#if (defined(LILYGO_WATCH_HAS_DISPLAY) && !defined(LILYGO_EINK_TOUCHSCREEN) && !defined(LILYGO_EINK_GDEW0371W7)) || defined(LILYGO_BLOCK_ILI9488_MODULE) || defined(LILYGO_BLOCK_ST7796S_MODULE)
 
 #if defined(EXTERNAL_TFT_ESPI_LIBRARY)
         if (tft == nullptr) {
@@ -781,6 +824,11 @@ private:
         tft->fillScreen(TFT_BLACK);
 
         tft->setTextFont(1);
+
+
+#elif defined(LILYGO_EINK_GDEW0371W7)
+        SPI.begin(EINK_SPI_CLK, EINK_SPI_MISO, EINK_SPI_MOSI);
+        ePaper = new ePaperDisplay( GDEW0371W7, EINK_BUSY, EINK_RESET, EINK_DC, EINK_SS );
 #endif
     }
 
@@ -788,7 +836,7 @@ private:
 
     void initTouch()
     {
-#if defined(LILYGO_WATCH_HAS_TOUCH) && !defined(LILYGO_EINK_TOUCHSCREEN) &&  !defined(LILYGO_BLOCK_ST7796S_MODULE) &&  !defined(LILYGO_BLOCK_ILI9488_MODULE)
+#if defined(LILYGO_WATCH_HAS_TOUCH) && !defined(LILYGO_EINK_TOUCHSCREEN) &&  !defined(LILYGO_BLOCK_ST7796S_MODULE) &&  !defined(LILYGO_BLOCK_ILI9488_MODULE) && !defined(LILYGO_EINK_GDEW0371W7)
         touch = new FT5206_Class();
         Wire1.begin(TOUCH_SDA, TOUCH_SCL);
         if (!touch->begin(Wire1)) {

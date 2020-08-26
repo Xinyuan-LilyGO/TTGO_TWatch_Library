@@ -27,7 +27,7 @@
 
 #define USER_BUTTON         36
 
-#define TP_INT              38
+#define TOUCH_INT           38
 #define RTC_INT             37
 #define AXP202_INT          35
 #define BMA423_INT1         39

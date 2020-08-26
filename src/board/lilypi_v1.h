@@ -25,7 +25,7 @@
 
 #define USER_BUTTON         0
 
-#define TP_INT              39
+#define TOUCH_INT           39
 #define RTC_INT             36
 
 #define ADC_PIN             35
@@ -36,4 +36,10 @@
 
 #define HAL_ADC_UNIT        ADC_UNIT_1
 
-
+#define EINK_BUSY           12
+#define EINK_RESET          27
+#define EINK_DC             19
+#define EINK_SS             5
+#define EINK_SPI_MOSI       23
+#define EINK_SPI_MISO       -1 //elink no use
+#define EINK_SPI_CLK        18
