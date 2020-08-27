@@ -1,19 +1,8 @@
-// #pragma mark - Depend on the following libraries
-
 /*
-
-// This code is only suitable for T-Block
-// This code is only suitable for T-Block
-// This code is only suitable for T-Block
-
-cd ~/Arduino/libraries
-git clone https://github.com/ZinggJM/GxEPD.git
-git clone https://github.com/olikraus/U8g2_for_Adafruit_GFX.git
-
-1.cd ~/Arduino/libraries/U8g2_for_Adafruit_GFX/src/
-2.Edit GxFont_GFX.h
-3.Uncomment #include <U8g2_for_Adafruit_GFX.h> to use U8G2 font
-
+* Based on the test code written by GxEPD / U8g2_for_Adafruit_GFX
+* https://github.com/ZinggJM/GxEPD
+* https://github.com/olikraus/U8g2_for_Adafruit_GFX
+*
 */
 
 
