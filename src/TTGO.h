@@ -93,6 +93,14 @@ Written by Lewis he //https://github.com/lewisxhe
 #include "libraries/ePaperDriverLib/src/ePaperDriver.h"
 #endif
 
+
+#if defined(LILYGO_EINK_GDEH0154D67_TP) || defined(LILYGO_EINK_GDEH0154D67_BL)
+#include "libraries/GxEPD/src/GxEPD.h"
+#include "libraries/GxEPD/src/GxIO/GxIO.h"
+#include "libraries/GxEPD/src/GxIO/GxIO_SPI/GxIO_SPI.h"
+#include "libraries/GxEPD/src/GxGDEH0154D67/GxGDEH0154D67.h"
+#endif
+
 #if !defined(EXTERNAL_TFT_ESPI_LIBRARY) && !defined(LILYGO_BLOCK_ILI9488_MODULE)
 #define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
 #endif
@@ -125,9 +133,9 @@ public:
         rtc = new PCF8563_Class(*i2c);
 #endif  /*LILYGO_WATCH_HAS_PCF8563*/
 
-#ifdef LILYGO_WATCH_HAS_BLACKLIGHT
+#ifdef LILYGO_WATCH_HAS_BACKLIGHT
         bl = new BackLight(TWATCH_TFT_BL);
-#endif  /*LILYGO_WATCH_HAS_BLACKLIGHT*/
+#endif  /*LILYGO_WATCH_HAS_BACKLIGHT*/
 
 #ifdef LILYGO_WATCH_HAS_BMA423
         bma = new BMA(*i2c);
@@ -154,6 +162,9 @@ public:
         initBlacklight();
     }
 
+    /******************************************
+     *              TouchPad
+     * ***************************************/
 #ifdef LILYGO_WATCH_HAS_TOUCH
     bool touched()
     {
@@ -223,7 +234,9 @@ public:
 
 #endif
 
-
+    /******************************************
+     *              Power
+     * ***************************************/
 #ifdef LILYGO_WATCH_HAS_AXP202
     /*
     * @brief  It will turn off the power supply of all peripherals except ESP32
@@ -259,6 +272,10 @@ public:
 
 
 #endif  /*LILYGO_WATCH_HAS_AXP202*/
+
+    /******************************************
+     *              SIM Series
+     * ***************************************/
 
 #if     defined(LILYGO_WATCH_HAS_SIM800L) || defined(LILYGO_WATCH_HAS_SIM868)
 #ifdef LILYGO_WATCH_HAS_SIM868
@@ -320,6 +337,9 @@ public:
 #endif  /*LILYGO_WATCH_HAS_SIM800L || LILYGO_WATCH_HAS_SIM868*/
 
 
+    /******************************************
+     *              DISPLAY
+     * ***************************************/
 #ifdef LILYGO_WATCH_HAS_DISPLAY
     void displayOff()
     {
@@ -347,8 +367,10 @@ public:
 #endif  /*LILYGO_WATCH_HAS_DISPLAY*/
 
 
-
-#ifdef LILYGO_WATCH_HAS_BLACKLIGHT
+    /******************************************
+     *              BACKLIGHT
+     * ***************************************/
+#ifdef LILYGO_WATCH_HAS_BACKLIGHT
     void openBL()
     {
 #if  !defined(LILYGO_WATCH_2020_V1) && defined(LILYGO_WATCH_HAS_AXP202)
@@ -369,7 +391,7 @@ public:
     {
         bl->adjust(level);
     }
-#endif  /*LILYGO_WATCH_HAS_BLACKLIGHT*/
+#endif  /*LILYGO_WATCH_HAS_BACKLIGHT*/
 
 
 
@@ -459,7 +481,7 @@ public:
 #endif  /*LILYGO_WATCH_HAS_PCF8563*/
 
 
-#ifdef LILYGO_WATCH_HAS_BLACKLIGHT
+#ifdef LILYGO_WATCH_HAS_BACKLIGHT
     BackLight *bl = nullptr;
 #endif
 
@@ -467,7 +489,7 @@ public:
     AXP20X_Class *power = nullptr;
 #endif
 
-#ifdef LILYGO_WATCH_HAS_DISPLAY
+#if defined(LILYGO_WATCH_HAS_DISPLAY)
     TFT_eSPI *tft = nullptr;
 #endif
 
@@ -489,6 +511,11 @@ public:
 
 #if defined(LILYGO_EINK_GDEW0371W7)
     ePaperDisplay *ePaper = nullptr;
+#endif
+
+#if defined(LILYGO_EINK_GDEH0154D67_TP) || defined(LILYGO_EINK_GDEH0154D67_BL)
+    GxIO_Class  *io = nullptr;
+    GxEPD_Class *ePaper = nullptr;
 #endif
 
 #ifdef LILYGO_WATCH_HAS_MOTOR
@@ -782,8 +809,8 @@ private:
 
     void initTFT()
     {
-#if (defined(LILYGO_WATCH_HAS_DISPLAY) && !defined(LILYGO_EINK_TOUCHSCREEN) && !defined(LILYGO_EINK_GDEW0371W7)) || defined(LILYGO_BLOCK_ILI9488_MODULE) || defined(LILYGO_BLOCK_ST7796S_MODULE)
-
+// #if (defined(LILYGO_WATCH_HAS_DISPLAY) && !defined(LILYGO_WATCH_HAS_EINK)) || defined(LILYGO_BLOCK_ILI9488_MODULE) || defined(LILYGO_BLOCK_ST7796S_MODULE)
+#if defined(LILYGO_WATCH_HAS_DISPLAY)
 #if defined(EXTERNAL_TFT_ESPI_LIBRARY)
         if (tft == nullptr) {
             DBGX("TFT Handler is NULL!!!");
@@ -827,24 +854,36 @@ private:
 
 
 #elif defined(LILYGO_EINK_GDEW0371W7)
+        /* sclk = 18 mosi = 23 miso = n/a */
         SPI.begin(EINK_SPI_CLK, EINK_SPI_MISO, EINK_SPI_MOSI);
         ePaper = new ePaperDisplay( GDEW0371W7, EINK_BUSY, EINK_RESET, EINK_DC, EINK_SS );
+#elif defined(LILYGO_EINK_GDEH0154D67_BL) || defined(LILYGO_EINK_GDEH0154D67_TP)
+        DBGX("GDEH0154D67 Init...");
+
+        /* sclk = 18 mosi = 23 miso = n/a */
+        SPI.begin(EINK_SPI_CLK, EINK_SPI_MISO, EINK_SPI_MOSI);
+        io = new GxIO_Class(SPI,  EINK_SS,  EINK_DC, EINK_RESET);
+        ePaper = new GxEPD_Class(*io,  EINK_RESET,  EINK_BUSY);
+        ePaper->init();
+        ePaper->setRotation(0);
+        ePaper->fillScreen(GxEPD_WHITE);
+        ePaper->setTextColor(GxEPD_BLACK);
+        ePaper->setCursor(0, 0);
 #endif
     }
 
 
-
     void initTouch()
     {
-#if defined(LILYGO_WATCH_HAS_TOUCH) && !defined(LILYGO_EINK_TOUCHSCREEN) &&  !defined(LILYGO_BLOCK_ST7796S_MODULE) &&  !defined(LILYGO_BLOCK_ILI9488_MODULE) && !defined(LILYGO_EINK_GDEW0371W7)
+#if defined(LILYGO_TOUCHSCREEN_CALLBACK_METHOD)
+        touch = new FT5206_Class();
+        if (!touch->begin(i2cReadBytes, i2cWriteBytes)) {
+            DBGX("Begin touch FAIL");
+        }
+#elif defined(LILYGO_WATCH_HAS_TOUCH)
         touch = new FT5206_Class();
         Wire1.begin(TOUCH_SDA, TOUCH_SCL);
         if (!touch->begin(Wire1)) {
-            DBGX("Begin touch FAIL");
-        }
-#elif defined(LILYGO_TOUCHSCREEN_CALLBACK_METHOD)
-        touch = new FT5206_Class();
-        if (!touch->begin(i2cReadBytes, i2cWriteBytes)) {
             DBGX("Begin touch FAIL");
         }
 #endif
@@ -895,9 +934,9 @@ private:
 
     void initBlacklight()
     {
-#ifdef LILYGO_WATCH_HAS_BLACKLIGHT
+#ifdef LILYGO_WATCH_HAS_BACKLIGHT
         bl->begin();
-#endif /*LILYGO_WATCH_HAS_BLACKLIGHT*/
+#endif /*LILYGO_WATCH_HAS_BACKLIGHT*/
     }
 
 // #if defined(LILYGO_WATCH_HAS_AXP202)

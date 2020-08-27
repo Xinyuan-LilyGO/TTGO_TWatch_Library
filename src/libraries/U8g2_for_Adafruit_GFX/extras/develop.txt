@@ -1,0 +1,9 @@
+Developer Information
+=================
+
+Takeover U8g2 fonts:
+- copy font file u8g2_fonts.c to "src" folder
+- change the include file in u8g2_fonts.c from "u8g2.h" to "u8g2_fonts.h"
+- Update the list of fonts in "U8g2_for_Adafruit_GFX.h"
+- Update keywords.txt
+- Update version in library.properties

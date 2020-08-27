@@ -1,67 +1,30 @@
-#pragma mark - Depend on the following libraries
-
 /*
-
-// This code is only suitable for T-Block
-// This code is only suitable for T-Block
-// This code is only suitable for T-Block
-
-cd ~/Arduino/libraries
-git clone https://github.com/ZinggJM/GxEPD.git
-git clone https://github.com/olikraus/U8g2_for_Adafruit_GFX.git
-
-1.cd ~/Arduino/libraries/U8g2_for_Adafruit_GFX/src/
-2.Edit GxFont_GFX.h
-3.Uncomment #include <U8g2_for_Adafruit_GFX.h> to use U8G2 font
-
+* Based on the test code written by GxEPD / U8g2_for_Adafruit_GFX
+* https://github.com/ZinggJM/GxEPD
+* https://github.com/olikraus/U8g2_for_Adafruit_GFX
+*
 */
-
 
 #include "config.h"
 
 extern const unsigned char logoIcon[280];
 
-#include <GxEPD.h>
-#include <GxGDEH0154D67/GxGDEH0154D67.h>  // 1.54" b/w
-#include <GxIO/GxIO_SPI/GxIO_SPI.h>
-#include <GxIO/GxIO.h>
-
-
-#define INK_BUSY                                    34
-#define INK_RESET                                   27
-#define INK_DC                                      19
-#define INK_SS                                      5
-#define INK_MOSI                                    23
-#define INK_MISO                                    26 //eink no use
-#define INK_CLK                                     18
-
 #define DEFAULT_BRIGHTNESS                          45
-
-GxIO_Class io(SPI,  INK_SS,  INK_DC, INK_RESET);
-GxEPD_Class display(io,  INK_RESET,  INK_BUSY);
 
 U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 TTGOClass *twatch = nullptr;
+GxEPD_Class *ePaper = nullptr;
 PCF8563_Class *rtc = nullptr;
 AXP20X_Class *power = nullptr;
 Button2 *btn = nullptr;
+
 uint32_t seupCount = 0;
 bool pwIRQ = false;
 
 
-void sleepSensor();
-
 void setupDisplay()
 {
-    SPI.begin(INK_CLK, INK_MISO, INK_MOSI);
-    display.init(); // enable diagnostic output on Serial
-    display.setRotation(0);
-    display.fillScreen(GxEPD_WHITE);
-    display.setTextColor(GxEPD_BLACK);
-    display.setCursor(0, 0);
-    display.setFont(&FreeSerif24pt7b);
-
-    u8g2Fonts.begin(display); // connect u8g2 procedures to Adafruit GFX
+    u8g2Fonts.begin(*ePaper); // connect u8g2 procedures to Adafruit GFX
     u8g2Fonts.setFontMode(1);                   // use u8g2 transparent mode (this is default)
     u8g2Fonts.setFontDirection(0);              // left to right (this is default)
     u8g2Fonts.setForegroundColor(GxEPD_BLACK);  // apply Adafruit GFX color
@@ -109,7 +72,7 @@ void mainPage(bool fullScreen)
     if (fullScreen) {
         lastX = 25;
         lastY = 100;
-        display.drawBitmap(5, 5, logoIcon, 75, 28, GxEPD_BLACK);
+        ePaper->drawBitmap(5, 5, logoIcon, 75, 28, GxEPD_BLACK);
 
         //BATTERY ICON
         u8g2Fonts.setFont(u8g2_font_battery19_tn);
@@ -119,8 +82,8 @@ void mainPage(bool fullScreen)
         u8g2Fonts.setFontDirection(0);              // left to right (this is default)
 
 
-        display.drawFastHLine(10, 40, display.width() - 20, GxEPD_BLACK);
-        display.drawFastHLine(10, 150, display.width() - 20, GxEPD_BLACK);
+        ePaper->drawFastHLine(10, 40, ePaper->width() - 20, GxEPD_BLACK);
+        ePaper->drawFastHLine(10, 150, ePaper->width() - 20, GxEPD_BLACK);
 
         u8g2Fonts.setFont(u8g2_font_inr38_mn  ); // select u8g2 font from here: https://github.com/olikraus/u8g2/wiki/fntlistall
 
@@ -139,8 +102,8 @@ void mainPage(bool fullScreen)
         tbw = u8g2Fonts.getUTF8Width(buff);
 
         int16_t x, y;
-        x = ((display.width() - tbw) / 2) ;
-        y = ((display.height() - tbh) / 2) + 40  ;
+        x = ((ePaper->width() - tbw) / 2) ;
+        y = ((ePaper->height() - tbh) / 2) + 40  ;
 
         u8g2Fonts.setCursor(x, y);
         u8g2Fonts.print(buff);
@@ -153,18 +116,18 @@ void mainPage(bool fullScreen)
         getY = u8g2Fonts.getCursorY();
         getH  = u8g2Fonts.getFontAscent() - u8g2Fonts.getFontDescent();
         getW = u8g2Fonts.getUTF8Width("1000步");
-        display.update();
+        ePaper->update();
 
 
     } else {
         u8g2Fonts.setFont(u8g2_font_inr38_mn); // select u8g2 font from here: https://github.com/olikraus/u8g2/wiki/fntlistall
-        display.fillRect(lastX, lastY - u8g2Fonts.getFontAscent() - 3, lastW, lastH, GxEPD_WHITE);
-        display.fillScreen(GxEPD_WHITE);
-        display.setTextColor(GxEPD_BLACK);
+        ePaper->fillRect(lastX, lastY - u8g2Fonts.getFontAscent() - 3, lastW, lastH, GxEPD_WHITE);
+        ePaper->fillScreen(GxEPD_WHITE);
+        ePaper->setTextColor(GxEPD_BLACK);
         lastW = u8g2Fonts.getUTF8Width(buff);
         u8g2Fonts.setCursor(lastX, lastY);
         u8g2Fonts.print(buff);
-        display.updateWindow(lastX, lastY - u8g2Fonts.getFontAscent() - 3, lastW, lastH, false);
+        ePaper->updateWindow(lastX, lastY - u8g2Fonts.getFontAscent() - 3, lastW, lastH, false);
     }
 }
 
@@ -188,6 +151,8 @@ void setup()
 
     btn = twatch->button;
 
+    ePaper = twatch->ePaper;
+
     // Use compile time as RTC input time
     rtc->check();
 
@@ -198,7 +163,7 @@ void setup()
     power->clearIRQ();
 
     // Set MPU6050 to sleep
-    sleepSensor();
+    twatch->mpu->setSleepEnabled(true);
 
     // Set Pin to interrupt
     pinMode(AXP202_INT, INPUT_PULLUP);
@@ -216,14 +181,13 @@ void setup()
     });
 
     // Adjust the backlight to reduce current consumption
-    twatch->bl->adjust(DEFAULT_BRIGHTNESS);
+    twatch->setBrightness(DEFAULT_BRIGHTNESS);
 
     // Initialize the ink screen
     setupDisplay();
 
     // Initialize the interface
     mainPage(true);
-
 
     // Reduce CPU frequency
     setCpuFrequencyMhz(40);
@@ -256,23 +220,6 @@ void loop()
     }
 }
 
-
-#define MPU6050_ADDRESS_ADD             0x68
-#define MPU6050_RA_PWR_MGMT_1           0x6B
-#define MPU6050_PWR1_SLEEP_BIT          6
-
-void writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t data)
-{
-    uint8_t b;
-    twatch->readBytes(devAddr, regAddr, &b, 1);
-    b = (data != 0) ? (b | (1 << bitNum)) : (b & ~(1 << bitNum));
-    twatch->writeBytes(devAddr, regAddr, &b, 1);
-}
-
-void sleepSensor()
-{
-    writeBit(MPU6050_ADDRESS_ADD, MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_SLEEP_BIT, true);
-}
 
 const unsigned char logoIcon[280] =  {
     0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00,
