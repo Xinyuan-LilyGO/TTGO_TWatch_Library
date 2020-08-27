@@ -101,7 +101,7 @@ Written by Lewis he //https://github.com/lewisxhe
 #include "libraries/GxEPD/src/GxGDEH0154D67/GxGDEH0154D67.h"
 #endif
 
-#if !defined(EXTERNAL_TFT_ESPI_LIBRARY) && !defined(LILYGO_BLOCK_ILI9488_MODULE)
+#if !defined(EXTERNAL_TFT_ESPI_LIBRARY) && !defined(LILYGO_BLOCK_ILI9488_MODULE) && !defined(TWATCH_USE_PSRAM_ALLOC_LVGL)
 #define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
 #endif
 
