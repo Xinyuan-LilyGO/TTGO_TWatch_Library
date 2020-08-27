@@ -936,10 +936,11 @@ private:
     Ticker *tickTicker = nullptr;
 #endif  /*LILYGO_WATCH_LVGL*/
 
+public: /*Compatible with MY-TTGO-TWATCH https://github.com/sharandac/My-TTGO-Watch*/
 #ifdef LILYGO_WATCH_HAS_TOUCH
     FT5206_Class *touch = nullptr;
 #endif
-
+private:
 #if  defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_DISPLAY)
     lv_disp_drv_t disp_drv;
 #endif
