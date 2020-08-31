@@ -174,6 +174,7 @@ size_t GxFont_GFX::write(uint8_t v)
         break;
 #endif
     }
+    return 0;
 }
 
 int16_t GxFont_GFX::getCursorX(void) const
@@ -195,6 +196,7 @@ int16_t GxFont_GFX::getCursorX(void) const
       return _GxF_GxFont_GFX_TFT_eSPI.getCursorX();
 #endif
   }
+  return 0;
 }
 
 int16_t GxFont_GFX::getCursorY(void) const
@@ -216,6 +218,7 @@ int16_t GxFont_GFX::getCursorY(void) const
       return _GxF_GxFont_GFX_TFT_eSPI.getCursorY();
 #endif
   }
+  return 0;
 }
 
 #endif
