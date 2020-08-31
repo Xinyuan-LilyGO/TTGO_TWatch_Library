@@ -24,7 +24,8 @@
 
 #define TWATCH_2020_IR_PIN          16
 
-#define TWATCH_GPS_1PPS             34
-#define TWATCH_GPS_RXD              26
-#define TWATCH_GPS_TXD              25
-#define TWATCH_GPS_WAKE             33
+#define GPS_1PPS                    34
+#define GPS_RX                      25
+#define GPS_TX                      26
+#define GPS_WAKE                    33
+#define GPS_BAUD_RATE               9600
