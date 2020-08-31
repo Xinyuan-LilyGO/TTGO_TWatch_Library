@@ -13,14 +13,6 @@ Written by Lewis he //https://github.com/lewisxhe
 
 #pragma once
 
-// #define LILYGO_DEBUG Serial
-
-#ifdef LILYGO_DEBUG
-#define DBGX(...)        LILYGO_DEBUG.printf(__VA_ARGS__)
-#else
-#define DBGX(...)
-#endif
-
 #include <SPI.h>
 
 #ifdef LILYGO_WATCH_LVGL
@@ -106,6 +98,16 @@ Written by Lewis he //https://github.com/lewisxhe
 #endif
 
 
+
+#ifndef LVGL_BUFFER_SIZE
+#if defined(LILYGO_BLOCK_ST7796S_MODULE)  || defined(LILYGO_BLOCK_ILI9488_MODULE)
+#define LVGL_BUFFER_SIZE        (320*100)
+#else
+#define LVGL_BUFFER_SIZE        (240*100)
+#endif
+#endif  /*LVGL_BUFFER_SIZE*/
+
+
 class TTGOClass
 {
 public:
@@ -186,7 +188,69 @@ public:
         }
         TP_Point p = touch->getPoint();
 
-#if defined(LILYGO_EINK_GDEW0371W7)
+#if     defined(LILYGO_BLOCK_ST7796S_MODULE)
+        uint8_t rotation = tft->getRotation();
+        switch (rotation) {
+        case 1:
+            x = p.y;
+            y = tft->height() - p.x;
+            break;
+        case 2:
+            x = tft->width() - p.x;
+            y = tft->height() - p.y;
+            break;
+        case 3:
+            x = tft->width() - p.y;
+            y = p.x;
+            break;
+        case 0:
+        default:
+            x = p.x;
+            y = p.y;
+        }
+#elif   defined(LILYGO_WATCH_2019_WITH_TOUCH)
+        uint8_t rotation = tft->getRotation();
+        int16_t _x = map(p.x, 0, 320, 0, 240);
+        int16_t _y = map(p.y, 0, 320, 0, 240);
+        switch (rotation) {
+        case 1:
+            x = _y;
+            y = TFT_HEIGHT - _x;
+            break;
+        case 2:
+            x = TFT_WIDTH - _x;
+            y = TFT_HEIGHT - _y;
+            break;
+        case 3:
+            x = TFT_WIDTH - _y;
+            y = _x;
+            break;
+        case 0:
+        default:
+            x = _x;
+            y = _y;
+        }
+#elif   defined(LILYGO_WATCH_2020_V1)
+        uint8_t rotation = tft->getRotation();
+        switch (rotation) {
+        case 0:
+            x = TFT_WIDTH - p.x;
+            y = TFT_HEIGHT - p.y;
+            break;
+        case 1:
+            x = TFT_WIDTH - p.y;
+            y = p.x;
+            break;
+        case 3:
+            x = p.y;
+            y = TFT_HEIGHT - p.x;
+            break;
+        case 2:
+        default:
+            x = p.x;
+            y = p.y;
+        }
+#elif   defined(LILYGO_EINK_GDEW0371W7)
         uint8_t r = ePaper->getRotation();
         switch (r) {
         case 0:
@@ -206,7 +270,8 @@ public:
             y = p.x;
             break;
         default:
-            break;
+            x = p.x;
+            y = p.y;
         }
 #else
         x = p.x;
@@ -407,6 +472,16 @@ public:
         lv_disp_drv_update(lv_disp_get_default(), &disp_drv);
     }
 
+
+private:
+#ifdef  TWATCH_USE_PSRAM_ALLOC_LVGL
+    lv_color_t *buf1 = nullptr;
+#ifdef  TWATCH_LVGL_DOUBLE_BUFFER
+    lv_color_t *buf2 = nullptr;
+#endif
+#endif
+
+public:
     bool lvgl_begin()
     {
         if (tft == nullptr) {
@@ -417,23 +492,40 @@ public:
         lv_disp_drv_init(&disp_drv);
         static lv_disp_buf_t disp_buf;
 
-#if     (defined(LILYGO_BLOCK_ST7796S_MODULE)  || defined(LILYGO_BLOCK_ILI9488_MODULE)) && defined(LILYGO_WATCH_BLOCK)
-        const uint16_t buffer_size = 320 * 100;
-#else
-        const uint16_t buffer_size = 240 * 100;
-#endif
-
-#ifdef TWATCH_USE_PSRAM_ALLOC_LVGL
-        lv_color_t *buf1 = (lv_color_t *)heap_caps_calloc(buffer_size, sizeof(lv_color_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT );
+#ifdef  TWATCH_USE_PSRAM_ALLOC_LVGL
+        if (psramFound()) {
+            buf1 = (lv_color_t *)ps_calloc(sizeof(lv_color_t), LVGL_BUFFER_SIZE);
+        } else {
+            buf1 = (lv_color_t *)calloc(sizeof(lv_color_t), LVGL_BUFFER_SIZE);
+        }
         if (!buf1) {
-            DBGX("alloc failed\n");
+            log_e("buf1 alloc failed\n");
             return false;
         }
+#ifdef  TWATCH_LVGL_DOUBLE_BUFFER
+        if (psramFound()) {
+            buf2 = (lv_color_t *)ps_calloc(sizeof(lv_color_t), LVGL_BUFFER_SIZE);
+        } else {
+            buf2 = (lv_color_t *)calloc(sizeof(lv_color_t), LVGL_BUFFER_SIZE);
+        }
+        if (!buf2) {
+            log_e("buf2 alloc failed\n");
+            free(buf1);
+            return false;
+        }
+#endif  /*TWATCH_LVGL_DOUBLE_BUFFER*/
 #else
-        static lv_color_t buf1[buffer_size];
-#endif  /*TWATCH_USE_PSRAM_ALLOC_LVGL*/
+        static lv_color_t buf1[LVGL_BUFFER_SIZE];
+#endif  /*TWATCH_LVGL_DOUBLE_BUFFER*/
 
-        lv_disp_buf_init(&disp_buf, buf1, NULL, buffer_size);
+
+#ifdef  TWATCH_LVGL_DOUBLE_BUFFER
+        lv_disp_buf_init(&disp_buf, buf1, buf2, LVGL_BUFFER_SIZE);
+#else
+        lv_disp_buf_init(&disp_buf, buf1, NULL, LVGL_BUFFER_SIZE);
+#endif
+
+
         disp_drv.hor_res = tft->width();
         disp_drv.ver_res = tft->height();
         disp_drv.flush_cb = disp_flush;
@@ -441,7 +533,7 @@ public:
         disp_drv.buffer = &disp_buf;
         lv_disp_drv_register(&disp_drv);
 
-#if  defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_TOUCH)
+#if  defined(LILYGO_WATCH_HAS_TOUCH)
         /*Register a touchpad input device*/
         lv_indev_drv_init(&indev_drv);
         indev_drv.type = LV_INDEV_TYPE_POINTER;
@@ -559,7 +651,7 @@ public:
             sdhander->begin(SD_SCLK, SD_MISO, SD_MOSI, SD_CS);
         }
         if (!SD.begin(SD_CS, *sdhander)) {
-            DBGX("SD Card Mount Failed");
+            log_e("SD Card Mount Failed");
             return false;
         }
         return true;
@@ -774,7 +866,7 @@ private:
 #if defined(LILYGO_WATCH_HAS_BMA423)
         struct bma423_axes_remap remap_data;
         if (!bma->begin()) {
-            DBGX("Begin BMA423 FAIL");
+            log_e("Begin BMA423 FAIL");
             return false;
         }
         // T-Watch 2020 and 2019 use different mapping axes
@@ -798,7 +890,7 @@ private:
 #elif defined(LILYGO_WATCH_HAS_MPU6050)
         if (!mpu->begin(i2cReadBytes, i2cWriteBytes,
                         MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G)) {
-            DBGX("Begin MPU6050 FAIL");
+            log_e("Begin MPU6050 FAIL");
             return false;
         }
 #endif
@@ -813,7 +905,7 @@ private:
 #if defined(LILYGO_WATCH_HAS_DISPLAY)
 #if defined(EXTERNAL_TFT_ESPI_LIBRARY)
         if (tft == nullptr) {
-            DBGX("TFT Handler is NULL!!!");
+            log_e("TFT Handler is NULL!!!");
             return;
         }
 #else   /* EXTERNAL_TFT_ESPI_LIBRARY */
@@ -858,7 +950,7 @@ private:
         SPI.begin(EINK_SPI_CLK, EINK_SPI_MISO, EINK_SPI_MOSI);
         ePaper = new ePaperDisplay( GDEW0371W7, EINK_BUSY, EINK_RESET, EINK_DC, EINK_SS );
 #elif defined(LILYGO_EINK_GDEH0154D67_BL) || defined(LILYGO_EINK_GDEH0154D67_TP)
-        DBGX("GDEH0154D67 Init...");
+        log_i("GDEH0154D67 Init...");
 
         /* sclk = 18 mosi = 23 miso = n/a */
         SPI.begin(EINK_SPI_CLK, EINK_SPI_MISO, EINK_SPI_MOSI);
@@ -878,13 +970,13 @@ private:
 #if defined(LILYGO_TOUCHSCREEN_CALLBACK_METHOD)
         touch = new FT5206_Class();
         if (!touch->begin(i2cReadBytes, i2cWriteBytes)) {
-            DBGX("Begin touch FAIL");
+            log_e("Begin touch FAIL");
         }
 #elif defined(LILYGO_WATCH_HAS_TOUCH)
         touch = new FT5206_Class();
         Wire1.begin(TOUCH_SDA, TOUCH_SCL);
         if (!touch->begin(Wire1)) {
-            DBGX("Begin touch FAIL");
+            log_e("Begin touch FAIL");
         }
 #endif
     }
@@ -905,7 +997,7 @@ private:
 #ifdef LILYGO_WATCH_HAS_AXP202
         int ret = power->begin(i2cReadBytes, i2cWriteBytes);
         if (ret == AXP_FAIL) {
-            DBGX("AXP Power begin failed");
+            log_e("AXP Power begin failed");
         } else {
             //Change the shutdown time to 4 seconds
             power->setShutdownTime(AXP_POWER_OFF_TIME_4S);
@@ -990,88 +1082,11 @@ private:
 
 protected:
 
-
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_TOUCH)
-    static bool getTouchXY(int16_t &x, int16_t &y)
-    {
-        TP_Point p;
-        if (_ttgo->touch == nullptr) {
-            return false;
-        }
-        if (!_ttgo->touch->touched()) {
-            return false;
-        }
-        p = _ttgo->touch->getPoint();
-
-#if     defined(LILYGO_BLOCK_ST7796S_MODULE)
-        uint8_t rotation = _ttgo->tft->getRotation();
-        switch (rotation) {
-        case 1:
-            x = p.y;
-            y = _ttgo->tft->height() - p.x;
-            break;
-        case 2:
-            x = _ttgo->tft->width() - p.x;
-            y = _ttgo->tft->height() - p.y;
-            break;
-        case 3:
-            x = _ttgo->tft->width() - p.y;
-            y = p.x;
-            break;
-        case 0:
-        default:
-            x = p.x;
-            y = p.y;
-            break;
-        }
-#elif   defined(LILYGO_WATCH_2019_WITH_TOUCH)
-        uint8_t rotation = _ttgo->tft->getRotation();
-        int16_t _x = map(p.x, 0, 320, 0, 240);
-        int16_t _y = map(p.y, 0, 320, 0, 240);
-        switch (rotation) {
-        case 1:
-            x = _y;
-            y = TFT_HEIGHT - _x;
-            break;
-        case 2:
-            x = TFT_WIDTH - _x;
-            y = TFT_HEIGHT - _y;
-            break;
-        case 3:
-            x = TFT_WIDTH - _y;
-            y = _x;
-            break;
-        case 0:
-        default:
-            x = _x;
-            y = _y;
-        }
-#elif   defined(LILYGO_WATCH_2020_V1)
-        uint8_t rotation = _ttgo->tft->getRotation();
-        switch (rotation) {
-        case 0:
-            x = TFT_WIDTH - p.x;
-            y = TFT_HEIGHT - p.y;
-            break;
-        case 1:
-            x = TFT_WIDTH - p.y;
-            y = p.x;
-            break;
-        case 3:
-            x = p.y;
-            y = TFT_HEIGHT - p.x;
-            break;
-        case 2:
-        default:
-            x = p.x;
-            y = p.y;
-        }
-#else
-        x = p.x;
-        y = p.y;
-#endif
-        return true;
-    }
+    // static bool getTouchXY(int16_t &x, int16_t &y)
+    // {
+    //     return _ttgo->getTouch(x, y);
+    // }
 #endif
 
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_DISPLAY)
@@ -1094,7 +1109,9 @@ protected:
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_TOUCH)
     static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     {
-        data->state = _ttgo->getTouchXY(data->point.x, data->point.y) ?  LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+        data->state = _ttgo->getTouch(data->point.x, data->point.y) ?  LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+        if (data->state == LV_INDEV_STATE_PR)
+            Serial.printf("X:%d y:%d\n", data->point.x, data->point.y);
         return false; /*Return false because no moare to be read*/
     }
 #endif /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_TOUCH*/
