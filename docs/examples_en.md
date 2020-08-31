@@ -20,7 +20,10 @@ examples/
 │   ├── UserButton                  #Basic user button example
 │   ├── WakeupFormPEKKey            #Use the power management PEK button to wake up ESP32
 │   ├── WakeupFormSensor            #Use the three-axis accelerometer to wake up the ESP32
-│   └── WakeupFormTimer             #Use built-in timer to wake up ESP32
+│   ├── WakeupFormTimer             #Use built-in timer to wake up ESP32
+│   ├── BluetoothAudio              #Bluetooth playback
+│   └── BluetoothAudioWeb           #Bluetooth playback, with web control
+
 ├── ClientProject                   #Customer's example directory
 │   └── SimpleFramework             #Use TFT_eSPI frame
 ├── ExternTFTLibrary                #Use PlatfromIO, an example of using external TFT_eSPI with TTGO_TWatch_Library
@@ -58,6 +61,7 @@ examples/
 │   ├── CapTouch                    #MPR121 Capacitive touch sensor example
 │   ├── Epaper_BL                   #1.54`Ink screen driver example with backlight
 │   ├── Epaper_TP                   #1.54`Drive example with touch ink screen
+│   ├── Epaper_GDEW0371W7           #3.71`Drive example with touch ink screen
 │   ├── LEDMatrix                   #LEDdot matrix example
 │   ├── MPU6050_accel_pitch_roll    #MPU6050 Acceleration example
 │   ├── MPU6050_accel_simple        #MPU6050 Acceleration example
@@ -66,6 +70,7 @@ examples/
 │   ├── MPU6050_temperature         #MPU6050 Example of built-in temperature sensor
 │   └── TouchScreen                 #ST7796S / ILI9488 Display module example
 ├── LilyPi                          #This directory is only applicable to LilyPi, not applicable to others 
+│   ├── Epaper_GDEW0371W7           #3.71`Drive example with touch ink screen
 │   └── lv_demo_widgets             #lvgl example
 └── TFT_eSPI                        #TFT_eSPI Display example
     ├── All_Free_Fonts_Demo

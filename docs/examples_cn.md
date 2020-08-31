@@ -20,7 +20,9 @@ examples/
 │   ├── UserButton                  #基本用户按键示例
 │   ├── WakeupFormPEKKey            #使用电源管理PEK按键唤醒ESP32
 │   ├── WakeupFormSensor            #使用三轴加速度计唤醒ESP32
-│   └── WakeupFormTimer             #使用内置定时器唤醒ESP32
+│   ├── WakeupFormTimer             #使用内置定时器唤醒ESP32
+│   ├── BluetoothAudio              #通过蓝牙播放音频
+│   └── BluetoothAudioWeb           #通过蓝牙播放音频,附带网页控制
 ├── ClientProject                   #客户的示例目录
 │   └── SimpleFramework             #使用TFT_eSPI构成的框架
 ├── ExternTFTLibrary                #使用PlatfromIO,外部TFT_eSPI与TTGO_TWatch_Library搭配使用示例
@@ -58,6 +60,7 @@ examples/
 │   ├── CapTouch                    #MPR121 电容触摸传感器示例
 │   ├── Epaper_BL                   #1.54`带背光墨水屏驱动示例
 │   ├── Epaper_TP                   #1.54`带触摸墨水屏驱动示例
+│   ├── Epaper_GDEW0371W7           #3.71`带触摸墨水屏驱动示例
 │   ├── LEDMatrix                   #LED点阵示例
 │   ├── MPU6050_accel_pitch_roll    #MPU6050 加速度示例
 │   ├── MPU6050_accel_simple        #MPU6050 加速度示例
@@ -66,6 +69,7 @@ examples/
 │   ├── MPU6050_temperature         #MPU6050 内置温度传感器示例
 │   └── TouchScreen                 #ST7796S / ILI9488 显示屏模块示例
 ├── LilyPi                          #此目录只适用LilyPi，不适用其他
+│   ├── Epaper_GDEW0371W7           #3.71`带触摸墨水屏驱动示例
 │   └── lv_demo_widgets             #lvgl 演示示例
 └── TFT_eSPI                        #TFT_eSPI 显示示例
     ├── All_Free_Fonts_Demo
