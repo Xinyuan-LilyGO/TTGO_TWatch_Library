@@ -333,6 +333,17 @@ public:
         power->setLDO3Mode(1);
         power->setPowerOutPut(AXP202_LDO3, en);
     }
+  
+      /*
+     * @brief Turn off all AXP202 outputs except LDO1.
+     * This is equivalent to holding the power button for 6s
+     * Current consumption in the shutdown state is <350uA
+     *
+     * Restart by pressing power button for 2s
+     */
+    void soft_hardShutdown(){
+        power->shutdown();
+    }
 
 
 
