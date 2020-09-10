@@ -38,6 +38,7 @@
 #ifndef U8g2_for_Adafruit_GFX_h
 #define U8g2_for_Adafruit_GFX_h
 
+#include "../../TFT_eSPI/TFT_eSPI.h"
 #include "../../Adafruit-GFX-Library/Adafruit_GFX.h"
 #include "u8g2_fonts.h"
 
@@ -103,6 +104,7 @@ typedef struct _u8g2_font_decode_t u8g2_font_decode_t;
 
 struct _u8g2_font_t {
     Adafruit_GFX *gfx;
+    TFT_eSPI *tft;
 
     /* information about the current font */
     const uint8_t *font;             /* current font for all text procedures */
@@ -168,9 +170,17 @@ public:
         u8g2.font_decode.dir = 0;
         home();
     }
+
     void begin(Adafruit_GFX &gfx)
     {
         u8g2.gfx = &gfx;
+        u8g2.tft = NULL;
+    }
+
+    void begin(TFT_eSPI &tft)
+    {
+        u8g2.gfx = NULL;
+        u8g2.tft = &tft;
     }
     void setFont(const uint8_t *font)             // set u8g2 font
     {

@@ -225,19 +225,38 @@ static int16_t u8g2_add_vector_x(int16_t dx, int8_t x, int8_t y, uint8_t dir)
 void u8g2_draw_hv_line(u8g2_font_t *u8g2, int16_t x, int16_t y, int16_t len, uint8_t dir, uint16_t color) U8X8_NOINLINE;
 void u8g2_draw_hv_line(u8g2_font_t *u8g2, int16_t x, int16_t y, int16_t len, uint8_t dir, uint16_t color)
 {
-    switch (dir) {
-    case 0:
-        u8g2->gfx->drawFastHLine(x, y, len, color);
-        break;
-    case 1:
-        u8g2->gfx->drawFastVLine(x, y, len, color);
-        break;
-    case 2:
-        u8g2->gfx->drawFastHLine(x - len + 1, y, len, color);
-        break;
-    case 3:
-        u8g2->gfx->drawFastVLine(x, y - len + 1, len, color);
-        break;
+    if (u8g2->gfx) {
+        switch (dir) {
+        case 0:
+            u8g2->gfx->drawFastHLine(x, y, len, color);
+            break;
+        case 1:
+            u8g2->gfx->drawFastVLine(x, y, len, color);
+            break;
+        case 2:
+            u8g2->gfx->drawFastHLine(x - len + 1, y, len, color);
+            break;
+        case 3:
+            u8g2->gfx->drawFastVLine(x, y - len + 1, len, color);
+            break;
+        }
+        return;
+    }
+    if (u8g2->tft) {
+        switch (dir) {
+        case 0:
+            u8g2->tft->drawFastHLine(x, y, len, color);
+            break;
+        case 1:
+            u8g2->tft->drawFastVLine(x, y, len, color);
+            break;
+        case 2:
+            u8g2->tft->drawFastHLine(x - len + 1, y, len, color);
+            break;
+        case 3:
+            u8g2->tft->drawFastVLine(x, y - len + 1, len, color);
+            break;
+        }
     }
 
 }

@@ -31,6 +31,7 @@ Written by Lewis he //https://github.com/lewisxhe
 #if !defined(EXTERNAL_TFT_ESPI_LIBRARY)
 #if defined(LILYGO_WATCH_HAS_DISPLAY)   || defined(LILYGO_EINK_TOUCHSCREEN) || defined(LILYGO_WATCH_HAS_EINK)
 #include "libraries/TFT_eSPI/TFT_eSPI.h"
+#include "libraries/U8g2_for_Adafruit_GFX/src/U8g2_for_Adafruit_GFX.h"
 #endif
 #else   //EXTERNAL_TFT_ESPI_LIBRARY
 #include <TFT_eSPI.h>
