@@ -302,6 +302,34 @@ public:
     /******************************************
      *              Power
      * ***************************************/
+
+#ifdef LILYGO_WATCH_2020_V2
+    void trunOnGPS()
+    {
+        if (power)
+            power->setPowerOutPut(AXP202_LDO4, true);
+    }
+
+    void turnOffGPS()
+    {
+        if (power)
+            power->setPowerOutPut(AXP202_LDO4, false);
+    }
+
+#else
+    /**
+     * @brief Turn on the peripheral power,
+     * usually control the power of different backplanes,
+     * In 2020V1, it controls the power of the audio circuit
+     */
+    void enableLDO3(bool en = true)
+    {
+        power->setLDO3Mode(1);
+        power->setPowerOutPut(AXP202_LDO3, en);
+    }
+#endif
+
+
 #ifdef LILYGO_WATCH_HAS_AXP202
     /*
     * @brief  It will turn off the power supply of all peripherals except ESP32
@@ -323,19 +351,10 @@ public:
 #endif  /*LILYGO_WATCH_2020_V1*/
     }
 
-    /**
-     * @brief Turn on the peripheral power,
-     * usually control the power of different backplanes,
-     * In 2020V1, it controls the power of the audio circuit
-     */
-    void enableLDO3(bool en = true)
+    void shutdown()
     {
-        power->setLDO3Mode(1);
-        power->setPowerOutPut(AXP202_LDO3, en);
+        power->shutdown();
     }
-
-
-
 #endif  /*LILYGO_WATCH_HAS_AXP202*/
 
     /******************************************
@@ -856,6 +875,17 @@ private:
         pinMode(EXTERN_USB_EN, OUTPUT);
         pinMode(RELAY_PIN, OUTPUT);
 #endif
+
+#if defined(LILYGO_WATCH_2020_V2)
+        //Adding a hardware reset can reduce the current consumption of the touch screen
+        pinMode(TOUCH_RST, OUTPUT);
+        digitalWrite(TOUCH_RST, HIGH);
+        delay(5);
+        digitalWrite(TOUCH_RST, LOW);
+        delay(5);       //Tris reset time
+        digitalWrite(TOUCH_RST, HIGH);
+#endif
+
 #if defined(TOUCH_INT)
         pinMode(TOUCH_INT, INPUT);
 #endif
@@ -1020,6 +1050,14 @@ private:
             //is shared with the backlight, so LDO2 cannot be turned off
             power->setPowerOutPut(AXP202_LDO2, AXP202_ON);
 #endif  /*LILYGO_WATCH_2020_V1*/
+
+
+#ifdef  LILYGO_WATCH_2020_V2
+            //GPS power domain is AXP202 LDO4
+            power->setPowerOutPut(AXP202_LDO3, false);
+            power->setPowerOutPut(AXP202_LDO4, false);
+            power->setLDO4Voltage(AXP202_LDO4_3300MV);
+#endif  /*LILYGO_WATCH_2020_V2*/
         }
 #endif /*LILYGO_WATCH_HAS_AXP202*/
     }

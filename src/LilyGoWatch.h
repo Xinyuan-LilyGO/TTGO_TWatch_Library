@@ -136,6 +136,11 @@
 
 #elif defined(LILYGO_WATCH_2020_V2)
 #include "board/twatch2020_v2.h"
+
+#if defined(BOARD_HAS_PSRAM)
+#error  "The version you choose is Twatch 2020 V2, this version is not configured with PSRAM, please select Disable in the PSRAM enable tab in Arduino IDE"
+#endif
+
 // Has
 #define LILYGO_WATCH_HAS_TOUCH
 #define LILYGO_WATCH_HAS_DISPLAY

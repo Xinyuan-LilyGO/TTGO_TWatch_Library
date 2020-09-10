@@ -14,6 +14,7 @@
 #define TOUCH_SDA                   23
 #define TOUCH_SCL                   32
 #define TOUCH_INT                   38
+#define TOUCH_RST                   4
 
 #define SEN_SDA                     21
 #define SEN_SCL                     22
@@ -24,6 +25,7 @@
 
 #define TWATCH_2020_IR_PIN          16
 
+//GPS power domain is AXP202 LDO4
 #define GPS_1PPS                    34
 #define GPS_RX                      25
 #define GPS_TX                      26
