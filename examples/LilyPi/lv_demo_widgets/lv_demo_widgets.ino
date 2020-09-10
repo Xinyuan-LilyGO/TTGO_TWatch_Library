@@ -5,16 +5,12 @@ TTGOClass *ttgo;
 
 void relayTurnOn(void)
 {
-#ifdef LILYGO_LILYPI_V1
-    ttgo->turnOffRelay();
-#endif
+    ttgo->turnOnRelay();
 }
 
 void relayTurnOff(void)
 {
-#ifdef LILYGO_LILYPI_V1
-    ttgo->turnOnRelay();
-#endif
+    ttgo->turnOffRelay();
 }
 
 void setBrightness(uint8_t level)
@@ -50,11 +46,14 @@ void setup()
     // Turn on the backlight
     ttgo->openBL();
 
+    ttgo->lvgl_begin();
+
+    ttgo->lvgl_whirling(1);
+
     if (!ttgo->sdcard_begin()) {
         // if sd card mount fail . show it
         Serial.println("SDCARD MOUNT FAILED");
         ttgo->tft->setTextFont(4);
-        ttgo->tft->setRotation(3);
         ttgo->tft->setCursor(0, 0);
         ttgo->tft->setTextColor(TFT_RED);
         ttgo->tft->println("SDCARD MOUNT FAILED");
@@ -63,11 +62,16 @@ void setup()
         Serial.println("SDCARD MOUNT SUCCESS");
     }
 
-    ttgo->lvgl_begin();
-
-    ttgo->lvgl_whirling(3);
-
-
+    //Check if RTC is online
+    if (!ttgo->deviceProbe(0x51)) {
+        Serial.println("RTC CHECK FAILED");
+        ttgo->tft->fillScreen(TFT_BLACK);
+        ttgo->tft->setTextFont(4);
+        ttgo->tft->setCursor(0, 0);
+        ttgo->tft->setTextColor(TFT_RED);
+        ttgo->tft->println("RTC CHECK FAILED");
+        delay(5000);
+    }
 
     lv_demo_widgets();
 

@@ -315,18 +315,6 @@ public:
         if (power)
             power->setPowerOutPut(AXP202_LDO4, false);
     }
-
-#else
-    /**
-     * @brief Turn on the peripheral power,
-     * usually control the power of different backplanes,
-     * In 2020V1, it controls the power of the audio circuit
-     */
-    void enableLDO3(bool en = true)
-    {
-        power->setLDO3Mode(1);
-        power->setPowerOutPut(AXP202_LDO3, en);
-    }
 #endif
 
 
@@ -350,6 +338,18 @@ public:
         // power->setPowerOutPut(AXP202_LDO2, false);
 #endif  /*LILYGO_WATCH_2020_V1*/
     }
+
+    /**
+    * @brief Turn on the peripheral power,
+    * usually control the power of different backplanes,
+    * In 2020V1, it controls the power of the audio circuit
+    */
+    void enableLDO3(bool en = true)
+    {
+        power->setLDO3Mode(1);
+        power->setPowerOutPut(AXP202_LDO3, en);
+    }
+
 
     void shutdown()
     {
