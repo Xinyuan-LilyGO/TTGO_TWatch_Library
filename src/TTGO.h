@@ -1149,8 +1149,6 @@ protected:
     static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     {
         data->state = _ttgo->getTouch(data->point.x, data->point.y) ?  LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
-        if (data->state == LV_INDEV_STATE_PR)
-            Serial.printf("X:%d y:%d\n", data->point.x, data->point.y);
         return false; /*Return false because no moare to be read*/
     }
 #endif /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_TOUCH*/
