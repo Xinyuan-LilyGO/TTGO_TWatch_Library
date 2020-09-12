@@ -38,7 +38,8 @@ github:https://github.com/lewisxhe/FT5206_Library
 #define FT5206_VENDID_REG       (0xA8)
 #define FT5206_CHIPID_REG       (0xA3)
 #define FT5206_THRESHHOLD_REG   (0x80)
-#define FT5206_POWER_REG        (0x87)
+#define FT5206_TIMEENTERMONITOR (0x87)  //Time to go from Active to monitor state, has no effect?
+#define FT5206_POWER_REG        (0xA5)  //This directly controls the power state
 
 #define FT5206_MONITOR         (0x01)
 #define FT5206_SLEEP_IN        (0x03)
