@@ -11,7 +11,7 @@
  #########################################################################
 */
 
-#include "config.h
+#include "config.h"
 
 // New background colour
 #define TFT_BROWN 0x38E0
