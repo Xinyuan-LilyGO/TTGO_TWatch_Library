@@ -101,7 +101,7 @@ Written by Lewis he //https://github.com/lewisxhe
 
 
 #ifndef LVGL_BUFFER_SIZE
-#if defined(LILYGO_BLOCK_ST7796S_MODULE)  || defined(LILYGO_BLOCK_ILI9488_MODULE)
+#if defined(LILYGO_BLOCK_ST7796S_MODULE)  || defined(LILYGO_BLOCK_ILI9488_MODULE) || defined(LILYGO_BLOCK_ILI9481_MODULE)
 #define LVGL_BUFFER_SIZE        (320*100)
 #else
 #define LVGL_BUFFER_SIZE        (240*100)
@@ -954,6 +954,11 @@ private:
         h = 480;
         drv = 0x9488;
         freq = 27000000;
+#elif   defined(LILYGO_BLOCK_ILI9481_MODULE) && (defined(LILYGO_WATCH_BLOCK) || defined(LILYGO_LILYPI_V1))
+        w = 320;
+        h = 480;
+        drv = 0x9481;
+        freq = 27000000;
 #endif  /* (LILYGO_BLOCK_ST7796S_MODULE) && defined(LILYGO_WATCH_BLOCK) */
         tft = new TFT_eSPI(w, h);
         tft->setDriver(drv, freq);
@@ -1120,13 +1125,6 @@ private:
 #endif
 
 protected:
-
-#if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_TOUCH)
-    // static bool getTouchXY(int16_t &x, int16_t &y)
-    // {
-    //     return _ttgo->getTouch(x, y);
-    // }
-#endif
 
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_DISPLAY)
     static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
