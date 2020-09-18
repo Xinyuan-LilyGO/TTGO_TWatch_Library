@@ -1,3 +1,6 @@
+
+The following only applies to T-Watch, please [click here to view LilyPi](lilypi_pinmap.md)
+
 # 1.Pinout table 
 
 |    Peripherals    |  2019/TOUCH  | 2019/NO TOUCH |   T BLOCK    | T-Watch2020 V1 |
@@ -14,6 +17,7 @@
 |     TFT SCLK      |      18      |      18       |     N/A      |       18       |
 |      TFT DC       |      27      |      27       |     N/A      |       27       |
 |      TFT CS       |      5       |       5       |     N/A      |       5        |
+|   TFT BackLight   |      12      |      12       |     N/A      |       12       |
 |   SENSOR SDA[3]   |      21      |      21       |      21      |       21       |
 |   SENSOR SCL[3]   |      22      |      22       |      22      |       22       |
 |    FT6236 SDA     |      23      |      N/A      |     N/A      |       23       |
@@ -28,6 +32,10 @@
 |      I2S WS       |    N/A[1]    |    N/A[1]     |    N/A[1]    |       25       |
 |     I2S DOUT      |    N/A[1]    |    N/A[1]     |    N/A[1]    |       33       |
 |      IR Send      |     N/A      |      N/A      |     N/A      |       13       |
+|      SD MISO      |     N/A      |      N/A      |     N/A      |      N/A       |
+|      SD MOSI      |     N/A      |      N/A      |     N/A      |      N/A       |
+|      SD SCLK      |     N/A      |      N/A      |     N/A      |      N/A       |
+|       SD CS       |     N/A      |      N/A      |     N/A      |      N/A       |
 
 
 [1]. According to different base plates
