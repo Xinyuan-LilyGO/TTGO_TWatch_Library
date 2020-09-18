@@ -65,6 +65,11 @@ Written by Lewis he //https://github.com/lewisxhe
 #include "lvgl/lvgl.h"
 #endif
 
+#ifdef LILYGO_WATCH_LVGL_FS
+#include "libraries/lv_fs_if/lv_fs_if.h"
+#endif
+
+
 #ifdef LILYGO_WATCH_HAS_AXP202
 #include "drive/axp/axp20x.h"
 #endif
@@ -560,6 +565,25 @@ public:
         indev_drv.read_cb = touchpad_read;
         lv_indev_drv_register(&indev_drv);
 #endif  /*LILYGO_WATCH_HAS_TOUCH*/
+
+
+#ifdef  LILYGO_WATCH_2020_V1
+#define LILYGO_WATCH_LVGL_FS_SPIFFS
+#endif
+
+
+#ifdef LILYGO_WATCH_LVGL_FS
+#ifdef LILYGO_WATCH_LVGL_FS_SPIFFS
+        SPIFFS.begin(true, "/fs");
+#else
+
+        //TODO:
+
+#endif  /*LILYGO_WATCH_LVGL_FS_SPIFFS*/
+
+        lv_fs_if_init();
+
+#endif  /*LILYGO_WATCH_LVGL_FS*/
 
         tickTicker = new Ticker();
         startLvglTick();
