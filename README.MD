@@ -59,8 +59,9 @@
 - In the Arduino File -> Examples -> `TTGO_TWatch_Library`
 
 * LilyPi
-- In the Arduino board select `ESP32 Dev Module`
+- In the Arduino board select `TTGO T-Watch`
 - In the Arduino File -> Examples -> `TTGO_TWatch_Library`
+- The core configuration of LilyPi is the same as T-Watch, it has 16M Flash and 8M PSRAM
 
  <h2 align = "left">🔶 Precautions</h2>
 

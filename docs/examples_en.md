@@ -71,6 +71,7 @@ examples/
 │   └── TouchScreen                 #ST7796S / ILI9488 Display module example
 ├── LilyPi                          #This directory is only applicable to LilyPi, not applicable to others 
 │   ├── Epaper_GDEW0371W7           #3.71`Drive example with touch ink screen
+│   ├── IRRemote                    #Example of using external module infrared remote control
 │   └── lv_demo_widgets             #lvgl example
 └── TFT_eSPI                        #TFT_eSPI Display example
     ├── All_Free_Fonts_Demo

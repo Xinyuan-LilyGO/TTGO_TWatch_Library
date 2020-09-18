@@ -70,6 +70,7 @@ examples/
 │   └── TouchScreen                 #ST7796S / ILI9488 显示屏模块示例
 ├── LilyPi                          #此目录只适用LilyPi，不适用其他
 │   ├── Epaper_GDEW0371W7           #3.71`带触摸墨水屏驱动示例
+│   ├── IRRemote                    #使用外部模块红外遥控示例
 │   └── lv_demo_widgets             #lvgl 演示示例
 └── TFT_eSPI                        #TFT_eSPI 显示示例
     ├── All_Free_Fonts_Demo
