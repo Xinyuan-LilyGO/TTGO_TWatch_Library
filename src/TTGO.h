@@ -672,8 +672,8 @@ public:
     PCF8563_Class *rtc = nullptr;
     void rtcAttachInterrupt(void (*rtc_cb)(void))
     {
-        pinMode(RTC_INT, INPUT_PULLUP); //need change to rtc_pin
-        attachInterrupt(RTC_INT, rtc_cb, FALLING);
+        pinMode(RTC_INT_PIN, INPUT_PULLUP); //need change to rtc_pin
+        attachInterrupt(RTC_INT_PIN, rtc_cb, FALLING);
     }
 #endif  /*LILYGO_WATCH_HAS_PCF8563*/
 

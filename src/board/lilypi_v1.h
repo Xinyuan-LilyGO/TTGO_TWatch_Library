@@ -26,7 +26,7 @@
 #define USER_BUTTON         0
 
 #define TOUCH_INT           39
-#define RTC_INT             36
+#define RTC_INT_PIN             36
 
 #define ADC_PIN             35
 

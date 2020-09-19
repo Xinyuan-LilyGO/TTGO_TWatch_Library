@@ -12,8 +12,8 @@ void setup()
     ttgo->begin();
     ttgo->openBL();
 
-    pinMode(RTC_INT, INPUT_PULLUP);
-    attachInterrupt(RTC_INT, [] {
+    pinMode(RTC_INT_PIN, INPUT_PULLUP);
+    attachInterrupt(RTC_INT_PIN, [] {
         rtcIrq = 1;
     }, FALLING);
 
@@ -36,7 +36,7 @@ void loop()
     ttgo->tft->drawString(buf, 5, 118, 7);
     if (rtcIrq) {
         rtcIrq = 0;
-        detachInterrupt(RTC_INT);
+        detachInterrupt(RTC_INT_PIN);
         ttgo->rtc->resetAlarm();
         int i = 3;
         while (i--) {

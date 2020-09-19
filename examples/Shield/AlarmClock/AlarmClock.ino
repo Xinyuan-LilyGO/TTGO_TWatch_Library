@@ -77,7 +77,7 @@ void loop(void)
         ttgo->powerOff();                                   //Turn off all peripheral power supplies
 
         //!Setting PCF8563 interrupt wakeup
-        esp_sleep_enable_ext1_wakeup( ((uint64_t)(((uint64_t)1) << RTC_INT)), ESP_EXT1_WAKEUP_ALL_LOW);
+        esp_sleep_enable_ext1_wakeup( ((uint64_t)(((uint64_t)1) << RTC_INT_PIN)), ESP_EXT1_WAKEUP_ALL_LOW);
         esp_deep_sleep_start();
     }
 }
