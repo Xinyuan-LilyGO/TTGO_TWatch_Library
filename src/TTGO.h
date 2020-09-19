@@ -24,9 +24,18 @@ Written by Lewis he //https://github.com/lewisxhe
 #include <SD.h>
 #endif
 
-#ifdef LILYGO_WATCH_HAS_TOUCH
-#include "drive/fx50xx/FT5206.h"
+#ifndef LILYGO_BLOCK_ILI9481_MODULE
+#define LILYGO_TOUCH_DRIVER_FTXXX
 #endif
+
+#ifdef LILYGO_WATCH_HAS_TOUCH
+#include "drive/fx50xx/focaltech.h"
+#if defined(LILYGO_TOUCH_DRIVER_GTXXX)
+typedef GT9xx_Class CapacitiveTouch ;
+#elif defined(LILYGO_TOUCH_DRIVER_FTXXX)
+typedef FocalTech_Class CapacitiveTouch ;
+#endif
+#endif  /*LILYGO_WATCH_HAS_TOUCH*/
 
 #if !defined(EXTERNAL_TFT_ESPI_LIBRARY)
 #if defined(LILYGO_WATCH_HAS_DISPLAY)   || defined(LILYGO_EINK_TOUCHSCREEN) || defined(LILYGO_WATCH_HAS_EINK)
@@ -176,7 +185,11 @@ public:
 #ifdef LILYGO_WATCH_HAS_TOUCH
     bool touched()
     {
-        return (touch->touched() > 0);
+#if     defined(LILYGO_TOUCH_DRIVER_GTXXX)
+        return (touch->scanPoint() > 0);
+#elif   defined(LILYGO_TOUCH_DRIVER_FTXXX)
+        return (touch->getTouched() > 0);
+#endif
     }
 
     /**
@@ -186,38 +199,68 @@ public:
 
     bool getTouch(int16_t &x, int16_t &y)
     {
+        uint16_t __x = 0, __y = 0;
         if (touch == nullptr) {
             return false;
         }
-        if (!touch->touched()) {
+
+#if     defined(LILYGO_TOUCH_DRIVER_GTXXX)
+        if (!touch->scanPoint()) {
             return false;
         }
-        TP_Point p = touch->getPoint();
+        touch->getPoint(__x, __y, 0);
 
-#if     defined(LILYGO_BLOCK_ST7796S_MODULE)
+#elif   defined(LILYGO_TOUCH_DRIVER_FTXXX)
+        if (!touch->getPoint(__x, __y)) {
+            return false;
+        }
+#endif  /*LILYGO_TOUCH_DRIVER_GTXXX LILYGO_TOUCH_DRIVER_FTXXX*/
+
+
+#if     defined(LILYGO_BLOCK_ILI9481_MODULE)
         uint8_t rotation = tft->getRotation();
         switch (rotation) {
         case 1:
-            x = p.y;
-            y = tft->height() - p.x;
+            x = __y;
+            y = tft->height() - __x;
             break;
         case 2:
-            x = tft->width() - p.x;
-            y = tft->height() - p.y;
+            x = tft->width() - __x;
+            y = tft->height() - __y;
             break;
         case 3:
-            x = tft->width() - p.y;
-            y = p.x;
+            x = tft->width() - __y;
+            y = __x;
             break;
         case 0:
         default:
-            x = p.x;
-            y = p.y;
+            x = __x;
+            y = __y;
+        }
+#elif   defined(LILYGO_BLOCK_ST7796S_MODULE)
+        uint8_t rotation = tft->getRotation();
+        switch (rotation) {
+        case 1:
+            x = __y;
+            y = tft->height() - __x;
+            break;
+        case 2:
+            x = tft->width() - __x;
+            y = tft->height() - __y;
+            break;
+        case 3:
+            x = tft->width() - __y;
+            y = __x;
+            break;
+        case 0:
+        default:
+            x = __x;
+            y = __y;
         }
 #elif   defined(LILYGO_WATCH_2019_WITH_TOUCH)
         uint8_t rotation = tft->getRotation();
-        int16_t _x = map(p.x, 0, 320, 0, 240);
-        int16_t _y = map(p.y, 0, 320, 0, 240);
+        int16_t _x = map(__x, 0, 320, 0, 240);
+        int16_t _y = map(__y, 0, 320, 0, 240);
         switch (rotation) {
         case 1:
             x = _y;
@@ -240,48 +283,48 @@ public:
         uint8_t rotation = tft->getRotation();
         switch (rotation) {
         case 0:
-            x = TFT_WIDTH - p.x;
-            y = TFT_HEIGHT - p.y;
+            x = TFT_WIDTH - __x;
+            y = TFT_HEIGHT - __y;
             break;
         case 1:
-            x = TFT_WIDTH - p.y;
-            y = p.x;
+            x = TFT_WIDTH - __y;
+            y = __x;
             break;
         case 3:
-            x = p.y;
-            y = TFT_HEIGHT - p.x;
+            x = __y;
+            y = TFT_HEIGHT - __x;
             break;
         case 2:
         default:
-            x = p.x;
-            y = p.y;
+            x = __x;
+            y = __y;
         }
 #elif   defined(LILYGO_EINK_GDEW0371W7)
         uint8_t r = ePaper->getRotation();
         switch (r) {
         case 0:
-            x = p.x;
-            y = p.y;
+            x = __x;
+            y = __y;
             break;
         case 1:
-            x =  p.y;
-            y = GDEW0371W7_HEIGHT - p.x;
+            x =  __y;
+            y = GDEW0371W7_HEIGHT - __x;
             break;
         case 2:
-            x = GDEW0371W7_HEIGHT - p.x;
-            y = GDEW0371W7_WIDTH - p.y;
+            x = GDEW0371W7_HEIGHT - __x;
+            y = GDEW0371W7_WIDTH - __y;
             break;
         case 3:
-            x = GDEW0371W7_WIDTH - p.y;
-            y = p.x;
+            x = GDEW0371W7_WIDTH - __y;
+            y = __x;
             break;
         default:
-            x = p.x;
-            y = p.y;
+            x = __x;
+            y = __y;
         }
 #else
-        x = p.x;
-        y = p.y;
+        x = __x;
+        y = __y;
 #endif
         return true;
     }
@@ -291,7 +334,11 @@ public:
     */
     void touchToSleep()
     {
-        touch->enterSleepMode();
+#if     defined(LILYGO_TOUCH_DRIVER_GTXXX)
+        //TODO:
+#elif   defined(LILYGO_TOUCH_DRIVER_FTXXX)
+        touch->setPowerMode(FOCALTECH_PMODE_DEEPSLEEP);
+#endif
     }
 
     /*
@@ -300,28 +347,40 @@ public:
     */
     void touchToMonitor()
     {
-        touch->enterMonitorMode();
+#if     defined(LILYGO_TOUCH_DRIVER_GTXXX)
+        //TODO:
+#elif   defined(LILYGO_TOUCH_DRIVER_FTXXX)
+        touch->setPowerMode(FOCALTECH_PMODE_MONITOR);
+#endif
     }
 
-#endif
+#endif  /*LILYGO_WATCH_HAS_TOUCH*/
 
     /******************************************
      *              Power
      * ***************************************/
 
-#ifdef LILYGO_WATCH_2020_V2
     void trunOnGPS()
     {
+#ifdef LILYGO_WATCH_2020_V2
         if (power)
             power->setPowerOutPut(AXP202_LDO4, true);
+#else
+        if (power)
+            power->setPowerOutPut(AXP202_LDO3, true);
+#endif
     }
 
     void turnOffGPS()
     {
+#ifdef LILYGO_WATCH_2020_V2
         if (power)
             power->setPowerOutPut(AXP202_LDO4, false);
-    }
+#else
+        if (power)
+            power->setPowerOutPut(AXP202_LDO3, false);
 #endif
+    }
 
 
 #ifdef LILYGO_WATCH_HAS_AXP202
@@ -437,7 +496,7 @@ public:
             tft->writecommand(0x10);
         }
 #ifdef LILYGO_WATCH_HAS_TOUCH
-        touch->enterSleepMode();
+        touchToSleep();
 #endif  /*LILYGO_WATCH_HAS_TOUCH*/
     }
 
@@ -445,7 +504,7 @@ public:
     {
         tft->writecommand(0x10);
 #ifdef LILYGO_WATCH_HAS_TOUCH
-        touch->enterMonitorMode();
+        touchToMonitor();
 #endif  /*LILYGO_WATCH_HAS_TOUCH*/
     }
 
@@ -573,8 +632,10 @@ public:
 
 
 #ifdef LILYGO_WATCH_LVGL_FS
-#ifdef LILYGO_WATCH_LVGL_FS_SPIFFS
+#if  defined(LILYGO_WATCH_LVGL_FS_SPIFFS)
+
         SPIFFS.begin(true, "/fs");
+
 #else
 
         //TODO:
@@ -911,9 +972,7 @@ private:
         digitalWrite(TOUCH_RST, HIGH);
 #endif
 
-#if defined(TOUCH_INT)
-        pinMode(TOUCH_INT, INPUT);
-#endif
+
     }
 
     bool initSensor()
@@ -1025,20 +1084,36 @@ private:
     }
 
 
+
     void initTouch()
     {
+
+#if defined(TOUCH_INT)
+        pinMode(TOUCH_INT, INPUT);
+        //TODO: gt9xx
+#endif
+
 #if defined(LILYGO_TOUCHSCREEN_CALLBACK_METHOD)
-        touch = new FT5206_Class();
+        touch = new CapacitiveTouch();
+#if defined(LILYGO_TOUCH_DRIVER_GTXXX)
+        //TODO: touch->setPins();
+        if (!touch->begin(i2cReadBytes_u16, i2cWriteBytes_u16)) {
+            log_e("Begin touch FAIL");
+        }
+#elif defined(LILYGO_TOUCH_DRIVER_FTXXX)
         if (!touch->begin(i2cReadBytes, i2cWriteBytes)) {
             log_e("Begin touch FAIL");
         }
+        touch->enableINT();
+#endif  /*LILYGO_TOUCH_DRIVER_XXXXX*/
+
 #elif defined(LILYGO_WATCH_HAS_TOUCH)
-        touch = new FT5206_Class();
+        touch = new CapacitiveTouch();
         Wire1.begin(TOUCH_SDA, TOUCH_SCL);
         if (!touch->begin(Wire1)) {
             log_e("Begin touch FAIL");
         }
-#endif
+#endif /*initTouch*/
     }
 
     void initPower()
@@ -1099,20 +1174,41 @@ private:
 #endif /*LILYGO_WATCH_HAS_BACKLIGHT*/
     }
 
-// #if defined(LILYGO_WATCH_HAS_AXP202)
+    /**
+     * @brief  8-bit register interface write function
+     */
     static uint8_t i2cWriteBytes(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint8_t len)
     {
         _ttgo->writeBytes(devAddress, regAddress, data, len);
         return 0;
     }
 
+    /**
+      * @brief  8-bit register interface read function
+      */
     static uint8_t i2cReadBytes(uint8_t devAddress, uint8_t regAddress,  uint8_t *data, uint8_t len)
     {
         _ttgo->readBytes(devAddress, regAddress, data, len);
         return 0;
     }
-// #endif  /*LILYGO_WATCH_HAS_AXP202*/
 
+    /**
+     * @brief  16-bit register interface write function
+     */
+    static uint8_t i2cWriteBytes_u16(int devAddress, uint16_t regAddress, uint8_t *data, int len)
+    {
+        configASSERT(_ttgo->i2c);
+        return _ttgo->i2c->writeBytes_u16(devAddress, regAddress, data, len);
+    }
+
+    /**
+     * @brief  16-bit register interface read function
+     */
+    static uint8_t i2cReadBytes_u16(int devAddress, uint16_t regAddress,  uint8_t *data, int len)
+    {
+        configASSERT(_ttgo->i2c);
+        return _ttgo->i2c->readBytes_u16(devAddress, regAddress, data, len);
+    }
 
 #ifdef LILYGO_WATCH_HAS_NFC
     static void nfcWriteBytes(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint16_t len)
@@ -1137,7 +1233,7 @@ private:
 
 public: /*Compatible with MY-TTGO-TWATCH https://github.com/sharandac/My-TTGO-Watch*/
 #ifdef LILYGO_WATCH_HAS_TOUCH
-    FT5206_Class *touch = nullptr;
+    CapacitiveTouch *touch = nullptr;
 #endif
 private:
 #if  defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_DISPLAY)
@@ -1171,6 +1267,8 @@ protected:
     static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     {
         data->state = _ttgo->getTouch(data->point.x, data->point.y) ?  LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+        if (data->state == LV_INDEV_STATE_PR)
+            Serial.printf("X=%d Y=%d\n", data->point.x, data->point.y);
         return false; /*Return false because no moare to be read*/
     }
 #endif /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_TOUCH*/

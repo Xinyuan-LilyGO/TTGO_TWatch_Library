@@ -92,3 +92,39 @@ bool I2CBus::deviceProbe(uint8_t addr)
     xSemaphoreGiveRecursive(_i2c_mux);
     return (ret == 0);
 }
+
+
+int I2CBus::readBytes_u16(int addr, uint16_t reg, uint8_t *data, int len)
+{
+    xSemaphoreTakeRecursive(_i2c_mux, portMAX_DELAY);
+    _port->beginTransmission(addr);
+    _port->write(reg >> 8);
+    _port->write(reg & 0xFF);
+    _port->endTransmission(false);
+    uint8_t cnt = _port->requestFrom(addr, len, 1);
+    if (!cnt) {
+        return 0;
+    }
+    int index = 0;
+    while (_port->available()) {
+        if (index > len)return 1 << 14;
+        data[index++] = _port->read();
+    }
+    xSemaphoreGiveRecursive(_i2c_mux);
+    return index == len;
+}
+
+int I2CBus::writeBytes_u16(int addr, uint16_t reg, uint8_t *data, int len)
+{
+    xSemaphoreTakeRecursive(_i2c_mux, portMAX_DELAY);
+    _port->beginTransmission(addr);
+    _port->write(reg >> 8);
+    _port->write(reg & 0xFF);
+    for (int i = 0; i < len; i++) {
+        _port->write(data[i]);
+    }
+    int ret = _port->endTransmission();
+    xSemaphoreGiveRecursive(_i2c_mux);
+    return ret == 0;
+}
+
