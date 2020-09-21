@@ -109,7 +109,7 @@ typedef FocalTech_Class CapacitiveTouch ;
 #endif
 
 #if !defined(EXTERNAL_TFT_ESPI_LIBRARY) && !defined(LILYGO_BLOCK_ILI9488_MODULE) && !defined(TWATCH_USE_PSRAM_ALLOC_LVGL)
-#define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
+// #define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
 #endif
 
 
@@ -359,10 +359,12 @@ public:
     /******************************************
      *              Power
      * ***************************************/
+#ifdef LILYGO_WATCH_HAS_AXP202
 
     void trunOnGPS()
     {
 #ifdef LILYGO_WATCH_2020_V2
+        // 2020 v2 use axp202 ldo 4
         if (power)
             power->setPowerOutPut(AXP202_LDO4, true);
 #else
@@ -374,6 +376,7 @@ public:
     void turnOffGPS()
     {
 #ifdef LILYGO_WATCH_2020_V2
+        // 2020 v2 use axp202 ldo 4
         if (power)
             power->setPowerOutPut(AXP202_LDO4, false);
 #else
@@ -383,7 +386,6 @@ public:
     }
 
 
-#ifdef LILYGO_WATCH_HAS_AXP202
     /*
     * @brief  It will turn off the power supply of all peripherals except ESP32
     * * */
@@ -1267,8 +1269,6 @@ protected:
     static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     {
         data->state = _ttgo->getTouch(data->point.x, data->point.y) ?  LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
-        if (data->state == LV_INDEV_STATE_PR)
-            Serial.printf("X=%d Y=%d\n", data->point.x, data->point.y);
         return false; /*Return false because no moare to be read*/
     }
 #endif /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_TOUCH*/
