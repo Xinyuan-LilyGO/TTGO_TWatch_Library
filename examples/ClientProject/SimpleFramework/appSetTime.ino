@@ -46,7 +46,7 @@ void appSetTime() {
 
   while (wl != 13) {
     wl = getTnum();
-    if (wl != -1) {
+    if (wl != -1 && wl != 13)
 
       switch (curnum) {
         case 1:
