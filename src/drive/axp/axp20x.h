@@ -266,6 +266,7 @@ github:https://github.com/lewisxhe/AXP202X_Libraries
 #define AXP202_VBUS_VOLTAGE_STEP (1.7F)
 #define AXP202_VBUS_CUR_STEP (0.375F)
 #define AXP202_INTERNAL_TEMP_STEP (0.1F)
+#define AXP202_INTERNAL_TEMP_MIN (-144.7F)
 #define AXP202_APS_VOLTAGE_STEP (1.4F)
 #define AXP202_TS_PIN_OUT_STEP (0.8F)
 #define AXP202_GPIO0_STEP (0.5F)
