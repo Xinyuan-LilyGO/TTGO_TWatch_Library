@@ -85,7 +85,7 @@ void PCF8563_Class::setDateTime(uint16_t year,
     _data[5] = _dec_to_bcd(month);
     _data[6] = _dec_to_bcd(year % 100);
 
-    if (2000 - year  - (year % 100)) {
+    if ( year < 2000) {
         _data[4] |= PCF8563_CENTURY_MASK;
     } else {
         _data[4] &= (~PCF8563_CENTURY_MASK);
@@ -349,7 +349,7 @@ void PCF8563_Class::syncToRtc()
     struct tm  info;
     time(&now);
     localtime_r(&now, &info);
-    setDateTime(info.tm_year, info.tm_mon + 1, info.tm_mday, info.tm_hour, info.tm_min, info.tm_sec);
+    setDateTime(info.tm_year + 1900, info.tm_mon + 1, info.tm_mday, info.tm_hour, info.tm_min, info.tm_sec);
     // Serial.printf("syncToRtc: %d %d %d - %d %d %d \n", info.tm_year, info.tm_mon + 1, info.tm_mday, info.tm_hour, info.tm_min, info.tm_sec);
 }
 
