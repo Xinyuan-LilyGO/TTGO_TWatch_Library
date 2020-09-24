@@ -1186,7 +1186,7 @@ private:
     static uint8_t i2cWriteBytes(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint8_t len)
     {
         _ttgo->writeBytes(devAddress, regAddress, data, len);
-        return 0;
+        return true;
     }
 
     /**
@@ -1195,7 +1195,7 @@ private:
     static uint8_t i2cReadBytes(uint8_t devAddress, uint8_t regAddress,  uint8_t *data, uint8_t len)
     {
         _ttgo->readBytes(devAddress, regAddress, data, len);
-        return 0;
+        return true;
     }
 
     /**

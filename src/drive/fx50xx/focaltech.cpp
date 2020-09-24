@@ -57,14 +57,14 @@ github:https://github.com/lewisxhe/FocalTech_Library
 
 bool FocalTech_Class::probe(void)
 {
-#ifdef ARDUINO
-    _i2cPort->beginTransmission(_address);
-    if (_i2cPort->endTransmission() == 0) {
-        initialization = true;
-    }
-#else
+// #ifdef ARDUINO
+//     _i2cPort->beginTransmission(_address);
+//     if (_i2cPort->endTransmission() == 0) {
+//         initialization = true;
+//     }
+// #else
     initialization = true;
-#endif
+// #endif
     return true;
 }
 
@@ -77,7 +77,7 @@ bool FocalTech_Class::begin(TwoWire &port, uint8_t addr)
     return probe();
 }
 
-bool FocalTech_Class::begin(iic_com_fptr_t read_cb, iic_com_fptr_t write_cb, uint8_t addr)
+bool FocalTech_Class::begin(iic_com_fptr_u8_t read_cb, iic_com_fptr_u8_t write_cb, uint8_t addr)
 {
     if (read_cb == nullptr || write_cb == nullptr) {
         return false;
@@ -208,7 +208,7 @@ bool FocalTech_Class::getPoint(uint16_t &x, uint16_t &y)
         event = (EventFlag_t)(buffer[1] & 0xC0);
         x = (buffer[1] & 0x0F) << 8 | buffer[2];
         y =  (buffer[3] & 0x0F) << 8 | buffer[4];
-
+#define DBG_FOCALTECH
 #ifdef DBG_FOCALTECH
         printf("x=%03u y=%03u\n", x, y);
 #endif

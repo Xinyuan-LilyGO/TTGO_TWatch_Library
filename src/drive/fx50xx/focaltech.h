@@ -64,6 +64,7 @@ typedef enum {
 } PowerMode_t;
 
 typedef uint8_t (*iic_com_fptr_t)(int dev_addr, uint16_t reg_addr, uint8_t *data, int len);
+typedef uint8_t (*iic_com_fptr_u8_t)(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint8_t len);
 
 
 class GT9xx_Class
@@ -115,7 +116,7 @@ public:
     bool begin(TwoWire &port = Wire, uint8_t addr = FOCALTECH_SLAVE_ADDRESS);
 #endif
 
-    bool begin(iic_com_fptr_t read_cb, iic_com_fptr_t write_cb, uint8_t addr = FOCALTECH_SLAVE_ADDRESS);
+    bool begin(iic_com_fptr_u8_t read_cb, iic_com_fptr_u8_t write_cb, uint8_t addr = FOCALTECH_SLAVE_ADDRESS);
 
     void    setTheshold(uint8_t value);
     uint8_t getThreshold(void);
@@ -157,8 +158,8 @@ private:
 
     uint8_t _address;
     bool initialization = false;
-    iic_com_fptr_t _readCallbackFunc = nullptr;
-    iic_com_fptr_t _writeCallbackFunc = nullptr;
+    iic_com_fptr_u8_t _readCallbackFunc = nullptr;
+    iic_com_fptr_u8_t _writeCallbackFunc = nullptr;
 
 #ifdef ARDUINO
     TwoWire *_i2cPort;
