@@ -364,35 +364,35 @@ bool GT9xx_Class::probe(void)
         0x00, 0x00, 0x00, 0x00, 0xC0, 0x01
     };
 
-    if (_rst > 0) {
-        pinMode(_rst, OUTPUT);
-        if (_interrupt > 0)
-            pinMode(_interrupt, OUTPUT);
-        digitalWrite(_rst, LOW);
-        delay(30);  //T2>=10ms
-        if (_interrupt > 0)
-            digitalWrite(_interrupt, HIGH);
-        delay(10);
-        if (_interrupt > 0)
-            pinMode(_interrupt, OPEN_DRAIN);
-        digitalWrite(_rst, HIGH);
-    }
+    // if (_rst > 0) {
+    //     pinMode(_rst, OUTPUT);
+    //     if (_interrupt > 0)
+    //         pinMode(_interrupt, OUTPUT);
+    //     digitalWrite(_rst, LOW);
+    //     delay(30);  //T2>=10ms
+    //     if (_interrupt > 0)
+    //         digitalWrite(_interrupt, HIGH);
+    //     delay(10);
+    //     if (_interrupt > 0)
+    //         pinMode(_interrupt, OPEN_DRAIN);
+    //     digitalWrite(_rst, HIGH);
+    // }
 
-// #ifdef ARDUINO
-//     _i2cPort->beginTransmission(_address);
-//     if (_i2cPort->endTransmission() == 0) {
-//         initialization = true;
-//     }
-// #else
-    initialization = true;
-// #endif
+    
+
 
     softReset();
 
     uint8_t buffer[5] = {0};
     readBytes(GT9XX_PRODUCT_ID, buffer, 3);
     buffer[3] = readRegister(GT9XX_CONFIG_VERSION);
-    Serial.printf("TouchPad_ID:%c,%c,%c\r\nTouchPad_Config_Version:%2x\r\n", buffer[0], buffer[1], buffer[2], buffer[3]);
+    // Serial.printf("TouchPad_ID:%c,%c,%c\r\nTouchPad_Config_Version:%2x\r\n", buffer[0], buffer[1], buffer[2], buffer[3]);
+    if(buffer[0] == '9'){
+        initialization = true;
+    }else{
+        initialization = false;
+        return false;
+    }
     uint8_t check_sum = 0;
     for (int i = 0; i < (sizeof(config0) - 2); i++) {
         check_sum += config0[i];

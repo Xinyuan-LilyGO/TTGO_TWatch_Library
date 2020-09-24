@@ -1092,14 +1092,18 @@ private:
 
 #if defined(TOUCH_INT)
         pinMode(TOUCH_INT, INPUT);
-        //TODO: gt9xx
 #endif
 
 #if defined(LILYGO_TOUCHSCREEN_CALLBACK_METHOD)
         touch = new CapacitiveTouch();
 #if defined(LILYGO_TOUCH_DRIVER_GTXXX)
-        //TODO: touch->setPins();
-        if (!touch->begin(i2cReadBytes_u16, i2cWriteBytes_u16)) {
+        uint8_t address = 0x5D;
+        if(i2c->deviceProbe(0x5D)){
+             address = 0x5D;
+        }else if(i2c->deviceProbe(0x14)){
+            address = 0x14;
+        }
+        if (!touch->begin(i2cReadBytes_u16, i2cWriteBytes_u16,address)) {
             log_e("Begin touch FAIL");
         }
 #elif defined(LILYGO_TOUCH_DRIVER_FTXXX)
@@ -1224,9 +1228,7 @@ private:
     }
 #endif  /*LILYGO_WATCH_HAS_NFC*/
 
-
     I2CBus *i2c = nullptr;
-
     static TTGOClass *_ttgo;
 
 #if  defined(LILYGO_WATCH_LVGL)
