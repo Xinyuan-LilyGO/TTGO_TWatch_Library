@@ -88,12 +88,20 @@ bool FocalTech_Class::begin(iic_com_fptr_u8_t read_cb, iic_com_fptr_u8_t write_c
     return probe();
 }
 
+uint8_t FocalTech_Class::getControl(void)
+{
+    if (!initialization) {
+        return 0;
+    }
+    return readRegister8(FOCALTECH_REGISTER_CONTROL);
+}
+
 uint8_t FocalTech_Class::getDeviceMode(void)
 {
     if (!initialization) {
         return 0;
     }
-    return readRegister8(FOCALTECH_REGISTER_MODE) & 0x03;
+    return (readRegister8(FOCALTECH_REGISTER_MODE) >> 4) & 0x07;
 }
 
 GesTrue_t FocalTech_Class::getGesture(void)
@@ -151,6 +159,38 @@ void FocalTech_Class::setMonitorTime(uint8_t sec)
         return;
     }
     writeRegister8(FOCALTECH_REGISTER_MONITORTIME, sec);
+}
+
+uint8_t FocalTech_Class::getActivePeriod(void)
+{
+    if (!initialization) {
+        return 0;
+    }
+    return readRegister8(FOCALTECH_REGISTER_ACTIVEPERIOD);
+}
+
+void FocalTech_Class::setActivePeriod(uint8_t period)
+{
+    if (!initialization) {
+        return;
+    }
+    writeRegister8(FOCALTECH_REGISTER_ACTIVEPERIOD, period);
+}
+
+uint8_t FocalTech_Class::getMonitorPeriod(void)
+{
+    if (!initialization) {
+        return 0;
+    }
+    return readRegister8(FOCALTECH_REGISTER_MONITORPERIOD);
+}
+
+void FocalTech_Class::setMonitorPeriod(uint8_t period)
+{
+    if (!initialization) {
+        return;
+    }
+    writeRegister8(FOCALTECH_REGISTER_MONITORPERIOD, period);
 }
 
 void FocalTech_Class::enableAutoCalibration(void)
@@ -231,6 +271,14 @@ void FocalTech_Class::setPowerMode(PowerMode_t m)
         return;
     }
     writeRegister8(FOCALTECH_REGISTER_POWER_MODE, m);
+}
+
+PowerMode_t FocalTech_Class::getPowerMode(void)
+{
+    if (!initialization) {
+        return FOCALTECH_PMODE_DEEPSLEEP;
+    }
+    return (PowerMode_t)readRegister8(FOCALTECH_REGISTER_POWER_MODE);
 }
 
 uint8_t FocalTech_Class::getVendorID(void)
