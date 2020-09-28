@@ -966,15 +966,13 @@ private:
 
 #if defined(LILYGO_WATCH_2020_V2)
         //Adding a hardware reset can reduce the current consumption of the touch screen
-        pinMode(TOUCH_RST, OUTPUT);
-        digitalWrite(TOUCH_RST, HIGH);
-        delay(5);
-        digitalWrite(TOUCH_RST, LOW);
-        delay(5);       //Tris reset time
-        digitalWrite(TOUCH_RST, HIGH);
+        // pinMode(TOUCH_RST, OUTPUT);
+        // digitalWrite(TOUCH_RST, HIGH);
+        // delay(5);
+        // digitalWrite(TOUCH_RST, LOW);
+        // delay(5);       //Tris reset time
+        // digitalWrite(TOUCH_RST, HIGH);
 #endif
-
-
     }
 
     bool initSensor()
@@ -1089,7 +1087,6 @@ private:
 
     void initTouch()
     {
-
 #if defined(TOUCH_INT)
         pinMode(TOUCH_INT, INPUT);
 #endif
@@ -1098,12 +1095,12 @@ private:
         touch = new CapacitiveTouch();
 #if defined(LILYGO_TOUCH_DRIVER_GTXXX)
         uint8_t address = 0x5D;
-        if(i2c->deviceProbe(0x5D)){
-             address = 0x5D;
-        }else if(i2c->deviceProbe(0x14)){
+        if (i2c->deviceProbe(0x5D)) {
+            address = 0x5D;
+        } else if (i2c->deviceProbe(0x14)) {
             address = 0x14;
         }
-        if (!touch->begin(i2cReadBytes_u16, i2cWriteBytes_u16,address)) {
+        if (!touch->begin(i2cReadBytes_u16, i2cWriteBytes_u16, address)) {
             log_e("Begin touch FAIL");
         }
 #elif defined(LILYGO_TOUCH_DRIVER_FTXXX)
@@ -1164,10 +1161,22 @@ private:
 
 
 #ifdef  LILYGO_WATCH_2020_V2
+            // New features of Twatch V2
+
             //GPS power domain is AXP202 LDO4
-            power->setPowerOutPut(AXP202_LDO3, false);
             power->setPowerOutPut(AXP202_LDO4, false);
             power->setLDO4Voltage(AXP202_LDO4_3300MV);
+
+            power->setPowerOutPut(AXP202_LDO3, false);
+            power->setLDO3Voltage(AXP202_LDO3, 3300);
+            
+            //Adding a hardware reset can reduce the current consumption of the  capacitive touch
+            power->setPowerOutPut(AXP202_EXTEN, true);
+            delay(20);
+            power->setPowerOutPut(AXP202_EXTEN, false);
+            delay(20);
+            power->setPowerOutPut(AXP202_EXTEN, true);
+
 #endif  /*LILYGO_WATCH_2020_V2*/
         }
 #endif /*LILYGO_WATCH_HAS_AXP202*/
