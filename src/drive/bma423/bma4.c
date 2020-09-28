@@ -1191,7 +1191,7 @@ uint16_t bma4_get_temperature(int32_t *temp, uint8_t temp_unit, struct bma4_dev 
         rslt |= bma4_read_regs(BMA4_TEMPERATURE_ADDR, data, BMA4_TEMP_DATA_SIZE, dev);
 
         if (rslt == BMA4_OK)
-            temp_raw_scaled = (int32_t)data[BMA4_TEMP_BYTE] * BMA4_SCALE_TEMP;
+            temp_raw_scaled = (int32_t)(int8_t)data[BMA4_TEMP_BYTE] * BMA4_SCALE_TEMP;
 
         /* '0' value read from the register corresponds to 23 degree C */
         (*temp) = temp_raw_scaled + (BMA4_OFFSET_TEMP * BMA4_SCALE_TEMP);
