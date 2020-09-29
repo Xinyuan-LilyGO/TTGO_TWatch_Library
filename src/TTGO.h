@@ -78,6 +78,9 @@ typedef FocalTech_Class CapacitiveTouch ;
 #include "libraries/lv_fs_if/lv_fs_if.h"
 #endif
 
+#ifdef LILYGO_WATCH_LVGL_DECODER
+#include "libraries/lv_lib_png/lv_png.h"
+#endif
 
 #ifdef LILYGO_WATCH_HAS_AXP202
 #include "drive/axp/axp20x.h"
@@ -632,19 +635,18 @@ public:
 #define LILYGO_WATCH_LVGL_FS_SPIFFS
 #endif
 
-
 #ifdef LILYGO_WATCH_LVGL_FS
 #if  defined(LILYGO_WATCH_LVGL_FS_SPIFFS)
-
         SPIFFS.begin(true, "/fs");
-
 #else
-
         //TODO:
-
 #endif  /*LILYGO_WATCH_LVGL_FS_SPIFFS*/
 
         lv_fs_if_init();
+
+#ifdef LILYGO_WATCH_LVGL_DECODER
+        lv_png_init();
+#endif
 
 #endif  /*LILYGO_WATCH_LVGL_FS*/
 
@@ -1169,7 +1171,7 @@ private:
 
             power->setPowerOutPut(AXP202_LDO3, false);
             power->setLDO3Voltage(AXP202_LDO3, 3300);
-            
+
             //Adding a hardware reset can reduce the current consumption of the  capacitive touch
             power->setPowerOutPut(AXP202_EXTEN, true);
             delay(20);
