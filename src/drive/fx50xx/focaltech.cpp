@@ -44,7 +44,10 @@ github:https://github.com/lewisxhe/FocalTech_Library
 #define FOCALTECH_REGISTER_TOUCH1_YH    (0x05)
 #define FOCALTECH_REGISTER_TOUCH1_YL    (0x06)
 #define FOCALTECH_REGISTER_THRESHHOLD   (0x80)
+#define FOCALTECH_REGISTER_CONTROL      (0x86)
 #define FOCALTECH_REGISTER_MONITORTIME  (0x87)
+#define FOCALTECH_REGISTER_ACTIVEPERIOD  (0x88)
+#define FOCALTECH_REGISTER_MONITORPERIOD  (0x89)
 
 #define FOCALTECH_REGISTER_LIB_VERSIONH (0xA1)
 #define FOCALTECH_REGISTER_LIB_VERSIONL (0xA2)
@@ -224,7 +227,7 @@ void FocalTech_Class::enableINT(void)
     if (!initialization) {
         return;
     }
-    writeRegister8(FOCALTECH_REGISTER_INT_STATUS, 0);
+    writeRegister8(FOCALTECH_REGISTER_INT_STATUS, 1);
 }
 
 void FocalTech_Class::disableINT(void)
@@ -232,7 +235,15 @@ void FocalTech_Class::disableINT(void)
     if (!initialization) {
         return;
     }
-    writeRegister8(FOCALTECH_REGISTER_INT_STATUS, 1);
+    writeRegister8(FOCALTECH_REGISTER_INT_STATUS, 0);
+}
+
+uint8_t FocalTech_Class::getINTMode(void)
+{
+    if (!initialization) {
+        return 0;
+    }
+    return readRegister8(FOCALTECH_REGISTER_INT_STATUS);
 }
 
 bool FocalTech_Class::getPoint(uint16_t &x, uint16_t &y)
@@ -248,7 +259,7 @@ bool FocalTech_Class::getPoint(uint16_t &x, uint16_t &y)
         event = (EventFlag_t)(buffer[1] & 0xC0);
         x = (buffer[1] & 0x0F) << 8 | buffer[2];
         y =  (buffer[3] & 0x0F) << 8 | buffer[4];
-#define DBG_FOCALTECH
+
 #ifdef DBG_FOCALTECH
         printf("x=%03u y=%03u\n", x, y);
 #endif
