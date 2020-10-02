@@ -484,7 +484,7 @@ bool GT9xx_Class::readBytes( uint16_t reg, uint8_t *data, int nbytes)
     _i2cPort->write(reg >> 8);
     _i2cPort->write(reg & 0xFF);
     _i2cPort->endTransmission();
-    _i2cPort->requestFrom(_address, nbytes);
+    _i2cPort->requestFrom(_address, (uint8_t )nbytes);
     int index = 0;
     while (_i2cPort->available())
         data[index++] = _i2cPort->read();
