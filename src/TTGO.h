@@ -148,9 +148,6 @@ public:
     {
 
         i2c = new I2CBus();
-#ifdef LILYGO_WATCH_HAS_TOUCH_I2CBUS
-        i2c2 = new I2CBus(Wire1, TOUCH_SDA, TOUCH_SCL);
-#endif  /*LILYGO_WATCH_HAS_TOUCH_I2CBUS*/
 
 #ifdef LILYGO_WATCH_HAS_PCF8563
         rtc = new PCF8563_Class(*i2c);
@@ -916,20 +913,6 @@ public:
         return i2c->deviceProbe(addr);
     }
 
-#ifdef LILYGO_WATCH_HAS_TOUCH_I2CBUS
-    void writeBytes2(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint16_t len)
-    {
-        if (!i2c2)return;
-        i2c2->writeBytes(devAddress, regAddress, data, len);;
-    }
-
-    void readBytes2(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint16_t len)
-    {
-        if (!i2c2)return;
-        i2c2->readBytes(devAddress, regAddress, data, len);
-    }
-#endif  /*LILYGO_WATCH_HAS_TOUCH_I2CBUS*/
-
 #ifdef LILYGO_WATCH_HAS_ADC
     float getVoltage()
     {
@@ -1131,16 +1114,10 @@ private:
 
 #elif defined(LILYGO_WATCH_HAS_TOUCH)
         touch = new CapacitiveTouch();
-#ifdef LILYGO_WATCH_HAS_TOUCH_I2CBUS
-        if (!touch->begin(i2cReadBytes2, i2cWriteBytes2)) {
-            log_e("Begin touch FAIL");
-        }
-#else
         Wire1.begin(TOUCH_SDA, TOUCH_SCL);
         if (!touch->begin(Wire1)) {
             log_e("Begin touch FAIL");
         }
-#endif  /*LILYGO_WATCH_HAS_TOUCH_I2CBUS*/
 #endif /*initTouch*/
     }
 
@@ -1222,13 +1199,6 @@ private:
         _ttgo->writeBytes(devAddress, regAddress, data, len);
         return true;
     }
-#ifdef LILYGO_WATCH_HAS_TOUCH_I2CBUS
-    static uint8_t i2cWriteBytes2(uint8_t devAddress, uint8_t regAddress, uint8_t *data, uint8_t len)
-    {
-        _ttgo->writeBytes2(devAddress, regAddress, data, len);
-        return true;
-    }
-#endif  /*LILYGO_WATCH_HAS_TOUCH_I2CBUS*/
 
     /**
       * @brief  8-bit register interface read function
@@ -1238,13 +1208,6 @@ private:
         _ttgo->readBytes(devAddress, regAddress, data, len);
         return true;
     }
-#ifdef LILYGO_WATCH_HAS_TOUCH_I2CBUS
-    static uint8_t i2cReadBytes2(uint8_t devAddress, uint8_t regAddress,  uint8_t *data, uint8_t len)
-    {
-        _ttgo->readBytes2(devAddress, regAddress, data, len);
-        return true;
-    }
-#endif  /*LILYGO_WATCH_HAS_TOUCH_I2CBUS*/
 
     /**
      * @brief  16-bit register interface write function
@@ -1277,9 +1240,6 @@ private:
 #endif  /*LILYGO_WATCH_HAS_NFC*/
 
     I2CBus *i2c = nullptr;
-#ifdef LILYGO_WATCH_HAS_TOUCH_I2CBUS
-    I2CBus *i2c2 = nullptr;
-#endif  /*LILYGO_WATCH_HAS_TOUCH_I2CBUS*/
     static TTGOClass *_ttgo;
 
 #if  defined(LILYGO_WATCH_LVGL)
