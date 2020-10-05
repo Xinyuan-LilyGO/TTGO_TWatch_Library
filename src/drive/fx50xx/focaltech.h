@@ -123,6 +123,10 @@ public:
 
     uint8_t getMonitorTime(void);
     void    setMonitorTime(uint8_t sec);
+    uint8_t getActivePeriod(void);
+    void    setActivePeriod(uint8_t rate);
+    uint8_t getMonitorPeriod(void);
+    void    setMonitorPeriod(uint8_t rate);
 
     void    enableAutoCalibration(void);
     void    disableAutoCalibration(void);
@@ -130,6 +134,7 @@ public:
     void    getLibraryVersion(uint16_t &version);
 
     void    setPowerMode(PowerMode_t m);
+    PowerMode_t    getPowerMode(void);
 
     uint8_t getVendorID(void);
     uint8_t getVendor1ID(void);
@@ -137,12 +142,14 @@ public:
 
     void    enableINT(void);
     void    disableINT(void);
+    uint8_t getINTMode(void);
 
     bool    getPoint(uint16_t &x, uint16_t &y);
     // bool    getPoint(uint8_t *x, uint8_t *y);
 
     uint8_t getTouched(void);
 
+    uint8_t     getControl(void);
     uint8_t     getDeviceMode(void);
     GesTrue_t   getGesture(void);
 
