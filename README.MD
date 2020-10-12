@@ -54,28 +54,21 @@
 
 <h2 align = "left">🔶 How to find the sample program</h2>
 
-* T-Watch
+* T-Watch & LilyPi
 - In the Arduino board select `TTGO T-Watch`
 - In the Arduino File -> Examples -> `TTGO_TWatch_Library`
-
-* LilyPi
-- In the Arduino board select `TTGO T-Watch`
-- In the Arduino File -> Examples -> `TTGO_TWatch_Library`
-- The core configuration of LilyPi is the same as T-Watch, it has 16M Flash and 8M PSRAM
 
  <h2 align = "left">🔶 Precautions</h2>
 
-- T-Watch-2019 : Since Twatch uses a special IO as the SD interface, please remove the SD card when downloading the program.
-- LilyPi       : Since Twatch uses a special IO as the SD interface, please remove the SD card when downloading the program.
+- T-Watch-2019 & LilyPi: Since uses a special IO as the SD interface, please remove the SD card when downloading the program.
 
 
- <h2 align = "left">🔷 Other</h2>
+ <h2 align = "left">🔷 Resources </h2>
 
-- [Click for details of power consumption](docs/power.md)
-- [Pin Map Click to View](docs/pinmap.md)
-- [3D Shell](https://github.com/Xinyuan-LilyGO/LilyGo-TWatch-DataSheet/tree/master/3DSHELL)
-- [Hardware Resource](https://github.com/Xinyuan-LilyGO/LilyGo-TWatch-DataSheet)
-- [Acsip S76/78 Library&Examples](https://github.com/lewisxhe/Acsip-S7xG-Library)
+- [LilyPi Pin mapping and other instructions](docs/lilypi_pinmap.md)
+- [TWATCH 2019 Series pin mapping and other instructions](docs/watch_2019.md)
+- [TWATCH 2020 V1 Pin mapping and other instructions](docs/watch_2020_v1.md)
+- [TWATCH 2020 V2 Pin mapping and other instructions](docs/watch_2020_v2.md)
 
  <h2 align = "left">🔶 More interesting projects</h2>
 
