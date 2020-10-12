@@ -282,7 +282,7 @@ public:
             x = _x;
             y = _y;
         }
-#elif   defined(LILYGO_WATCH_2020_V1)
+#elif   defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)
         uint8_t rotation = tft->getRotation();
         switch (rotation) {
         case 0:
@@ -986,7 +986,7 @@ private:
             return false;
         }
         // T-Watch 2020 and 2019 use different mapping axes
-#if defined(LILYGO_WATCH_2020_V1)
+#if defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)
         remap_data.x_axis = 0;
         remap_data.x_axis_sign = 1;
         remap_data.y_axis = 1;
@@ -1056,7 +1056,7 @@ private:
         tft->initDMA(); // To use SPI DMA you must call initDMA() to setup the DMA engine
 #endif
 
-#ifdef  LILYGO_WATCH_2020_V1
+#if     defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)
         // Set default initial orientation
         tft->setRotation(2);
 #endif  /*LILYGO_WATCH_2020_V1*/
@@ -1169,15 +1169,22 @@ private:
             power->setPowerOutPut(AXP202_LDO4, false);
             power->setLDO4Voltage(AXP202_LDO4_3300MV);
 
-            power->setPowerOutPut(AXP202_LDO3, false);
-            power->setLDO3Voltage(AXP202_LDO3, 3300);
-
-            //Adding a hardware reset can reduce the current consumption of the  capacitive touch
+            //Adding a hardware reset can reduce the current consumption of the capacitive touch
             power->setPowerOutPut(AXP202_EXTEN, true);
             delay(20);
             power->setPowerOutPut(AXP202_EXTEN, false);
             delay(20);
             power->setPowerOutPut(AXP202_EXTEN, true);
+
+            /*
+            In 2020V2, LDO3 is allocated to the display and touch screen power.
+            When ESP32 is set to sleep or other situations where power consumption needs to be saved,
+            LDO3 can be turned off
+            */
+            power->setPowerOutPut(AXP202_LDO3, false);
+            power->setLDO3Voltage(3300);
+            power->setPowerOutPut(AXP202_LDO3, true);
+
 
 #endif  /*LILYGO_WATCH_2020_V2*/
         }

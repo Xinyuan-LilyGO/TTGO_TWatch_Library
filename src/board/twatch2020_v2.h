@@ -19,7 +19,7 @@
 #define SEN_SDA                     21
 #define SEN_SCL                     22
 
-#define RTC_INT_PIN                     37
+#define RTC_INT_PIN                 37
 #define AXP202_INT                  35
 #define BMA423_INT1                 39
 
@@ -31,3 +31,8 @@
 #define GPS_TX                      26
 #define GPS_WAKE                    33
 #define GPS_BAUD_RATE               9600
+
+#define SD_CS                       13
+#define SD_MISO                     2
+#define SD_MOSI                     15
+#define SD_SCLK                     14
