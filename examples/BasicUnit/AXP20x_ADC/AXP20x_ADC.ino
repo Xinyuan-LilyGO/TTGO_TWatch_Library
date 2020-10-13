@@ -42,7 +42,7 @@ void loop()
         tft->println("CONNECT");
 
         // Get USB voltage
-        tft->print("VBUS Volate:");
+        tft->print("VBUS Voltage:");
         tft->print(power->getVbusVoltage());
         tft->println(" mV");
 
@@ -66,7 +66,7 @@ void loop()
         tft->println("CONNECT");
 
         // Get battery voltage
-        tft->print("BAT Volate:");
+        tft->print("BAT Voltage:");
         tft->print(power->getBattVoltage());
         tft->println(" mV");
 
