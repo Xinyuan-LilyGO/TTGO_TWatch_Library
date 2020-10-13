@@ -125,6 +125,7 @@ typedef FocalTech_Class CapacitiveTouch ;
 #endif
 #endif  /*LVGL_BUFFER_SIZE*/
 
+#define TOUCH_IRQ_BIT           (_BV(1))
 
 class TTGOClass
 {
@@ -133,6 +134,7 @@ public:
     {
         if (_ttgo == nullptr) {
             _ttgo = new TTGOClass();
+            _tpEvent = xEventGroupCreate();
         }
         return _ttgo;
     }
@@ -958,22 +960,11 @@ private:
     {
     };
 
-
     void initHardware(void)
     {
 #if defined(LILYGO_LILYPI_V1)
         pinMode(EXTERN_USB_EN, OUTPUT);
         pinMode(RELAY_PIN, OUTPUT);
-#endif
-
-#if defined(LILYGO_WATCH_2020_V2)
-        //Adding a hardware reset can reduce the current consumption of the touch screen
-        // pinMode(TOUCH_RST, OUTPUT);
-        // digitalWrite(TOUCH_RST, HIGH);
-        // delay(5);
-        // digitalWrite(TOUCH_RST, LOW);
-        // delay(5);       //Tris reset time
-        // digitalWrite(TOUCH_RST, HIGH);
 #endif
     }
 
@@ -1012,8 +1003,6 @@ private:
 #endif
         return true;
     }
-
-
 
     void initTFT()
     {
@@ -1085,14 +1074,8 @@ private:
 #endif
     }
 
-
-
     void initTouch()
     {
-#if defined(TOUCH_INT)
-        pinMode(TOUCH_INT, INPUT);
-#endif
-
 #if defined(LILYGO_TOUCHSCREEN_CALLBACK_METHOD)
         touch = new CapacitiveTouch();
 #if defined(LILYGO_TOUCH_DRIVER_GTXXX)
@@ -1110,6 +1093,18 @@ private:
             log_e("Begin touch FAIL");
         }
         touch->enableINT();
+        /*
+        The time period of switching from active mode to monitor mode when there is no touching,
+        unit position, the manual indicates that the default value is 0xA,
+        and the default value is written here
+        */
+        touch->setMonitorTime(0x0A);
+        /*
+        Report rate in monitor mode,
+        unit location, default value is 0x28, 40ms?
+        */
+        touch->setMonitorPeriod(0x28);
+
 #endif  /*LILYGO_TOUCH_DRIVER_XXXXX*/
 
 #elif defined(LILYGO_WATCH_HAS_TOUCH)
@@ -1119,7 +1114,34 @@ private:
             log_e("Begin touch FAIL");
         }
 #endif /*initTouch*/
+
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
+        Serial.println("Enable Touch Intrrupt polling");
+        /*
+            Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
+        */
+        pinMode(TOUCH_INT, INPUT);
+        attachInterrupt(TOUCH_INT, TOUCH_IRQ_HANDLE, FALLING);
+#endif  /*LILYGO_WATCH_2020_V1 & LILYGO_WATCH_2020_V2*/
+
     }
+
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
+    /*
+    Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
+    */
+    static void TOUCH_IRQ_HANDLE(void)
+    {
+        portBASE_TYPE task_woken;
+        if (_ttgo->_tpEvent) {
+            xEventGroupSetBitsFromISR(_ttgo->_tpEvent, TOUCH_IRQ_BIT, &task_woken);
+            if ( task_woken == pdTRUE ) {
+                portYIELD_FROM_ISR();
+            }
+        }
+    }
+#endif  /*LILYGO_WATCH_2020_V1 & LILYGO_WATCH_2020_V2*/
+
 
     void initPower()
     {
@@ -1248,6 +1270,7 @@ private:
 
     I2CBus *i2c = nullptr;
     static TTGOClass *_ttgo;
+    static EventGroupHandle_t _tpEvent;
 
 #if  defined(LILYGO_WATCH_LVGL)
     Ticker *tickTicker = nullptr;
@@ -1288,9 +1311,29 @@ protected:
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_TOUCH)
     static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     {
+
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
+        /*
+            Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
+        */
+        static int16_t x, y;
+        if (xEventGroupGetBits(_ttgo->_tpEvent) & TOUCH_IRQ_BIT) {
+            xEventGroupClearBits(_ttgo->_tpEvent, TOUCH_IRQ_BIT);
+            data->state = _ttgo->getTouch(x, y) ?  LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+            data->point.x = x;
+            data->point.y = y;
+        } else {
+            data->state = LV_INDEV_STATE_REL;
+            data->point.x = x;
+            data->point.y = y;
+        }
+#else
         data->state = _ttgo->getTouch(data->point.x, data->point.y) ?  LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
+#endif /*LILYGO_WATCH_2020_V1 & LILYGO_WATCH_2020_V2*/
+
         return false; /*Return false because no moare to be read*/
     }
+
 #endif /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_TOUCH*/
 
 #endif /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_DISPLAY*/

@@ -15,3 +15,8 @@ Written by Lewis he //https://github.com/lewisxhe
 
 TTGOClass *TTGOClass::_ttgo = nullptr;
 
+EventGroupHandle_t TTGOClass::_tpEvent = nullptr;
+
+
+
+
