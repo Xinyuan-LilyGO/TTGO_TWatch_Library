@@ -359,6 +359,19 @@ public:
 #endif
     }
 
+#ifdef LILYGO_WATCH_2020_V2
+    /*
+    In 2020V2, touch can be set to sleep state, control AXP202_EXTEN can wake up touch
+    */
+    void touchWakup()
+    {
+        power->setPowerOutPut(AXP202_EXTEN, false);
+        delay(8);   //Trst Min = 5ms
+        power->setPowerOutPut(AXP202_EXTEN, true);
+    }
+#endif
+
+
 #endif  /*LILYGO_WATCH_HAS_TOUCH*/
 
     /******************************************
@@ -1116,7 +1129,6 @@ private:
 #endif /*initTouch*/
 
 #if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
-        Serial.println("Enable Touch Intrrupt polling");
         /*
             Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
         */
@@ -1193,9 +1205,9 @@ private:
 
             //Adding a hardware reset can reduce the current consumption of the capacitive touch
             power->setPowerOutPut(AXP202_EXTEN, true);
-            delay(20);
+            delay(10);
             power->setPowerOutPut(AXP202_EXTEN, false);
-            delay(20);
+            delay(8);   //Trst Min = 5ms
             power->setPowerOutPut(AXP202_EXTEN, true);
 
             /*
