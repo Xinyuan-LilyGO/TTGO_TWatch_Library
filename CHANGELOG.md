@@ -6,3 +6,8 @@
 - Added setting touch default monitoring report rate in touch initialization and enter monitoring mode in active state Description
 - Added 2020V2 touch wakeup method, touch can be set to sleep in 2020V2, control AXP202_EXTEN can wake up touch
 
+## (10.19.2020)
+- Add a method to turn off touch interrupt and turn on
+- Cancel AXP202 USB current limit in 2020 V2 version
+
+

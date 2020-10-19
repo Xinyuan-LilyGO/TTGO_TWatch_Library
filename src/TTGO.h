@@ -964,6 +964,23 @@ public:
     }
 #endif
 
+
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
+    void disableTouchIRQ()
+    {
+        detachInterrupt(TOUCH_INT);
+    }
+
+    void enableTouchIRQ()
+    {
+        /*
+            Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
+        */
+        pinMode(TOUCH_INT, INPUT);
+        attachInterrupt(TOUCH_INT, TOUCH_IRQ_HANDLE, FALLING);
+    }
+#endif  /*LILYGO_WATCH_2020_V1 & LILYGO_WATCH_2020_V2*/
+
 private:
     TTGOClass()
     {
@@ -1198,6 +1215,7 @@ private:
 
 #ifdef  LILYGO_WATCH_2020_V2
             // New features of Twatch V2
+            power->limitingOff();
 
             //GPS power domain is AXP202 LDO4
             power->setPowerOutPut(AXP202_LDO4, false);
@@ -1218,7 +1236,6 @@ private:
             power->setPowerOutPut(AXP202_LDO3, false);
             power->setLDO3Voltage(3300);
             power->setPowerOutPut(AXP202_LDO3, true);
-
 
 #endif  /*LILYGO_WATCH_2020_V2*/
         }
