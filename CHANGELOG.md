@@ -10,4 +10,9 @@
 - Add a method to turn off touch interrupt and turn on
 - Cancel AXP202 USB current limit in 2020 V2 version
 
+## (10.21.2020)
+- Added MAX30208 Temperature sensor example
+
+## (10.23.2020)
+- Added axp202&bma423 interrupt registered function
 
