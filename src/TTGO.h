@@ -184,6 +184,14 @@ public:
         initBlacklight();
     }
 
+#ifdef LILYGO_WATCH_HAS_BMA423
+    void bma423AttachInterrupt(void (*handle)(void))
+    {
+        pinMode(BMA423_INT1, INPUT_PULLUP);
+        attachInterrupt(BMA423_INT1, handle, RISING);
+    }
+#endif  /*LILYGO_WATCH_HAS_BMA423*/
+
     /******************************************
      *              TouchPad
      * ***************************************/
@@ -378,6 +386,13 @@ public:
      *              Power
      * ***************************************/
 #ifdef LILYGO_WATCH_HAS_AXP202
+
+    void powerAttachInterrupt(void (*handle)(void))
+    {
+        pinMode(AXP202_INT, INPUT_PULLUP);
+        attachInterrupt(AXP202_INT, handle, FALLING);
+    }
+
 
     void trunOnGPS()
     {
