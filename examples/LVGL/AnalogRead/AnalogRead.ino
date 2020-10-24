@@ -1,8 +1,8 @@
 #include "config.h"
 
-TTGOClass *ttgo = nullptr;
+TTGOClass   *ttgo = nullptr;
 lv_chart_series_t *ser1;
-lv_obj_t *chart;
+lv_obj_t    *chart;
 
 void setup()
 {
@@ -32,11 +32,11 @@ uint32_t lastMillis = 0;
 
 void loop()
 {
-    if (millis() - lastMillis > 500) {
+    if (millis() - lastMillis > 200) {
         lastMillis = millis();
         //Read the analog value of IO25 and display it in series
         uint16_t data = analogRead(25);
-        lv_chart_set_next(chart, ser1, data);
+        lv_chart_set_next(chart, ser1, map(data, 0, 4095, 0, 100));
     }
     lv_task_handler();
     delay(5);
