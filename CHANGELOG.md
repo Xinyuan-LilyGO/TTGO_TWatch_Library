@@ -16,3 +16,5 @@
 ## (10.23.2020)
 - Added axp202&bma423 interrupt registered function
 
+## (10.24.2020)
+- Added TQuick and TBao example <examples\T_Bao> <examples\T_Quick>
