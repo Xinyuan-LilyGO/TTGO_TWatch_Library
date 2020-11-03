@@ -8207,6 +8207,20 @@ void TFT_eSPI::setPins(uint8_t mosi, uint8_t miso, uint8_t sclk, uint8_t cs, uin
 }
 
 
+void TFT_eSPI::writeIndexedPixels(uint8_t *data, uint16_t *idx, uint32_t len)
+{
+    begin_tft_write();
+
+    DC_D;        // Play safe, but should already be in data mode
+
+    while (len--) {
+        tft_Write_16(idx[*(data++)]);
+    }
+
+    CS_L;        // Allow more hold time for low VDI rail
+
+    end_tft_write();
+}
 
 
 

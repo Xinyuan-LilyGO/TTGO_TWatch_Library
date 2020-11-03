@@ -842,6 +842,8 @@ public:
     // Write a set of pixels stored in memory, use setSwapBytes(true/false) function to correct endianess
     void     pushPixels(const void *data_in, uint32_t len);
 
+    void     writeIndexedPixels(uint8_t *data, uint16_t *idx, uint32_t len);
+
     // Read the colour of a pixel at x,y and return value in 565 format
     uint16_t readPixel(int32_t x, int32_t y);
 
