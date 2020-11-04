@@ -8223,5 +8223,25 @@ void TFT_eSPI::writeIndexedPixels(uint8_t *data, uint16_t *idx, uint32_t len)
 }
 
 
+void TFT_eSPI::writeIndexedPixelsDouble(uint8_t *data, uint16_t *idx, uint32_t len)
+{
+    uint8_t *d = data;
+    uint16_t p;
+    begin_tft_write();
+
+    DC_D;        // Play safe, but should already be in data mode
+
+    while (len--) {
+        p = idx[*(d++)];
+        tft_Write_16(p);
+        tft_Write_16(p);
+    }
+
+    CS_L;        // Allow more hold time for low VDI rail
+
+    end_tft_write();
+}
+
+
 
 
