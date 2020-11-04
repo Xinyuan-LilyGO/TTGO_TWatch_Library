@@ -1,6 +1,6 @@
 /*
 * Base on https://github.com/moononournation/arduino-nofrendo , by moononournation
-* - Adapt to LilyGo Twatch series
+* - Adapt to LilyGo Twatch series & LilyPi
 * - Added Dabble App Bluetooth control method for watch without handle
 * - Dabble App download link : https://play.google.com/store/apps/details?id=io.dabbleapp&hl=en_US&gl=US
 *   Adapted to Twatch by Lewis 04/11/2020
@@ -59,7 +59,7 @@ void setup()
     tft->fillScreen(bg_color);
     tft->setCursor(0, 0);
 
-#if defined(HW_CONTROLLER_GAMEPAD) || defined(LILYGO_WATCH_2019_WITH_TOUCH) || defined(LILYGO_WATCH_2019_NO_TOUCH)
+#if defined(HW_CONTROLLER_GAMEPAD) || defined(LILYGO_WATCH_2019_WITH_TOUCH) || defined(LILYGO_WATCH_2019_NO_TOUCH) || defined(LILYGO_LILYPI_V1)
     tft->setRotation(3);
 #endif
 
@@ -116,20 +116,52 @@ void loop()
 
 extern "C" void display_init()
 {
-    frame_x = 0;
-    frame_x_offset = (NES_SCREEN_WIDTH - tft->width()) / 2;
-    frame_width = tft->width();
-    frame_height = NES_SCREEN_HEIGHT;
-    frame_line_pixels = frame_width;
-    frame_y = (tft->height() - NES_SCREEN_HEIGHT) / 2;
+    int w = tft->width();
+
+    if (w < 480) {
+        if (w > NES_SCREEN_WIDTH) {
+            frame_x = 0;
+            frame_x_offset = (NES_SCREEN_WIDTH - tft->width()) / 2;
+            frame_width = tft->width();
+            frame_height = NES_SCREEN_HEIGHT;
+            frame_line_pixels = frame_width;
+        } else {
+            frame_x = 0;
+            frame_x_offset = (NES_SCREEN_WIDTH - w) / 2;
+            frame_width = w;
+            frame_height = NES_SCREEN_HEIGHT;
+            frame_line_pixels = frame_width;
+            Serial.printf("frame_x_offset=%d,frame_width=%d,frame_height:%d frame_line_pixels=%d\n", frame_x_offset, frame_width, frame_height, frame_line_pixels);
+        }
+        frame_y = (tft->height() - NES_SCREEN_HEIGHT) / 2;
+    } else { // assume 480x320
+        frame_x = 0;
+        frame_y = 0;
+        frame_x_offset = 8;
+        frame_width = w;
+        frame_height = tft->height();
+        frame_line_pixels = frame_width / 2;
+    }
 }
 
 extern "C" void display_write_frame(const uint8_t *data[])
 {
-    tft->setAddrWindow(frame_x, frame_y, frame_width, frame_height);
-    tft->startWrite();
-    for (int32_t i = 0; i < NES_SCREEN_HEIGHT; i++) {
-        tft->writeIndexedPixels((uint8_t *)(data[i] + frame_x_offset), myPalette, frame_line_pixels);
+    if (tft->width() < 480) {
+        tft->setAddrWindow(frame_x, frame_y, frame_width, frame_height);
+        tft->startWrite();
+        for (int32_t i = 0; i < NES_SCREEN_HEIGHT; i++) {
+            tft->writeIndexedPixels((uint8_t *)(data[i] + frame_x_offset), myPalette, frame_line_pixels);
+        }
+    } else {
+        int16_t y = 0;
+        for (int16_t i = 10; i < (10 + 214); i++) {
+            tft->setAddrWindow(frame_x, y++, frame_width, 1);
+            tft->startWrite();
+            tft->writeIndexedPixelsDouble((uint8_t *)(data[i] + 8), myPalette, frame_line_pixels);
+            if ((i % 2) == 1) {
+                y++; // blank line
+            }
+        }
     }
     tft->endWrite();
 }
