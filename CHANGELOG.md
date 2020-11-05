@@ -17,4 +17,11 @@
 - Added axp202&bma423 interrupt registered function
 
 ## (10.24.2020)
-- Added TQuick and TBao example <examples\T_Bao> <examples\T_Quick>
+- Added TQuick and TBao example <examples/T_Bao> <examples/T_Quick>
+
+## (11.04.2020)
+- Added NES Emulator example <examples/NES> ,Base on https://github.com/moononournation/arduino-nofrendo
+- Added ESP32Face example <examples/TFT_eSPI/ESPFace>,Base on https://github.com/luisllamasbinaburo/ESP32_Faces
+- Added TFT_eSPI writeIndexedPixelsDouble,writeIndexedPixels
+
+
