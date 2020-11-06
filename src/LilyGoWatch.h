@@ -36,6 +36,8 @@
 
 // #define LILYGO_BLOCK_ST7796S_MODULE
 // #define LILYGO_BLOCK_ILI9488_MODULE
+// #define LILYGO_WATCH_DRV2605
+
 
 #if defined(LILYGO_WATCH_2019_WITH_TOUCH)
 #include "board/twatch2019_with_touch.h"

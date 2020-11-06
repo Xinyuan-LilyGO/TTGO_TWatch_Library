@@ -111,6 +111,10 @@ typedef FocalTech_Class CapacitiveTouch ;
 #include "libraries/GxEPD/src/GxGDEH0154D67/GxGDEH0154D67.h"
 #endif
 
+#if defined(LILYGO_WATCH_DRV2605)
+#include "libraries/Adafruit_DRV2605_Library/Adafruit_DRV2605.h"
+#endif
+
 #if !defined(EXTERNAL_TFT_ESPI_LIBRARY) && !defined(LILYGO_BLOCK_ILI9488_MODULE) && !defined(TWATCH_USE_PSRAM_ALLOC_LVGL)
 // #define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
 #endif
@@ -175,6 +179,10 @@ public:
 #ifdef LILYGO_WATCH_HAS_MPU6050
         mpu = new MPU6050();
 #endif  /*LILYGO_WATCH_HAS_MPU6050*/
+
+#ifdef LILYGO_WATCH_DRV2605
+        drv = new Adafruit_DRV2605();
+#endif  /*LILYGO_WATCH_DRV2605*/
 
         initHardware();
         initPower();
@@ -749,6 +757,10 @@ public:
     GxEPD_Class *ePaper = nullptr;
 #endif
 
+#ifdef LILYGO_WATCH_DRV2605
+    Adafruit_DRV2605 *drv = nullptr;
+#endif
+
 #ifdef LILYGO_WATCH_HAS_MOTOR
     Motor *motor = nullptr;
     void motor_begin()
@@ -1010,7 +1022,11 @@ private:
 #if defined(LILYGO_LILYPI_V1)
         pinMode(EXTERN_USB_EN, OUTPUT);
         pinMode(RELAY_PIN, OUTPUT);
-#endif
+#endif  /*LILYGO_LILYPI_V1*/
+
+#ifdef LILYGO_WATCH_DRV2605
+        drv->begin(i2cReadBytes, i2cWriteBytes);
+#endif  /*LILYGO_WATCH_DRV2605*/
     }
 
     bool initSensor()
