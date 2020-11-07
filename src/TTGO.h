@@ -301,6 +301,8 @@ public:
             y = _y;
         }
 #elif   defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)
+
+#ifndef LILYGO_WATCH_2020_PANEL_V1
         uint8_t rotation = tft->getRotation();
         switch (rotation) {
         case 0:
@@ -320,6 +322,28 @@ public:
             x = __x;
             y = __y;
         }
+#else   /*LILYGO_WATCH_2020_PANEL_V1*/
+        uint8_t rotation = tft->getRotation();
+        switch (rotation) {
+        case 2:
+            x = TFT_WIDTH - __x;
+            y = TFT_HEIGHT - __y;
+            break;
+        case 1:
+            x =  __y;
+            y = TFT_HEIGHT - __x;
+            break;
+        case 3:
+            x = TFT_HEIGHT - __y;
+            y = __x;
+            break;
+        case 0:
+        default:
+            x = __x;
+            y = __y;
+        }
+#endif  /*LILYGO_WATCH_2020_PANEL_V1*/
+
 #elif   defined(LILYGO_EINK_GDEW0371W7)
         uint8_t r = ePaper->getRotation();
         switch (r) {
