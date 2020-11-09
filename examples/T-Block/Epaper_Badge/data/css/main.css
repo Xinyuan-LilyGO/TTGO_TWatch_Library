@@ -1,0 +1,401 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    font-size: 12px;
+    min-width: 900px;
+    font-family: '微软雅黑';
+}
+
+a {
+    color: #222;
+    text-decoration: none;
+}
+
+.clearfix:after {
+    clear: both;
+    display: block;
+    content: '';
+}
+
+.clearfix {
+    zoom: 1;
+}
+
+.wrap {
+    width: 1000px;
+    margin: 0 auto;
+}
+
+input:focus,
+textarea:focus {
+    box-shadow: 0 0 3px 1px rgba(32, 127, 179, 0.4);
+    outline: 0 none;
+}
+
+/******************************* 其他样式 *******************************/
+/*错误提示*/
+.err {
+    float: left;
+    height: 20px;
+    line-height: 20px;
+    text-align: right;
+    font-size: 12px;
+    width: 100%;
+    color: red;
+    display: none;
+    position: absolute;
+    left: 0px;
+}
+
+.err img {
+    margin-top: 2px;
+    margin-right: 2px;
+}
+
+.err-top40 {
+    top: 40px;
+}
+
+.err-top20 {
+    top: 20px;
+}
+
+.err-top160 {
+    top: 160px;
+}
+
+.err-top90 {
+    top: 90px;
+}
+
+/*上传*/
+#reg_info_file_base64 {
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=image);
+}
+
+/*登录*/
+.login-box-cen {
+    width: 240px;
+    border: 1px solid #cccccc;
+    margin: 0px auto 0px;
+    height: 318px;
+    border-radius: 10px;
+    padding: 0 64px;
+    background: #fff;
+}
+
+.login-box-cen-ti {
+    height: 76px;
+    line-height: 76px;
+    text-align: center;
+    color: #222222;
+    font-size: 16px
+}
+
+.login-box-cen-form {
+    position: relative;
+}
+
+.login-box-cen-form-input {
+    float: left;
+    padding-left: 20px;
+    border: 1px solid #ccc;
+    height: 38px;
+    line-height: 38px;
+    font-size: 14px;
+    color: #999999;
+}
+
+.login-box-cen-form-button {
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    font-size: 14px;
+    color: #fff;
+    text-align: center;
+    background: #207fb3;
+    cursor: pointer;
+}
+
+.login-box-cen-form-ot {
+    height: 30px;
+    line-height: 30px;
+    text-align: right;
+    font-size: 12px;
+}
+
+.login-box-cen-form-ot span {
+    color: #999999;
+}
+
+.login-box-cen-form-ot a {
+    color: #207fb3;
+}
+
+.w218 {
+    width: 218px;
+}
+
+.w238 {
+    width: 238px;
+}
+
+.mar-bottom10 {
+    margin-bottom: 10px;
+}
+
+/*注册*/
+.register-box-step {
+    height: 30px;
+    margin: 0px auto;
+    width: 382px;
+    padding: 40px 0;
+}
+
+.register-box-step em {
+    float: left;
+    width: 130px;
+    background: #207fb3;
+    margin-top: 13px;
+    height: 2px;
+}
+
+.register-box-step-first {
+    margin-left: 16px;
+}
+
+.register-box-con {
+    width: 380px;
+    padding: 0 310px;
+    background: #fff;
+    padding-bottom: 180px;
+}
+
+.register-box-con-ti {
+    height: 114px;
+    line-height: 114px;
+    text-align: center;
+    font-size: 14px;
+    color: #222222;
+    letter-spacing: 1px;
+}
+
+.login-box-cen-form-img {
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    overflow: hidden;
+    background: #207fb3;
+}
+
+.login-box-cen-form-mes {
+    float: left;
+    border: none;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 14px;
+    color: #fff;
+    background: #207fb3;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.register-box-cen-form {
+    position: relative;
+}
+
+.register-box-cen-form-xieyi {
+    height: 16px;
+    line-height: 16px;
+}
+
+.register-box-cen-form-xieyi span {
+    display: inline-block;
+    position: relative;
+    height: 16px;
+    line-height: 16px;
+    width: 17px;
+    vertical-align: top;
+    margin: 0 36px 0 44px;
+    cursor: pointer;
+    background-image: url(../images/register_03.png);
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+}
+
+.register-box-cen-form-xieyi span.ok {
+    background-position: -17px 0px;
+}
+
+.register-box-cen-form-xieyi em {
+    display: inline-block;
+    height: 16px;
+    line-height: 16px;
+    vertical-align: top;
+    font-size: 14px;
+}
+
+.register-box-cen-form-xieyi a {
+    color: #207fb3;
+}
+
+.register-box-con2-box {}
+
+.register-box-con2-box-left {
+    height: 40px;
+    line-height: 40px;
+    text-align: right;
+    float: left;
+    width: 293px;
+    color: #222222;
+    font-size: 16px;
+}
+
+.register-box-con2-box-left strong {
+    font-weight: bold;
+}
+
+.register-box-con2-box-right {
+    float: left;
+    width: 380px;
+    margin-left: 20px;
+    position: relative;
+}
+
+.register-box-con2-box-right .register-box-con2-box-right-text {
+    font-size: 16px;
+    color: #207fb3;
+    margin-left: 20px;
+    line-height: 40px;
+}
+
+.login-box-cen-form-textarea {
+    float: left;
+    padding-left: 20px;
+    border: 1px solid #ccc;
+    line-height: 38px;
+    font-size: 14px;
+    color: #999999;
+    resize: none;
+}
+
+.register-box-con2-box-upload {
+    position: relative;
+    width: 165px;
+    height: 98px;
+    float: left;
+    border: 1px solid #ccc;
+    margin-bottom: 12px;
+    float: left;
+}
+
+.register-box-con2-box-upload .register-box-con2-box-upload-ti {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 165px;
+    height: 98px;
+    text-align: center;
+    line-height: 98px;
+    font-size: 18px;
+    color: #207fb3;
+    z-index: 9;
+    overflow: hidden;
+    text-align: center;
+    display: table-cell;
+}
+
+.register-box-con2-box-upload .register-box-con2-box-upload-ti img {
+    vertical-align: middle;
+}
+
+.register-box-con2-box-upload input {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 165px;
+    z-index: 99;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+.register-box-con2-box-pw {
+    height: 25px;
+    line-height: 25px;
+    font-size: 14px;
+    color: #222222;
+    float: left;
+    width: 380px;
+}
+
+.register-box-con-good {
+    padding: 20px 0 410px;
+    color: #222222
+}
+
+.register-box-con-good img {
+    display: block;
+    margin: 0 auto;
+}
+
+.register-box-con-good-p1 {
+    font-size: 18px;
+    padding: 40px 0 20px;
+    text-align: center;
+    line-height: 20px;
+    font-weight: 500;
+}
+
+.register-box-con-good-p2 {
+    font-size: 14px;
+    text-align: center;
+    line-height: 26px;
+}
+
+.w358 {
+    width: 358px;
+}
+
+.w228 {
+    width: 228px;
+}
+
+.w120 {
+    width: 120px;
+}
+
+.w380 {
+    width: 380px;
+}
+
+.w278 {
+    width: 278px;
+}
+
+.h88 {
+    height: 88px;
+}
+
+.mar-top50 {
+    margin-top: 50px;
+}
+
+.mar-left10 {
+    margin-left: 10px;
+}
+
+.mar-bottom20 {
+    margin-bottom: 20px;
+}
+
+.bitian {
+    color: #dc2b2b;
+}

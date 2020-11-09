@@ -24,6 +24,15 @@
 - Added ESP32Face example <examples/TFT_eSPI/ESPFace>,Base on https://github.com/luisllamasbinaburo/ESP32_Faces
 - Added TFT_eSPI writeIndexedPixelsDouble,writeIndexedPixels
 
-## (11.27.2020)
+## (11.07.2020)
 - Added TBao example <examples/T_Bao2>
 - Adapt to 2020 new touch panel
+
+## (11.09.2020)
+- Added TBlock example <examples/T-Block/Epaper_Badge>
+
+
+
+
+
+

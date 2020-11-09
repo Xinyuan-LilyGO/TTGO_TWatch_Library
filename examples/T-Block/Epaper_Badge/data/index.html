@@ -1,0 +1,328 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>TTGO</title>
+	<link rel="stylesheet" href="css/main.css" />
+</head>
+
+<body>
+	<br /><br />
+	<br /><br />
+	<div class="content">
+		<div class="register-box">
+			<div class="wrap">
+				<div class="register-box-con2">
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Company</label>
+						<div class="register-box-con2-box-right">
+							<input type="text" class="login-box-cen-form-input w358"
+								placeholder="Please input your company name" id="reg_info_company" />
+							<label id="reg_info_company_text" class="err err-top40">Please input your company
+								name</label>
+						</div>
+					</div>
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Website</label>
+						<div class="register-box-con2-box-right">
+							<input type="text" class="login-box-cen-form-input w358"
+								placeholder="Please input your Website" id="reg_info_www" />
+							<label class="err err-top40" id="reg_info_www_text">Please input your Website</label>
+						</div>
+					</div>
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Address</label>
+						<div class="register-box-con2-box-right">
+							<input type="text" class="login-box-cen-form-input w358"
+								placeholder="Please input your Address" id="reg_info_address" />
+							<label class="err err-top40" id="reg_info_address_text">Please input your Address</label>
+						</div>
+					</div>
+
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Name</label>
+						<div class="register-box-con2-box-right">
+							<input type="text" class="login-box-cen-form-input w358"
+								placeholder="Please input your Name" id="reg_info_name" />
+							<label class="err err-top40" id="reg_info_name_text">Please input your Name</label>
+						</div>
+					</div>
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Tel</label>
+						<div class="register-box-con2-box-right">
+							<input type="text" class="login-box-cen-form-input w358"
+								placeholder="Please input your tel number" id="login_phone" />
+							<label class="err err-top40" id="login_phone_text">Please input your tel number</label>
+						</div>
+					</div>
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Email</label>
+						<div class="register-box-con2-box-right">
+							<input type="text" class="login-box-cen-form-input w358"
+								placeholder="Please input your Email" id="reg_info_email" />
+							<label class="err err-top40" id="reg_info_email_text">Please input your Email</label>
+						</div>
+					</div>
+
+					<!--Avatar  -->
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian"></em>Avatar</label>
+						<div class="register-box-con2-box-right">
+							<label class="register-box-con2-box-upload">
+								<input type="file" name="file" id="reg_info_file" onchange="showPicture(this)" />
+								<div class="register-box-con2-box-upload-ti">
+									<em id="reg_info_file_w">Upload</em>
+									<img id="reg_info_file_base64" style="display:none;" />
+								</div>
+							</label>
+							<label class="err err-top160" id="reg_info_file_text">Support image format BMP, the image
+								size does not exceed 2M</label>
+						</div>
+					</div>
+
+					<!-- QR -->
+					<div class="register-box-con2-box clearfix mar-bottom20">
+						<label class="register-box-con2-box-left"><em class="bitian"></em>QR</label>
+						<div class="register-box-con2-box-right">
+							<label class="register-box-con2-box-upload">
+								<input type="file" name="file" id="qr_info_file" onchange="showPicture(this)" />
+								<div class="register-box-con2-box-upload-ti">
+									<em id="qr_info_file_w">Upload</em>
+									<img id="qr_info_file_base64" style="display:none;" />
+								</div>
+							</label>
+							<p class="register-box-con2-box-pw">Support image format BMP, the image size does not exceed
+								2M</p>
+							<label class="err err-top160" id="reg_info_file_text">Support image format BMP, the image
+								size does not exceed 2M</label>
+						</div>
+					</div>
+
+					<div class="register-box-con2-box clearfix mar-bottom20 mar-top50">
+						<label class="register-box-con2-box-left"></label>
+						<div class="register-box-con2-box-right">
+							<input type="submit" value="commit" class="login-box-cen-form-button w380"
+								id="reg_info_submit" />
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<br /><br />
+
+	<div id="uploader"></div>
+	<br /><br />
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/tbdValidate.js"></script>
+	<script type="text/javascript">
+		var regconfig = [{
+				eleinput: "login_phone",
+				eletext: "login_phone_text",
+				rule: [{
+					reg: /^.+$/,
+					text: "Phone number cannot be empty"
+				}, {
+					reg: /^1[34578]\d{9}$/,
+					text: "Malformed phone number"
+				}]
+			},
+			{
+				eleinput: "reg_info_company",
+				eletext: "reg_info_company_text",
+				rule: [{
+					reg: /^.+$/,
+					text: "Business name cannot be empty"
+				}, {
+					reg: /^.{1,20}$/,
+					text: "The company name does not exceed 20 words"
+				}]
+			},
+			{
+				eleinput: "reg_info_name",
+				eletext: "reg_info_name_text",
+				rule: [{
+					reg: /^.+$/,
+					text: "Name cannot be empty"
+				}, {
+					reg: /^.{1,20}$/,
+					text: "Name no more than 20 words"
+				}]
+			},
+			{
+				eleinput: "reg_info_email",
+				eletext: "reg_info_email_text",
+				rule: [{
+					reg: /^.+$/,
+					text: "Email cannot be empty"
+				}, {
+					reg: /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/,
+					text: "Email address format error"
+				}]
+			}
+		];
+		tbdValidate(
+			regconfig, {
+				elesubmit: "reg_info_submit",
+				funsubmit: function () {
+					if ($("#reg_info_file_base64").attr("src")) {
+						$("#reg_info_file_text").hide();
+					} else {
+						$("#reg_info_file_text").html('please upload image').show();
+						return false;
+					};
+					var company = document.getElementById("reg_info_company");
+					var name = document.getElementById("reg_info_name");
+					var address = document.getElementById("reg_info_address");
+					var email = document.getElementById("reg_info_email");
+					var link = document.getElementById("reg_info_www");
+					var tel = document.getElementById("login_phone");
+					console.log(company.value);
+					console.log(name.value);
+					console.log(address.value);
+					console.log(email.value);
+					console.log(tel.value);
+
+					$.post("/data", {
+						"company": company.value,
+						"name": name.value,
+						"address": address.value,
+						"email": email.value,
+						"link": link.value,
+						"tel": tel.value
+					});
+					var formData = new FormData();
+					var reg_info_file = document.getElementById("reg_info_file");
+					var file = reg_info_file.files[0];
+					var qr_info_file = document.getElementById("qr_info_file");
+					formData.append("data0", reg_info_file.files[0]);
+					formData.append("data1", qr_info_file.files[0]);
+
+					$.ajax({
+						url: "/",
+						type: 'POST',
+						cache: false,
+						data: formData,
+						processData: false,
+						contentType: false,
+						dataType: file.type,
+						beforeSend: function () {
+							console.log("upload start");
+						},
+						success: function (data) {
+							console.log("success upload");
+						}
+					});
+					alert("pass");
+				},
+			}
+		);
+
+		var noregconfig = [{
+				eleinput: "reg_info_www",
+				eletext: "reg_info_www_text",
+				rule: [{
+					reg: /(^(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$)|(^$)/,
+					text: "请输入正确的网址"
+				}]
+			},
+			{
+				eleinput: "reg_info_address",
+				eletext: "reg_info_address_text",
+				rule: [{
+					reg: /^.{0,40}$/,
+					text: "The address of the company, no more than 40 words"
+				}]
+			},
+		];
+		tbdnoValidate(noregconfig);
+		//end
+
+		//bmp and qr code uplaod
+		function showPicture(obj) {
+
+			var reg_info_file = document.getElementById("reg_info_file");
+			var file = reg_info_file.files[0];
+
+			var f = obj.files[0];
+			if (/bmp/.test(f.type)) {
+				console.log(f);
+				$("reg_info_file_text").hide();
+			} else {
+				$("#reg_info_file_text").html('Only support image format BMP').show();
+				alert("error ");
+				return false;
+			}
+			if (f.size >= 50 * 1024) {
+				$("#reg_info_file_text").html('Image size does not exceed 2M').show();
+				return false;
+			}
+			var baseID = "";
+			var hideID = "";
+			if (obj.id == "qr_info_file") {
+				baseID = "#qr_info_file_base64";
+				hideID = "#qr_info_file_w";
+			} else if (obj.id == "reg_info_file") {
+				baseID = "#reg_info_file_base64";
+				hideID = "#reg_info_file_w"
+			} else {
+				console.log("error id");
+			}
+			var fr = new FileReader();
+			fr.readAsDataURL(f);
+			$(baseID).removeAttr("width");
+			$(baseID).removeAttr("height");
+			fr.onloadend = function (e) {
+				$(hideID).hide();
+				$(baseID).show();
+				$(baseID).attr("src", e.target.result);
+				$(baseID)[0].onload = function () {
+					var upimgw = $(baseID).width();
+					var upimgh = $(baseID).height();
+					$(baseID).attr("width", imgPercentScale(165, 98, upimgw, upimgh).w);
+					$(baseID).attr("height", imgPercentScale(165, 98, upimgw, upimgh).h);
+				};
+			};
+		};
+
+		function imgPercentScale(boxw, boxh, imgw, imgh) {
+			var res = {};
+			var wper = imgw / boxw;
+			var hper = imgh / boxh;
+			if (wper <= 1 && hper < 1) {
+				res.w = imgw;
+				res.h = imgh;
+				return res;
+			};
+			if (wper > 1 && hper < 1) {
+				res.w = boxw;
+				var rhper = boxw / imgw;
+				res.h = imgh * rhper;
+				return res;
+			};
+			if (wper <= 1 && hper > 1) {
+				res.h = boxh;
+				var rwper = boxh / imgh;
+				res.w = imgw * rwper;
+				return res;
+			};
+			if (wper > 1 && hper > 1) {
+				if (wper >= hper) {
+					res.w = boxw;
+					var rhper = boxw / imgw;
+					res.h = imgh * rhper;
+					return res;
+				} else {
+					res.h = boxh;
+					var rwper = boxh / imgh;
+					res.w = imgw * rwper;
+					return res;
+				};
+			};
+		};
+	</script>
+</body>
+
+</html>
