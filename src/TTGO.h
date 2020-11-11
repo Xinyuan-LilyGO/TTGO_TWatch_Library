@@ -103,8 +103,12 @@ typedef FocalTech_Class CapacitiveTouch ;
 #include "libraries/ePaperDriverLib/src/ePaperDriver.h"
 #endif
 
-
-#if defined(LILYGO_EINK_GDEH0154D67_TP) || defined(LILYGO_EINK_GDEH0154D67_BL)
+#if defined(LILYGO_EINK_GDEP015OC1)
+#include "libraries/GxEPD/src/GxEPD.h"
+#include "libraries/GxEPD/src/GxIO/GxIO.h"
+#include "libraries/GxEPD/src/GxIO/GxIO_SPI/GxIO_SPI.h"
+#include "libraries/GxEPD/src/GxGDEP015OC1/GxGDEP015OC1.h"
+#elif  defined(LILYGO_EINK_GDEH0154D67_TP) || defined(LILYGO_EINK_GDEH0154D67_BL)
 #include "libraries/GxEPD/src/GxEPD.h"
 #include "libraries/GxEPD/src/GxIO/GxIO.h"
 #include "libraries/GxEPD/src/GxIO/GxIO_SPI/GxIO_SPI.h"
@@ -776,7 +780,7 @@ public:
     ePaperDisplay *ePaper = nullptr;
 #endif
 
-#if defined(LILYGO_EINK_GDEH0154D67_TP) || defined(LILYGO_EINK_GDEH0154D67_BL)
+#if defined(LILYGO_EINK_GDEH0154D67_TP) || defined(LILYGO_EINK_GDEH0154D67_BL) || defined(LILYGO_EINK_GDEP015OC1)
     GxIO_Class  *io = nullptr;
     GxEPD_Class *ePaper = nullptr;
 #endif
@@ -1144,7 +1148,7 @@ private:
         /* sclk = 18 mosi = 23 miso = n/a */
         SPI.begin(EINK_SPI_CLK, EINK_SPI_MISO, EINK_SPI_MOSI);
         ePaper = new ePaperDisplay( GDEW0371W7, EINK_BUSY, EINK_RESET, EINK_DC, EINK_SS );
-#elif defined(LILYGO_EINK_GDEH0154D67_BL) || defined(LILYGO_EINK_GDEH0154D67_TP)
+#elif defined(LILYGO_EINK_GDEH0154D67_BL) || defined(LILYGO_EINK_GDEH0154D67_TP) || defined(LILYGO_EINK_GDEP015OC1)
         log_i("GDEH0154D67 Init...");
 
         /* sclk = 18 mosi = 23 miso = n/a */
