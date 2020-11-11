@@ -31,6 +31,9 @@
 ## (11.09.2020)
 - Added TBlock example <examples/T-Block/Epaper_Badge>
 
+## (11.11.2020)
+- Added TBlock example <examples/T-Block/Epaper>
+
 
 
 
