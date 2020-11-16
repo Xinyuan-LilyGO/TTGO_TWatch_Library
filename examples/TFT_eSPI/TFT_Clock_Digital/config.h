@@ -8,6 +8,7 @@
 
 #if defined(LILYGO_LILYPI_V1) || defined(LILYGO_WATCH_BLOCK)
 #define LILYGO_BLOCK_ST7796S_MODULE          //Use ST7796S
+// #define LILYGO_BLOCK_ILI9481_MODULE          //Use ILI9841
 #endif
 
 #include <LilyGoWatch.h>
