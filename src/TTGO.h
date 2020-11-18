@@ -1265,6 +1265,8 @@ private:
             power->setLDO3Voltage(3300);
 #endif  /*LILYGO_WATCH_HAS_SIM868*/
 
+            power->setLDO2Voltage(3300);
+
 #ifdef  LILYGO_WATCH_2020_V1
             //In the 2020V1 version, the ST7789 chip power supply
             //is shared with the backlight, so LDO2 cannot be turned off
