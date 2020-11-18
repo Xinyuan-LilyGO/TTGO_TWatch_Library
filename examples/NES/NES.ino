@@ -63,6 +63,10 @@ void setup()
     tft->setRotation(3);
 #endif
 
+#ifdef HW_CONTROLLER_I2C_BBQ10KB
+    tft->setRotation(1);
+#endif
+
     SPIFFS.begin(false, FSROOT);
 
     FS filesystem = SPIFFS;

@@ -1,20 +1,17 @@
 // => Hardware select
-// #define LILYGO_LILYPI_V1                  //To use LilyPi with touchscreen, please uncomment this line
+// #define LILYGO_LILYPI_V1
 // #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
 // #define LILYGO_WATCH_2019_NO_TOUCH       // To use T-Watch2019 Not touchscreen , please uncomment this line
 // #define LILYGO_WATCH_2020_V1             //To use T-Watch2020, please uncomment this line
 // #define LILYGO_WATCH_2020_V2             //To use T-Watch2020, please uncomment this line
 
 // Controller select
-#define HW_CONTROLLER_DABBLE_APP         //Need to install Dabble App on your phone,download link : https://play.google.com/store/apps/details?id=io.dabbleapp&hl=en_US&gl=US
+// #define HW_CONTROLLER_DABBLE_APP         //Need to install Dabble App on your phone,download link : https://play.google.com/store/apps/details?id=io.dabbleapp&hl=en_US&gl=US
 // #define HW_CONTROLLER_GAMEPAD            //Need an external control handle, can only be used in 2019 Twatch
+// #define HW_CONTROLLER_I2C_BBQ10KB        //Need BBQ Keyboard
 
-
-
-
-#ifdef LILYGO_LILYPI_V1
-#define LILYGO_BLOCK_ST7796S_MODULE
-#endif
+// #define LILYGO_BLOCK_ST7796S_MODULE          //Use ST7796S
+// #define LILYGO_BLOCK_ILI9481_MODULE             //Use ILI9481
 
 #ifdef HW_CONTROLLER_GAMEPAD
 #define HW_CONTROLLER_GPIO
