@@ -1,12 +1,5 @@
 
-// This is the command sequence that initialises the ILI9481 driver
-//
-// This setup information uses simple 8 bit SPI writecommand() and writedata() functions
-//
-// See ST7735_Setup.h file for an alternative format
-
-
-// Configure ILI9481 display
+// Configure GC9A01A display
 {
     writecommand(0xEF);
     writecommand(0xEB);
@@ -60,11 +53,7 @@
     writedata(0x20);
 
     writecommand(0x36);
-// if (USE_HORIZONTAL == 0)
     writedata(0x08);
-// else if (USE_HORIZONTAL == 1)writedata(0xC8);
-// else if (USE_HORIZONTAL == 2)writedata(0x68);
-// else writedata(0xA8);
 
     writecommand(0x3A);
     writedata(0x05);
