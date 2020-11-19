@@ -1470,6 +1470,9 @@ void TFT_eSPI::init(uint8_t tc)
     case 0x9481:/*ILI9481_DRIVER*/
 #include "TFT_Drivers/ILI9481_Init.h"
         break;
+    case 0x9A01:
+#include "TFT_Drivers/GC9A01A_Init.h"
+        break;
     default:
         break;
     }
@@ -1521,6 +1524,9 @@ void TFT_eSPI::setRotation(uint8_t m)
         break;
     case 0x9481:/*ILI9481_DRIVER*/
 #include "TFT_Drivers/ILI9481_Rotation.h"
+        break;
+    case 0x9A01:
+#include "TFT_Drivers/GC9A01A_Rotation.h"
         break;
     default:
         break;

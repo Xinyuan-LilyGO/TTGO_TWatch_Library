@@ -1122,11 +1122,25 @@ private:
         h = 480;
         drv = 0x9481;
         freq = 27000000;
+#elif   defined(LILYGO_GC9A01A_MODULE) && defined(LILYGO_WATCH_BLOCK)
+        w = 240;
+        h = 240;
+        drv = 0x9A01;
+        freq = 27000000;
+        //Soft reset
+        pinMode(TWATCH_TFT_RST, OUTPUT);
+        digitalWrite(TWATCH_TFT_RST, HIGH);
+        delay(5);
+        digitalWrite(TWATCH_TFT_RST, LOW);
+        delay(20);
+        digitalWrite(TWATCH_TFT_RST, HIGH);
+
 #endif  /* (LILYGO_BLOCK_ST7796S_MODULE) && defined(LILYGO_WATCH_BLOCK) */
         tft = new TFT_eSPI(w, h);
         tft->setDriver(drv, freq);
         tft->setPins(TWATCH_TFT_MOSI, TWATCH_TFT_MISO, TWATCH_TFT_SCLK, TWATCH_TFT_CS, TWATCH_TFT_DC);
 #endif  /*EXTERNAL_TFT_ESPI_LIBRARY*/
+
 
         tft->init();
 
