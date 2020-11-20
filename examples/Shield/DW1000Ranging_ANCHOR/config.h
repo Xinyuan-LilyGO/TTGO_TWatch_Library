@@ -7,6 +7,7 @@
 //#define LILYGO_LILYPI_V1
 //#define LILYGO_WATCH_2020_V1
 //No SUPPORT!!!!
+#define LILYGO_WATCH_DRV2605
 
 #include <LilyGoWatch.h>
 

@@ -20,6 +20,8 @@ TTGOClass *watch;
 SPIClass VSPI1(HSPI);
 char buff[128];
 
+Adafruit_DRV2605 *drv;
+
 #ifdef LILYGO_WATCH_HAS_DISPLAY
 TFT_eSPI *tft;
 TFT_eSprite *eSp;
@@ -77,9 +79,10 @@ void setup()
 
     watch->begin();
 
-    watch->enableLDO3();
-
     VSPI1.begin(SPI_SCLK, SPI_MISO, SPI_MOSI);
+
+    // DW1000 Power
+    watch->enableLDO3();
 
     //init the configuration
     DW1000Ranging.initCommunication(BU01_RST, BU01_CS, BU01_IRQ, VSPI1); //Reset, CS, IRQ pin
@@ -101,9 +104,31 @@ void setup()
     eSp->createSprite(240, 60);
     eSp->setTextFont(2);
 #endif
+
+#ifdef LILYGO_WATCH_HAS_BUTTON
+    drv = watch->drv;
+
+    watch->enableDrv2650(true);
+
+    drv->selectLibrary(1);
+    // I2C trigger by sending 'go' command
+    // default, internal trigger when sending GO command
+    drv->setMode(DRV2605_MODE_INTTRIG);
+
+    watch->button->setPressedHandler([]() {
+        // set the effect to play
+        drv->setWaveform(0, 75);  // play effect
+        drv->setWaveform(1, 0);       // end waveform
+        // play the effect!
+        drv->go();
+    });
+#endif
 }
 
 void loop()
 {
+#ifdef LILYGO_WATCH_HAS_BUTTON
+    watch->button->loop();
+#endif
     DW1000Ranging.loop();
 }
