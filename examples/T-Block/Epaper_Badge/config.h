@@ -10,7 +10,7 @@
 // => Function select
 #define LILYGO_EINK_GDEH0154D67_BL             //It is electronic paper with backlight
 // #define LILYGO_EINK_GDEH0154D67_TP          //It is electronic paper with touchscreen
-
+// #define LILYGO_EINK_GDEP015OC1              //Single electronic paper, no backlight, no touch
 #include <LilyGoWatch.h>
 
 

@@ -515,6 +515,7 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
     }
 }
 
+static bool page = false;
 
 void setup()
 {
@@ -536,8 +537,10 @@ void setup()
 
     twatch->begin();
 
+#ifdef LILYGO_WATCH_HAS_BACKLIGHT
     // Turn on the backlight
     twatch->openBL();
+#endif
 
     rtc = twatch->rtc;
 
@@ -569,7 +572,6 @@ void setup()
 
     btn->setPressedHandler([]() {
 
-        static bool page = false;
         if (!page) {
             showQrPage();
         } else {
@@ -578,8 +580,10 @@ void setup()
         page = !page;
     });
 
+#ifdef LILYGO_WATCH_HAS_BACKLIGHT
     // Adjust the backlight to reduce current consumption
     twatch->setBrightness(DEFAULT_BRIGHTNESS);
+#endif
 
     if (!loadBadgeInfo(&info)) {
         loadDefaultInfo();
@@ -594,12 +598,24 @@ void setup()
 
 void loop()
 {
+#ifdef LILYGO_WATCH_HAS_TOUCH
+    if (twatch->touched()) {
+        if (!page) {
+            showQrPage();
+        } else {
+            showMianPage();
+        }
+        page = !page;
+    }
+#endif
     if (pwIRQ) {
         pwIRQ = false;
         // Get interrupt status
         power->readIRQ();
         if (power->isPEKShortPressIRQ()) {
+#ifdef LILYGO_WATCH_HAS_BACKLIGHT
             twatch->bl->isOn() ? twatch->bl->off() : twatch->bl->adjust(DEFAULT_BRIGHTNESS);
+#endif
         }
         // After the interruption, you need to manually clear the interruption status
         power->clearIRQ();
