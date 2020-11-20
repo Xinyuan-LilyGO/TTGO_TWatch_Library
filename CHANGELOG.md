@@ -34,7 +34,13 @@
 ## (11.11.2020)
 - Added TBlock example <examples/T-Block/Epaper>
 
-
+## (20.11.2020)
+- Update TBlock example <examples/T-Block/Epaper_Badge>, Compatible with three ink screens (GDEH0154D67_BL, GDEH0154D67_TP,GDEP015OC1)
+- Set AXP202 LDO2's default turn-on voltage to 3.3V
+- Update example description
+- Added MAX30208 Temperature example <examples/Sensor/MAX30208>
+- Added `GC9A01A` display driver , Suitable for T-Block round 240x240 screen
+- 
 
 
 
