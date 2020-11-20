@@ -56,6 +56,12 @@
 │   ├── Rotary                      #Rotary encoder example
 │   └── VEMl6075                    #UV sensor example
 ├── Shield
+│   ├── DW1000Ranging_ANCHOR
+│   ├── DW1000Ranging_TAG
+│   ├── DW1000_BasicReceiver
+│   ├── DW1000_BasicSender
+│   ├── DW1000_RangingAnchor
+│   ├── DW1000_RangingTag
 │   ├── AlarmClock                  #RTC Alarm clock example
 │   ├── BBQKeyboard                 #BBQ keyboard example
 │   ├── DRV8833                     #Motor example
