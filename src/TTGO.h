@@ -423,6 +423,14 @@ public:
      * ***************************************/
 #ifdef LILYGO_WATCH_HAS_AXP202
 
+#ifdef LILYGO_WATCH_DRV2605
+    void enableDrv2650(bool en = true)
+    {
+        power->setPowerOutPut(AXP202_EXTEN, en);
+    }
+#endif
+
+
     void powerAttachInterrupt(void (*handle)(void))
     {
         pinMode(AXP202_INT, INPUT_PULLUP);
