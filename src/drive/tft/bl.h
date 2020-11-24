@@ -12,7 +12,7 @@ public:
         _pin = pin;
         _channel = channel;
     };
-    
+
     virtual ~PWMBase()
     {
         ledcDetachPin(_pin);
@@ -29,7 +29,7 @@ public:
     {
         ledcWrite(_channel, level);
     };
-    
+
 protected:
     uint8_t _pin;
     uint8_t _channel;
@@ -41,7 +41,10 @@ public:
     BackLight(uint8_t pin, uint8_t channel = 0) : PWMBase(pin, channel)
     {
     };
-
+    uint8_t getLevel()
+    {
+        return _level;
+    }
     void adjust(uint8_t level)
     {
         _level = level;
@@ -86,11 +89,10 @@ public:
         _freq = freq;
         _tick = nullptr;
     };
-    
+
     virtual ~PWMToneBase()
     {
-        if (_tick != nullptr)
-        {
+        if (_tick != nullptr) {
             delete _tick;
         }
     }
@@ -112,7 +114,7 @@ public:
 protected:
     double _freq;
     Ticker *_tick;
-    
+
 };
 
 class Motor : public PWMToneBase
