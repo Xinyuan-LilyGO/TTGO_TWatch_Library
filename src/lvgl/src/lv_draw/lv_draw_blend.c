@@ -12,12 +12,19 @@
 #include "../lv_hal/lv_hal_disp.h"
 #include "../lv_core/lv_refr.h"
 
-#include "../lv_gpu/lv_gpu_stm32_dma2d.h"
+#if LV_USE_GPU_NXP_PXP
+    #include "../lv_gpu/lv_gpu_nxp_pxp.h"
+#elif LV_USE_GPU_NXP_VG_LITE
+    #include "../lv_gpu/lv_gpu_nxp_vglite.h"
+#elif LV_USE_GPU_STM32_DMA2D
+    #include "../lv_gpu/lv_gpu_stm32_dma2d.h"
+#endif
 
 /*********************
  *      DEFINES
  *********************/
 #define GPU_SIZE_LIMIT      240
+
 
 /**********************
  *      TYPEDEFS
@@ -138,6 +145,7 @@ LV_ATTRIBUTE_FAST_MEM void _lv_blend_fill(const lv_area_t * clip_area, const lv_
     const lv_area_t * disp_area = &vdb->area;
     lv_color_t * disp_buf = vdb->buf_act;
 
+    if(disp->driver.gpu_wait_cb) disp->driver.gpu_wait_cb(&disp->driver);
 
     /* Get clipped fill area which is the real draw area.
      * It is always the same or inside `fill_area` */
@@ -211,6 +219,8 @@ LV_ATTRIBUTE_FAST_MEM void _lv_blend_map(const lv_area_t * clip_area, const lv_a
     lv_disp_buf_t * vdb = lv_disp_get_buf(disp);
     const lv_area_t * disp_area = &vdb->area;
     lv_color_t * disp_buf = vdb->buf_act;
+
+    if(disp->driver.gpu_wait_cb) disp->driver.gpu_wait_cb(&disp->driver);
 
     /* Now `draw_area` has absolute coordinates.
      * Make it relative to `disp_area` to simplify draw to `disp_buf`*/
@@ -332,9 +342,19 @@ LV_ATTRIBUTE_FAST_MEM static void fill_normal(const lv_area_t * disp_area, lv_co
                 disp->driver.gpu_fill_cb(&disp->driver, disp_buf, disp_w, draw_area, color);
                 return;
             }
-#endif
-
-#if LV_USE_GPU_STM32_DMA2D
+#elif LV_USE_GPU_NXP_PXP
+            if(lv_area_get_size(draw_area) >= LV_GPU_NXP_PXP_FILL_SIZE_LIMIT) {
+                lv_gpu_nxp_pxp_fill(disp_buf, disp_w, draw_area, color, opa);
+                return;
+            }
+#elif LV_USE_GPU_NXP_VG_LITE
+            if(lv_area_get_size(draw_area) >= LV_GPU_NXP_VG_LITE_FILL_SIZE_LIMIT) {
+                if(lv_gpu_nxp_vglite_fill(disp_buf, disp_w, lv_area_get_height(disp_area), draw_area, color, opa) == LV_RES_OK) {
+                    return;
+                }
+                /* Fall down to SW render in case of error */
+            }
+#elif LV_USE_GPU_STM32_DMA2D
             if(lv_area_get_size(draw_area) >= 240) {
                 lv_gpu_stm32_dma2d_fill(disp_buf_first, disp_w, color, draw_area_w, draw_area_h);
                 return;
@@ -348,7 +368,20 @@ LV_ATTRIBUTE_FAST_MEM static void fill_normal(const lv_area_t * disp_area, lv_co
         }
         /*No mask with opacity*/
         else {
-#if LV_USE_GPU
+
+#if LV_USE_GPU_NXP_PXP
+            if(lv_area_get_size(draw_area) >= LV_GPU_NXP_PXP_FILL_OPA_SIZE_LIMIT) {
+                lv_gpu_nxp_pxp_fill(disp_buf, disp_w, draw_area, color, opa);
+                return;
+            }
+#elif LV_USE_GPU_NXP_VG_LITE
+            if(lv_area_get_size(draw_area) >= LV_GPU_NXP_VG_LITE_FILL_OPA_SIZE_LIMIT) {
+                if(lv_gpu_nxp_vglite_fill(disp_buf, disp_w, lv_area_get_height(disp_area), draw_area, color, opa) == LV_RES_OK) {
+                    return;
+                }
+                /* Fall down to SW render in case of error */
+            }
+#elif LV_USE_GPU
             if(disp->driver.gpu_blend_cb && lv_area_get_size(draw_area) > GPU_SIZE_LIMIT) {
                 for(x = 0; x < draw_area_w ; x++) blend_buf[x].full = color.full;
 
@@ -723,7 +756,43 @@ LV_ATTRIBUTE_FAST_MEM static void map_normal(const lv_area_t * disp_area, lv_col
 #endif
 
         if(opa > LV_OPA_MAX) {
-#if LV_USE_GPU_STM32_DMA2D
+#if LV_USE_GPU_NXP_PXP
+            if(lv_area_get_size(draw_area) >= GPU_NXP_PXP_BLIT_SIZE_LIMIT) {
+                lv_gpu_nxp_pxp_blit(disp_buf_first, disp_w, map_buf_first, map_w, draw_area_w, draw_area_h, opa);
+                return;
+            }
+#elif (LV_USE_GPU_NXP_VG_LITE)
+            if(lv_area_get_size(draw_area) >= LV_GPU_NXP_VG_LITE_BLIT_SIZE_LIMIT) {
+
+                lv_gpu_nxp_vglite_blit_info_t blit;
+
+                blit.src = map_buf;
+                blit.src_width = draw_area_w;
+                blit.src_height = draw_area_h;
+                blit.src_stride = lv_area_get_width(map_area) * sizeof(lv_color_t);
+                blit.src_area.x1 = (draw_area->x1 - (map_area->x1 - disp_area->x1));
+                blit.src_area.y1 = (draw_area->y1 - (map_area->y1 - disp_area->y1));
+                blit.src_area.x2 = blit.src_area.x1 + draw_area_w;
+                blit.src_area.y2 = blit.src_area.y1 + draw_area_h;
+
+
+                blit.dst = disp_buf;
+                blit.dst_width = lv_area_get_width(disp_area);
+                blit.dst_height = lv_area_get_height(disp_area);
+                blit.dst_stride = lv_area_get_width(disp_area) * sizeof(lv_color_t);
+                blit.dst_area.x1 = draw_area->x1;
+                blit.dst_area.y1 = draw_area->y1;
+                blit.dst_area.x2 = blit.dst_area.x1 + draw_area_w;
+                blit.dst_area.y2 = blit.dst_area.y1 + draw_area_h;
+
+                blit.opa = opa;
+
+                if(lv_gpu_nxp_vglite_blit(&blit) == LV_RES_OK) {
+                    return;
+                }
+                /* Fall down to SW render in case of error */
+            }
+#elif LV_USE_GPU_STM32_DMA2D
             if(lv_area_get_size(draw_area) >= 240) {
                 lv_gpu_stm32_dma2d_copy(disp_buf_first, disp_w, map_buf_first, map_w, draw_area_w, draw_area_h);
                 return;
@@ -738,7 +807,43 @@ LV_ATTRIBUTE_FAST_MEM static void map_normal(const lv_area_t * disp_area, lv_col
             }
         }
         else {
-#if LV_USE_GPU_STM32_DMA2D
+#if LV_USE_GPU_NXP_PXP
+            if(lv_area_get_size(draw_area) >= LV_GPU_NXP_PXP_BLIT_OPA_SIZE_LIMIT) {
+                lv_gpu_nxp_pxp_blit(disp_buf_first, disp_w, map_buf_first, map_w, draw_area_w, draw_area_h, opa);
+                return;
+            }
+#elif (LV_USE_GPU_NXP_VG_LITE)
+            if(lv_area_get_size(draw_area) >= LV_GPU_NXP_VG_LITE_BLIT_OPA_SIZE_LIMIT) {
+
+                lv_gpu_nxp_vglite_blit_info_t blit;
+
+                blit.src = map_buf;
+                blit.src_width = lv_area_get_width(map_area);
+                blit.src_height = lv_area_get_height(map_area);
+                blit.src_stride = lv_area_get_width(map_area) * sizeof(lv_color_t);
+                blit.src_area.x1 = (draw_area->x1 - (map_area->x1 - disp_area->x1));
+                blit.src_area.y1 = (draw_area->y1 - (map_area->y1 - disp_area->y1));
+                blit.src_area.x2 = blit.src_area.x1 + draw_area_w;
+                blit.src_area.y2 = blit.src_area.y1 + draw_area_h;
+
+
+                blit.dst = disp_buf;
+                blit.dst_width = lv_area_get_width(disp_area);
+                blit.dst_height = lv_area_get_height(disp_area);
+                blit.dst_stride = lv_area_get_width(disp_area) * sizeof(lv_color_t);
+                blit.dst_area.x1 = draw_area->x1;
+                blit.dst_area.y1 = draw_area->y1;
+                blit.dst_area.x2 = blit.dst_area.x1 + draw_area_w;
+                blit.dst_area.y2 = blit.dst_area.y1 + draw_area_h;
+
+                blit.opa = opa;
+
+                if(lv_gpu_nxp_vglite_blit(&blit) == LV_RES_OK) {
+                    return;
+                }
+                /* Fall down to SW render in case of error */
+            }
+#elif LV_USE_GPU_STM32_DMA2D
             if(lv_area_get_size(draw_area) >= 240) {
                 lv_gpu_stm32_dma2d_blend(disp_buf_first, disp_w, map_buf_first, opa, map_w, draw_area_w, draw_area_h);
                 return;

@@ -118,6 +118,7 @@ lv_obj_t * lv_page_create(lv_obj_t * par, const lv_obj_t * copy)
     /*Init the new page object*/
     if(copy == NULL) {
         ext->scrl = lv_cont_create(page, NULL);
+        lv_obj_set_focus_parent(ext->scrl, true);
         lv_obj_set_drag(ext->scrl, true);
         lv_obj_set_drag_throw(ext->scrl, true);
         lv_obj_add_protect(ext->scrl, LV_PROTECT_PARENT | LV_PROTECT_PRESS_LOST);
@@ -1041,32 +1042,6 @@ static lv_res_t lv_page_scrollable_signal(lv_obj_t * scrl, lv_signal_t sign, voi
                 lv_obj_invalidate_area(page, &sb_area_tmp);
                 page_ext->scrlbar.ver_draw = 0;
             }
-        }
-    }
-    else if(sign == LV_SIGNAL_FOCUS) {
-#if LV_USE_GROUP
-        if(lv_obj_get_group(page)) {
-            lv_group_focus_obj(page);
-        }
-        else
-#endif
-        {
-            res = lv_signal_send(page, LV_SIGNAL_FOCUS, NULL);
-            if(res != LV_RES_OK) return res;
-            res = lv_event_send(page, LV_EVENT_FOCUSED, NULL);
-            if(res != LV_RES_OK) return res;
-        }
-    }
-    else if(sign == LV_SIGNAL_DEFOCUS) {
-        bool in_group = false;
-#if LV_USE_GROUP
-        in_group =  lv_obj_get_group(page) ? true : false;
-#endif
-        if(in_group == false) {
-            res = lv_signal_send(page, LV_SIGNAL_DEFOCUS, NULL);
-            if(res != LV_RES_OK) return res;
-            res = lv_event_send(page, LV_EVENT_DEFOCUSED, NULL);
-            if(res != LV_RES_OK) return res;
         }
     }
     else if(sign == LV_SIGNAL_CLEANUP) {

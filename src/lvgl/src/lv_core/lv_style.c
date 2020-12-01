@@ -827,8 +827,9 @@ lv_res_t _lv_style_list_get_int(lv_style_list_t * list, lv_style_property_t prop
 
     int16_t ci;
     for(ci = 0; ci < list->style_cnt; ci++) {
-        lv_style_t * class = lv_style_list_get_style(list, ci);
-        int16_t weight_act = _lv_style_get_int(class, prop, &value_act);
+        /* changed class to _class to allow compilation as c++ */
+        lv_style_t * _class = lv_style_list_get_style(list, ci);
+        int16_t weight_act = _lv_style_get_int(_class, prop, &value_act);
 
         /*On perfect match return the value immediately*/
         if(weight_act == weight_goal) {
@@ -875,12 +876,13 @@ lv_res_t _lv_style_list_get_color(lv_style_list_t * list, lv_style_property_t pr
 
     int16_t weight = -1;
 
-    lv_color_t value_act = { 0 };
+    lv_color_t value_act;
+    value_act.full = 0;
 
     int16_t ci;
     for(ci = 0; ci < list->style_cnt; ci++) {
-        lv_style_t * class = lv_style_list_get_style(list, ci);
-        int16_t weight_act = _lv_style_get_color(class, prop, &value_act);
+        lv_style_t * _class = lv_style_list_get_style(list, ci);
+        int16_t weight_act = _lv_style_get_color(_class, prop, &value_act);
         /*On perfect match return the value immediately*/
         if(weight_act == weight_goal) {
             *res = value_act;
@@ -929,8 +931,8 @@ lv_res_t _lv_style_list_get_opa(lv_style_list_t * list, lv_style_property_t prop
 
     int16_t ci;
     for(ci = 0; ci < list->style_cnt; ci++) {
-        lv_style_t * class = lv_style_list_get_style(list, ci);
-        int16_t weight_act = _lv_style_get_opa(class, prop, &value_act);
+        lv_style_t * _class = lv_style_list_get_style(list, ci);
+        int16_t weight_act = _lv_style_get_opa(_class, prop, &value_act);
         /*On perfect match return the value immediately*/
         if(weight_act == weight_goal) {
             *res = value_act;
@@ -979,8 +981,8 @@ lv_res_t _lv_style_list_get_ptr(lv_style_list_t * list, lv_style_property_t prop
 
     int16_t ci;
     for(ci = 0; ci < list->style_cnt; ci++) {
-        lv_style_t * class = lv_style_list_get_style(list, ci);
-        int16_t weight_act = _lv_style_get_ptr(class, prop, &value_act);
+        lv_style_t * _class = lv_style_list_get_style(list, ci);
+        int16_t weight_act = _lv_style_get_ptr(_class, prop, &value_act);
         /*On perfect match return the value immediately*/
         if(weight_act == weight_goal) {
             *res = value_act;
@@ -1038,7 +1040,6 @@ bool lv_debug_check_style_list(const lv_style_list_t * list)
 
     return true;
 }
-
 
 /**********************
  *   STATIC FUNCTIONS

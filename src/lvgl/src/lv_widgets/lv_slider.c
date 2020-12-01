@@ -103,7 +103,7 @@ lv_obj_t * lv_slider_create(lv_obj_t * par, const lv_obj_t * copy)
         lv_area_copy(&ext->left_knob_area, &copy_ext->left_knob_area);
         lv_area_copy(&ext->right_knob_area, &copy_ext->right_knob_area);
 
-        lv_obj_refresh_style(slider, LV_OBJ_PART_ALL);
+        lv_obj_refresh_style(slider, LV_OBJ_PART_ALL, LV_STYLE_PROP_ALL);
     }
 
     LV_LOG_INFO("slider created");
@@ -165,8 +165,7 @@ static lv_design_res_t lv_slider_design(lv_obj_t * slider, const lv_area_t * cli
     }
     /*Draw the object*/
     else if(mode == LV_DESIGN_DRAW_MAIN) {
-
-        /*The ancestor design function will draw the background and the indicator.
+        /* The ancestor design function will draw the background and the indicator.
          * It also sets ext->bar.indic_area*/
         ancestor_design_f(slider, clip_area, mode);
 

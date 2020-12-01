@@ -7,6 +7,7 @@
  *      INCLUDES
  *********************/
 #include "lv_gpu_stm32_dma2d.h"
+#include "../lv_core/lv_disp.h"
 #include "../lv_core/lv_refr.h"
 
 #if LV_USE_GPU_STM32_DMA2D
@@ -62,7 +63,16 @@ static void dma2d_wait(void);
 void lv_gpu_stm32_dma2d_init(void)
 {
     /* Enable DMA2D clock */
+#if defined(STM32F4) || defined(STM32F7)
     RCC->AHB1ENR |= RCC_AHB1ENR_DMA2DEN;
+#elif  defined(STM32H7)
+    RCC->AHB3ENR |= RCC_AHB3ENR_DMA2DEN;
+#else
+# warning "LVGL can't enable the clock of DMA2D"
+#endif
+
+    /* Wait for hardware access to complete */
+    __asm volatile("DSB\n");
 
     /* Delay after setting peripheral clock */
     volatile uint32_t temp = RCC->AHB1ENR;
@@ -216,11 +226,13 @@ void lv_gpu_stm32_dma2d_blend(lv_color_t * buf, lv_coord_t buf_w, const lv_color
 
 static void invalidate_cache(void)
 {
-#if __DCACHE_PRESENT
-    if(SCB->CCR & (uint32_t)SCB_CCR_DC_Msk) {
+    lv_disp_t * disp = _lv_refr_get_disp_refreshing();
+    if(disp->driver.clean_dcache_cb) disp->driver.clean_dcache_cb(&disp->driver);
+    else {
+#if __CORTEX_M >= 0x07
         SCB_CleanInvalidateDCache();
-    }
 #endif
+    }
 }
 
 static void dma2d_wait(void)

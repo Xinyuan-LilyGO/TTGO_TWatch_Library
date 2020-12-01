@@ -130,7 +130,7 @@ lv_obj_t * lv_bar_create(lv_obj_t * par, const lv_obj_t * copy)
         lv_style_list_copy(&ext->style_indic, &ext_copy->style_indic);
 
         /*Refresh the style with new signal function*/
-        lv_obj_refresh_style(bar, LV_STYLE_PROP_ALL);
+        lv_obj_refresh_style(bar, LV_OBJ_PART_ALL, LV_STYLE_PROP_ALL);
 
         lv_bar_set_value(bar, ext->cur_value, LV_ANIM_OFF);
     }
@@ -737,6 +737,7 @@ static void lv_bar_set_value_with_anim(lv_obj_t * bar, int16_t new_value, int16_
             anim_info->anim_start = anim_info->anim_end;
             anim_info->anim_end   = new_value;
         }
+        *value_ptr = new_value;
         /* Stop the previous animation if it exists */
         lv_anim_del(anim_info, NULL);
 

@@ -44,5 +44,6 @@
 
 ## (1.12.2020)
 - Added UnitTest directory, Store hardware test code
-
+- Release TTGO_TWatch_Library V1.4.0 version
+- Update lvgl to 7.7.2
 

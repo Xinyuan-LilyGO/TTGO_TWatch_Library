@@ -127,7 +127,7 @@ lv_obj_t * lv_msgbox_create(lv_obj_t * par, const lv_obj_t * copy)
         if(copy_ext->btnm) ext->btnm = lv_btnmatrix_create(mbox, copy_ext->btnm);
 
         /*Refresh the style with new signal function*/
-        lv_obj_refresh_style(mbox, LV_STYLE_PROP_ALL);
+        lv_obj_refresh_style(mbox, LV_OBJ_PART_ALL, LV_STYLE_PROP_ALL);
     }
 
     LV_LOG_INFO("message box created");
@@ -195,6 +195,38 @@ void lv_msgbox_set_text(lv_obj_t * mbox, const char * txt)
     lv_msgbox_ext_t * ext = lv_obj_get_ext_attr(mbox);
     lv_label_set_text(ext->text, txt);
 
+    mbox_realign(mbox);
+}
+
+/**
+ * Set a formatted text for the message box
+ * @param mbox pointer to a message box
+ * @param fmt `printf`-like format
+ */
+void lv_msgbox_set_text_fmt(lv_obj_t * mbox, const char * fmt, ...)
+{
+    LV_ASSERT_OBJ(mbox, LV_OBJX_NAME);
+    LV_ASSERT_STR(fmt);
+
+    lv_msgbox_ext_t * msgbox_ext = lv_obj_get_ext_attr(mbox);
+    lv_label_ext_t * label_ext = lv_obj_get_ext_attr(msgbox_ext->text);
+
+    /*If text is NULL then refresh */
+    if(fmt == NULL) {
+        lv_label_refr_text(msgbox_ext->text);
+        return;
+    }
+
+    if(label_ext->text != NULL) {
+        lv_mem_free(label_ext->text);
+        label_ext->text = NULL;
+    }
+
+    va_list args;
+    va_start(args, fmt);
+    label_ext->text = _lv_txt_set_text_vfmt(fmt, args);
+    va_end(args);
+    lv_label_refr_text(msgbox_ext->text);
     mbox_realign(mbox);
 }
 

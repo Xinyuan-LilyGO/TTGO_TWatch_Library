@@ -1162,14 +1162,14 @@ static void indev_click_focus(lv_indev_proc_t * proc)
     if(lv_obj_is_protected(indev_obj_act, LV_PROTECT_CLICK_FOCUS) == false &&
        proc->types.pointer.last_pressed != obj_to_focus) {
 #if LV_USE_GROUP
-        lv_group_t * g_act = lv_obj_get_group(indev_obj_act);
+        lv_group_t * g_act = lv_obj_get_group(obj_to_focus);
         lv_group_t * g_prev = proc->types.pointer.last_pressed ? lv_obj_get_group(proc->types.pointer.last_pressed) : NULL;
 
         /*If both the last and act. obj. are in the same group (or no group but it's also the same) */
         if(g_act == g_prev) {
             /*The objects are in a group*/
             if(g_act) {
-                lv_group_focus_obj(indev_obj_act);
+                lv_group_focus_obj(obj_to_focus);
                 if(indev_reset_check(proc)) return;
             }
             /*The object are not in group*/
@@ -1181,9 +1181,9 @@ static void indev_click_focus(lv_indev_proc_t * proc)
                     if(indev_reset_check(proc)) return;
                 }
 
-                lv_signal_send(indev_obj_act, LV_SIGNAL_FOCUS, NULL);
+                lv_signal_send(obj_to_focus, LV_SIGNAL_FOCUS, NULL);
                 if(indev_reset_check(proc)) return;
-                lv_event_send(indev_obj_act, LV_EVENT_FOCUSED, NULL);
+                lv_event_send(obj_to_focus, LV_EVENT_FOCUSED, NULL);
                 if(indev_reset_check(proc)) return;
             }
         }
@@ -1218,13 +1218,13 @@ static void indev_click_focus(lv_indev_proc_t * proc)
 
             /*Focus to the act. in its group*/
             if(g_act) {
-                lv_group_focus_obj(indev_obj_act);
+                lv_group_focus_obj(obj_to_focus);
                 if(indev_reset_check(proc)) return;
             }
             else {
-                lv_signal_send(indev_obj_act, LV_SIGNAL_FOCUS, NULL);
+                lv_signal_send(obj_to_focus, LV_SIGNAL_FOCUS, NULL);
                 if(indev_reset_check(proc)) return;
-                lv_event_send(indev_obj_act, LV_EVENT_FOCUSED, NULL);
+                lv_event_send(obj_to_focus, LV_EVENT_FOCUSED, NULL);
                 if(indev_reset_check(proc)) return;
             }
         }
@@ -1236,9 +1236,9 @@ static void indev_click_focus(lv_indev_proc_t * proc)
             if(indev_reset_check(proc)) return;
         }
 
-        lv_signal_send(indev_obj_act, LV_SIGNAL_FOCUS, NULL);
+        lv_signal_send(obj_to_focus, LV_SIGNAL_FOCUS, NULL);
         if(indev_reset_check(proc)) return;
-        lv_event_send(indev_obj_act, LV_EVENT_FOCUSED, NULL);
+        lv_event_send(obj_to_focus, LV_EVENT_FOCUSED, NULL);
         if(indev_reset_check(proc)) return;
 #endif
         proc->types.pointer.last_pressed = obj_to_focus;
@@ -1490,7 +1490,6 @@ static lv_obj_t * get_dragged_obj(lv_obj_t * obj)
 static void indev_gesture(lv_indev_proc_t * proc)
 {
 
-    if(proc->types.pointer.drag_in_prog) return;
     if(proc->types.pointer.gesture_sent) return;
 
     lv_obj_t * gesture_obj = proc->types.pointer.act_obj;

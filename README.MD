@@ -29,7 +29,7 @@
 
 1. The library already contains all the hardware drivers for `T-Watch`
 2. Using **TFT_eSPI** as the display driver, you can directly call **TFT_eSPI** through the construction object.
-3. Using **lvgl v7.3.1** as the display graphics framework, the driver method has been implemented, you only need to call lvgl api according to your own needs.
+3. Using **lvgl v7.7.2** as the display graphics framework, the driver method has been implemented, you only need to call lvgl api according to your own needs.
 4. For the use of lvgl please refer to **[lvgl docs](https://docs.lvgl.io/v7/en/html/)**
 
 
