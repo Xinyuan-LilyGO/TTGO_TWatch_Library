@@ -114,7 +114,7 @@ void setup()
 #ifdef LILYGO_WATCH_HAS_DISPLAY
     tft = watch->tft;
     watch->openBL();
-    tft->drawCentreString("Start the module as a tag", 120, 100, 2);
+    tft->drawCentreString("Start the module as a anchor", 120, 100, 2);
     eSp = new TFT_eSprite(tft);
     eSp->createSprite(240, 60);
     eSp->setTextFont(2);
