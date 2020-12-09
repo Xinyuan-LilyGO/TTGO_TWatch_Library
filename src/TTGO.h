@@ -1028,7 +1028,7 @@ public:
 #endif
 
 
-#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL) || defined(LILYGO_WATCH_2019_WITH_TOUCH)
     void disableTouchIRQ()
     {
         detachInterrupt(TOUCH_INT);
@@ -1226,7 +1226,7 @@ private:
         }
 #endif /*initTouch*/
 
-#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL) || defined(LILYGO_WATCH_2019_WITH_TOUCH)
         /*
             Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
         */
@@ -1236,7 +1236,7 @@ private:
 
     }
 
-#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL) || defined(LILYGO_WATCH_2019_WITH_TOUCH)
     /*
     Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
     */
@@ -1424,7 +1424,7 @@ protected:
     static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     {
 
-#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL) || defined(LILYGO_WATCH_2019_WITH_TOUCH)
         /*
             Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
         */
