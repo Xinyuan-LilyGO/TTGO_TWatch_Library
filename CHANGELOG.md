@@ -49,3 +49,4 @@
 
 ## (9.12.2020)
 - Turn on Twatch 2019 interrupt function
+- Remove warnings caused by upgrading lvgl
