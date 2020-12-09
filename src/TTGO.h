@@ -1028,7 +1028,7 @@ public:
 #endif
 
 
-#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)|| defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
     void disableTouchIRQ()
     {
         detachInterrupt(TOUCH_INT);
@@ -1037,7 +1037,7 @@ public:
     void enableTouchIRQ()
     {
         /*
-            Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
+            Interrupt polling is only compatible with 2020-V1, 2020-V2 ,2019 , others are not currently adapted
         */
         pinMode(TOUCH_INT, INPUT);
         attachInterrupt(TOUCH_INT, TOUCH_IRQ_HANDLE, FALLING);
@@ -1226,7 +1226,7 @@ private:
         }
 #endif /*initTouch*/
 
-#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
         /*
             Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
         */
@@ -1236,7 +1236,7 @@ private:
 
     }
 
-#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
     /*
     Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
     */
@@ -1424,9 +1424,9 @@ protected:
     static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     {
 
-#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)) &&  defined(LILYGO_WATCH_LVGL)
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)|| defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
         /*
-            Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
+            Interrupt polling is only compatible with 2020-V1, 2020-V2,2019, others are not currently adapted
         */
         static int16_t x, y;
         if (xEventGroupGetBits(_ttgo->_tpEvent) & TOUCH_IRQ_BIT) {
