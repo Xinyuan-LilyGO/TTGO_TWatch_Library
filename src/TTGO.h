@@ -426,7 +426,11 @@ public:
 #ifdef LILYGO_WATCH_DRV2605
     void enableDrv2650(bool en = true)
     {
+#ifdef LILYGO_WATCH_2020_V2
+        power->setGPIOMode(AXP_GPIO_0, en ? AXP_IO_OUTPUT_HIGH_MODE : AXP_IO_OUTPUT_LOW_MODE);
+#else
         power->setPowerOutPut(AXP202_EXTEN, en);
+#endif
     }
 #endif
 

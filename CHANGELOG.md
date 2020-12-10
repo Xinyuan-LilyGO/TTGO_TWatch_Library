@@ -50,3 +50,6 @@
 ## (9.12.2020)
 - Turn on Twatch 2019 interrupt function
 - Remove warnings caused by upgrading lvgl
+
+## (10.12.2020)
+- Added DRV2605 enable for V2
