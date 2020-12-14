@@ -53,3 +53,7 @@
 
 ## (10.12.2020)
 - Added DRV2605 enable for V2
+
+## (14.12.2020)
+- Fix the problem that cannot be compiled in SimpleFramework
+
