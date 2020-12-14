@@ -166,6 +166,10 @@
 #undef  LILYGO_WATCH_HAS_SIM800L
 #undef  LILYGO_WATCH_HAS_SIM868
 
+#ifndef LILYGO_WATCH_DRV2605
+#define LILYGO_WATCH_DRV2605
+#endif
+
 
 #elif defined(LILYGO_WATCH_BLOCK)
 #include "board/twatch_block.h"
