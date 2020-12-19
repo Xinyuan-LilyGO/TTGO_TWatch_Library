@@ -642,7 +642,9 @@ int AXP20X_Class::readIRQ()
     case AXP202_CHIP_ID:
         for (int i = 0; i < 5; ++i) {
             _readByte(AXP202_INTSTS1 + i, 1, &_irq[i]);
+			AXP_DEBUG("%02x:%02x ", AXP202_INTSTS1 + i, _irq[i]);
         }
+		AXP_DEBUG("\n");
         return AXP_PASS;
     default:
         return AXP_FAIL;
