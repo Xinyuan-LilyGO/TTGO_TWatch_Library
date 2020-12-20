@@ -631,10 +631,13 @@ int AXP20X_Class::readIRQ()
 {
     if (!_init)
         return AXP_NOT_INIT;
+
+	AXP_DEBUG("readIRQ() : ");
     switch (_chip_id) {
     case AXP192_CHIP_ID:
         for (int i = 0; i < 4; ++i) {
             _readByte(AXP192_INTSTS1 + i, 1, &_irq[i]);
+			AXP_DEBUG("%02x:%02x ", AXP202_INTSTS1 + i, _irq[i]);
         }
         _readByte(AXP192_INTSTS5, 1, &_irq[4]);
         return AXP_PASS;
@@ -654,6 +657,7 @@ int AXP20X_Class::readIRQ()
 void AXP20X_Class::clearIRQ()
 {
     uint8_t val = 0xFF;
+	AXP_DEBUG("clearIRQ()\n");
     switch (_chip_id) {
     case AXP192_CHIP_ID:
         for (int i = 0; i < 3; i++) {

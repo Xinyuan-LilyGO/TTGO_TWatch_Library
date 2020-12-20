@@ -747,6 +747,13 @@ public:
     int getChargeControlCur();
     int setChargeControlCur(uint16_t mA);
 
+		// Read register value at reg address 
+	uint8_t readREG( uint8_t reg ){
+		uint8_t dt;
+		_readByte( reg, 1, &dt );
+		return dt;
+	}
+
 private:
     uint16_t _getRegistH8L5(uint8_t regh8, uint8_t regl5)
     {
