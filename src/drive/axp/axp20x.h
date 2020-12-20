@@ -32,7 +32,7 @@ github:https://github.com/lewisxhe/AXP202X_Libraries
 #include <Arduino.h>
 #include <Wire.h>
 
-#define AXP_DEBUG_PORT  Serial
+// #define AXP_DEBUG_PORT  Serial
 #ifdef AXP_DEBUG_PORT
 #define AXP_DEBUG(fmt, ...) AXP_DEBUG_PORT.printf_P((PGM_P)PSTR(fmt), ##__VA_ARGS__)
 #else
@@ -643,10 +643,16 @@ public:
     int setTimer(uint8_t minutes);
     int offTimer();
     int clearTimerStatus();
+
     /**
      * param:   axp202_startup_time_t or axp192_startup_time_t
      */
     int setStartupTime(uint8_t param);
+
+    /**
+     * Return : LongPress threshold x10 (so 15 = 1.5s)
+     */
+    int getStartupTime();
 
     /**
      * param: axp_loonPress_time_t
@@ -654,9 +660,19 @@ public:
     int setlongPressTime(uint8_t param);
 
     /**
+     * Return : LongPress threshold x10 (so 15 = 1.5s)
+     */
+	int getlongPressTime();
+
+    /**
      * @param  param: axp_poweroff_time_t
      */
     int setShutdownTime(uint8_t param);
+
+    /**
+     * Return : shutdown Press threshold x10 (so 15 = 1.5s)
+     */
+	int getShutdownTime();
 
     int setTimeOutShutdown(bool en);
 
@@ -748,7 +764,7 @@ public:
     int setChargeControlCur(uint16_t mA);
 
 		// Read register value at reg address 
-	uint8_t readREG( uint8_t reg ){
+	uint8_t readRegister( uint8_t reg ){
 		uint8_t dt;
 		_readByte( reg, 1, &dt );
 		return dt;
