@@ -9,6 +9,7 @@ bool irq = false;
 
 void setup()
 {
+    Serial.begin(115200);
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
@@ -49,12 +50,14 @@ void loop()
         ttgo->power->clearIRQ();
     }
     if (ttgo->getTouch(x, y)) {
+        ttgo->tft->fillRect(120, 130, 100, 40, TFT_BLACK);
         ttgo->tft->setCursor(120, 130);
         ttgo->tft->print("X:");
         ttgo->tft->println(x);
         ttgo->tft->setCursor(120, ttgo->tft->getCursorY());
         ttgo->tft->print("Y:");
         ttgo->tft->print(y);
+        Serial.printf("x:%d y:%d\n", x, y);
     }
 
 

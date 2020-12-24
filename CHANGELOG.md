@@ -57,3 +57,6 @@
 ## (14.12.2020)
 - Fix the problem that cannot be compiled in SimpleFramework
 
+## (24.12.2020)
+- Fix <UnitTest/ScreenRotation> coordinate residue
+
