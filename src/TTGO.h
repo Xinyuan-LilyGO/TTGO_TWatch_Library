@@ -62,9 +62,12 @@ typedef FocalTech_Class CapacitiveTouch ;
 #include "drive/rtc/pcf8563.h"
 #endif
 
-#ifdef LILYGO_WATCH_HAS_GPS
+#if defined(LILYGO_WATCH_AIR530_GPS)
+#include "drive/gps/Air530.h"
+#elif defined(LILYGO_WATCH_HAS_GPS)
 #include "drive/gps/TinyGPS++.h"
 #endif
+
 
 #ifdef LILYGO_WATCH_HAS_S76_S78G
 #include "drive/s7xg/s7xg.h"
@@ -849,11 +852,27 @@ public:
     }
 #endif  /*LILYGO_WATCH_HAS_SDCARD*/
 
-#if defined(LILYGO_WATCH_HAS_GPS) || defined(LILYGO_WATCH_HAS_S76_S78G)
+#if defined(LILYGO_WATCH_HAS_GPS) || defined(LILYGO_WATCH_HAS_S76_S78G) || defined(LILYGO_WATCH_AIR530_GPS)
     HardwareSerial *hwSerial = nullptr;
 #endif
 
-#ifdef LILYGO_WATCH_HAS_GPS
+
+#if defined(LILYGO_WATCH_AIR530_GPS)
+    //Only applicable to TWATCH V2
+    Air530 *gps = nullptr;
+
+    Air530 *gps_begin()
+    {
+        if (hwSerial == nullptr) {
+            hwSerial = new HardwareSerial(1);
+            hwSerial->begin(GPS_BAUD_RATE, SERIAL_8N1, GPS_RX, GPS_TX);
+        }
+        if (gps == nullptr) {
+            gps = new Air530(hwSerial, GPS_WAKE);
+        }
+        return gps;
+    }
+#elif defined(LILYGO_WATCH_HAS_GPS)
     TinyGPSPlus *gps = nullptr;
     void gps_begin()
     {
@@ -877,7 +896,6 @@ public:
         }
         return false;
     }
-
 #endif  /*LILYGO_WATCH_HAS_GPS*/
 
 #ifdef LILYGO_WATCH_HAS_S76_S78G
