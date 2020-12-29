@@ -1,28 +1,34 @@
-
+/*
+ * Air530Display.ino: Example of displaying Air530 GPS information on the screen
+ * Copyright 2020 Lewis he
+ */
 // Only supports 2020 V2 version, other versions do not support
 // Only supports 2020 V2 version, other versions do not support
 // Only supports 2020 V2 version, other versions do not support
 
 #include "config.h"
 
-TTGOClass *ttgo;
-TFT_eSPI *tft ;
-TinyGPSPlus *gps;
+TTGOClass *ttgo = nullptr;
+TFT_eSPI *tft = nullptr;
+Air530 *gps = nullptr;
 
-TFT_eSprite *eSpLoaction ;
-TFT_eSprite *eSpDate;
-TFT_eSprite *eSpTime;
-TFT_eSprite *eSpSpeed;
-TFT_eSprite *eSpSatellites;
+TFT_eSprite *eSpLoaction = nullptr;
+TFT_eSprite *eSpDate = nullptr;
+TFT_eSprite *eSpTime = nullptr;
+TFT_eSprite *eSpSpeed = nullptr;
+TFT_eSprite *eSpSatellites = nullptr;
 
-unsigned long last = 0UL;
+uint32_t last = 0;
 uint32_t updateTimeout = 0;
 
 void setup(void)
 {
     Serial.begin(115200);
+
     ttgo = TTGOClass::getWatch();
+
     ttgo->begin();
+
     ttgo->openBL();
     //Create a new pointer to save the display object
     tft = ttgo->tft;
@@ -34,10 +40,7 @@ void setup(void)
     //Open gps power
     ttgo->trunOnGPS();
 
-    ttgo->gps_begin();
-
-    //Create a new pointer to save the gps object
-    gps = ttgo->gps;
+    gps = ttgo->gps_begin();
 
     // Display on the screen, latitude and longitude, number of satellites, and date and time
 
@@ -64,7 +67,7 @@ void setup(void)
 
 void loop(void)
 {
-    ttgo->gpsHandler();
+    gps->process();
 
     if (gps->location.isUpdated()) {
         updateTimeout = millis();
@@ -136,8 +139,6 @@ void loop(void)
         Serial.print(gps->date.month());
         Serial.print(F(" Day="));
         Serial.println(gps->date.day());
-    } else {
-
     }
 
 
@@ -198,7 +199,6 @@ void loop(void)
         Serial.print(F(" Feet="));
         Serial.println(gps->altitude.feet());
     }
-
 
 
     if (gps->satellites.isUpdated()) {

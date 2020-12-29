@@ -11,8 +11,6 @@
 // #define LILYGO_WATCH_BLOCK
 //NOT SUPPORT ...
 
-// => Function select
-#define LILYGO_WATCH_HAS_GPS
 
 #include <LilyGoWatch.h>
 

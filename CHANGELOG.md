@@ -62,3 +62,7 @@
 
 ## (29.12.2020)
 - Add Air530 driver for `TWATCH V2`
+- Add Air530Allfunction example <BasicUnit/Air530Allfunction>
+- Add Air530Display example <BasicUnit/Air530Display>
+
+
