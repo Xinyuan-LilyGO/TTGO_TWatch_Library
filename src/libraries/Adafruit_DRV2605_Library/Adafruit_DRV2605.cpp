@@ -84,7 +84,7 @@ bool Adafruit_DRV2605::begin(i2c_com_fptr_t r, i2c_com_fptr_t w)
 /**************************************************************************/
 bool Adafruit_DRV2605::init()
 {
-    uint8_t id = readRegister8(DRV2605_REG_STATUS);
+    // uint8_t id = readRegister8(DRV2605_REG_STATUS);
     // Serial.print("Status 0x"); Serial.println(id, HEX);
 
     writeRegister8(DRV2605_REG_MODE, 0x00); // out of standby
@@ -205,7 +205,7 @@ void Adafruit_DRV2605::setRealtimeValue(uint8_t rtp)
 /**************************************************************************/
 uint8_t Adafruit_DRV2605::readRegister8(uint8_t reg)
 {
-    uint8_t x;
+    uint8_t x = 0;
 
     if (readCallback) {
         readCallback(DRV2605_ADDR, reg, &x, 1);

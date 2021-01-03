@@ -28,8 +28,13 @@
 #include <SPI.h>
 
 // False definition, no practical use, resolution has been set in TTGO.h
+#ifndef TFT_WIDTH
 #define TFT_WIDTH           240
+#endif
+
+#ifndef TFT_HEIGHT
 #define TFT_HEIGHT          240
+#endif
 
 // #define TFT_MISO            0   //IO0 is not used, just to remove errors
 // #define TFT_MOSI            19
