@@ -65,4 +65,10 @@
 - Add Air530Allfunction example <BasicUnit/Air530Allfunction>
 - Add Air530Display example <BasicUnit/Air530Display>
 
+## (3/1/2021)
+- Repair warning
 
+## (5/1/2021)
+- Add TWatch V3 board definition
+- Check the return value before setting the power output <src/drive/axp/axp202.cpp>
+- Move the Air530 example in <BasicUnit/TwatcV2Special/Air530*>
