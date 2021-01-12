@@ -27,24 +27,29 @@ void setup()
     Serial.begin(115200);
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
+
+#ifdef LILYGO_WATCH_HAS_DISPLAY
     ttgo->openBL();
     ttgo->tft->fillScreen(TFT_BLACK);
     ttgo->tft->setTextFont(2);
+#endif
 
     while (1) {
         if (ttgo->sdcard_begin()) {
             Serial.println("sd begin pass");
             break;
         }
+#ifdef LILYGO_WATCH_HAS_DISPLAY
         ttgo->tft->println("SD begin fail,wait 1 sec");
+#endif
         Serial.println("sd begin fail,wait 1 sec");
         delay(1000);
     }
-
+#ifdef LILYGO_WATCH_HAS_DISPLAY
     ttgo->tft->setCursor(0, 0);
     ttgo->tft->fillScreen(TFT_BLACK);
     ttgo->tft->println("Sample MP3 playback begins");
-
+#endif
     // pno_cs from https://ccrma.stanford.edu/~jos/pasp/Sound_Examples.html
     //!Turn on the audio power
     ttgo->enableLDO3();

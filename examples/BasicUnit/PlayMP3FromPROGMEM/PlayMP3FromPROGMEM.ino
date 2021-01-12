@@ -28,12 +28,14 @@ void setup()
     Serial.begin(115200);
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
+#ifdef LILYGO_WATCH_HAS_DISPLAY
     ttgo->openBL();
     ttgo->tft->fillScreen(TFT_BLACK);
     ttgo->tft->setTextFont(2);
     ttgo->tft->setCursor(0, 0);
     ttgo->tft->fillScreen(TFT_BLACK);
     ttgo->tft->println("Sample MP3 playback begins");
+#endif
 
     //!Turn on the audio power
     ttgo->enableLDO3();
