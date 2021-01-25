@@ -62,9 +62,12 @@ typedef FocalTech_Class CapacitiveTouch ;
 #include "drive/rtc/pcf8563.h"
 #endif
 
-#ifdef LILYGO_WATCH_HAS_GPS
+#if defined(LILYGO_WATCH_AIR530_GPS)
+#include "drive/gps/Air530.h"
+#elif defined(LILYGO_WATCH_HAS_GPS)
 #include "drive/gps/TinyGPS++.h"
 #endif
+
 
 #ifdef LILYGO_WATCH_HAS_S76_S78G
 #include "drive/s7xg/s7xg.h"
@@ -322,7 +325,7 @@ public:
             x = _x;
             y = _y;
         }
-#elif   defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)
+#elif   defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2020_V3)
 
 #ifndef LILYGO_WATCH_2020_PANEL_V1
         uint8_t rotation = tft->getRotation();
@@ -421,15 +424,22 @@ public:
 #endif
     }
 
-#ifdef LILYGO_WATCH_2020_V2
+#if defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2020_V3)
     /*
     In 2020V2, touch can be set to sleep state, control AXP202_EXTEN can wake up touch
     */
     void touchWakup()
     {
+#ifdef LILYGO_WATCH_2020_V2
         power->setPowerOutPut(AXP202_EXTEN, false);
         delay(8);   //Trst Min = 5ms
         power->setPowerOutPut(AXP202_EXTEN, true);
+#endif
+#ifdef LILYGO_WATCH_2020_V3
+        digitalWrite(TOUCH_RST, LOW);
+        delay(8);
+        digitalWrite(TOUCH_RST, HIGH);
+#endif
     }
 #endif
 
@@ -440,6 +450,24 @@ public:
      *              Power
      * ***************************************/
 #ifdef LILYGO_WATCH_HAS_AXP202
+
+    void enableAudio(void)
+    {
+#if     defined(LILYGO_WATCH_2020_V2)
+        power->setPowerOutPut(AXP202_LDO3, AXP202_ON);
+#elif   defined(LILYGO_WATCH_2020_V3)
+        power->setPowerOutPut(AXP202_LDO4, AXP202_ON);
+#endif
+    }
+
+    void disableAudio(void)
+    {
+#if     defined(LILYGO_WATCH_2020_V2)
+        power->setPowerOutPut(AXP202_LDO3, AXP202_OFF);
+#elif   defined(LILYGO_WATCH_2020_V3)
+        power->setPowerOutPut(AXP202_LDO4, AXP202_OFF);
+#endif
+    }
 
 #ifdef LILYGO_WATCH_DRV2605
     void enableDrv2650(bool en = true)
@@ -867,11 +895,27 @@ public:
     }
 #endif  /*LILYGO_WATCH_HAS_SDCARD*/
 
-#if defined(LILYGO_WATCH_HAS_GPS) || defined(LILYGO_WATCH_HAS_S76_S78G)
+#if defined(LILYGO_WATCH_HAS_GPS) || defined(LILYGO_WATCH_HAS_S76_S78G) || defined(LILYGO_WATCH_AIR530_GPS)
     HardwareSerial *hwSerial = nullptr;
 #endif
 
-#ifdef LILYGO_WATCH_HAS_GPS
+
+#if defined(LILYGO_WATCH_AIR530_GPS)
+    //Only applicable to TWATCH V2
+    Air530 *gps = nullptr;
+
+    Air530 *gps_begin()
+    {
+        if (hwSerial == nullptr) {
+            hwSerial = new HardwareSerial(1);
+            hwSerial->begin(GPS_BAUD_RATE, SERIAL_8N1, GPS_RX, GPS_TX);
+        }
+        if (gps == nullptr) {
+            gps = new Air530(hwSerial, GPS_WAKE);
+        }
+        return gps;
+    }
+#elif defined(LILYGO_WATCH_HAS_GPS)
     TinyGPSPlus *gps = nullptr;
     void gps_begin()
     {
@@ -895,7 +939,6 @@ public:
         }
         return false;
     }
-
 #endif  /*LILYGO_WATCH_HAS_GPS*/
 
 #ifdef LILYGO_WATCH_HAS_S76_S78G
@@ -1050,7 +1093,7 @@ public:
 #endif
 
 
-#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)|| defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2020_V3)|| defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
     void disableTouchIRQ()
     {
         detachInterrupt(TOUCH_INT);
@@ -1178,7 +1221,7 @@ private:
         tft->initDMA(); // To use SPI DMA you must call initDMA() to setup the DMA engine
 #endif
 
-#if     defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)
+#if     defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2020_V3)
         // Set default initial orientation
         tft->setRotation(2);
 #endif  /*LILYGO_WATCH_2020_V1*/
@@ -1209,6 +1252,14 @@ private:
 
     void initTouch()
     {
+#if defined(TOUCH_RST)
+        pinMode(TOUCH_RST, OUTPUT);
+        digitalWrite(TOUCH_RST, LOW);
+        delay(8);
+        digitalWrite(TOUCH_RST, HIGH);
+#endif
+
+
 #if defined(LILYGO_TOUCHSCREEN_CALLBACK_METHOD)
         touch = new CapacitiveTouch();
 #if defined(LILYGO_TOUCH_DRIVER_GTXXX)
@@ -1248,7 +1299,7 @@ private:
         }
 #endif /*initTouch*/
 
-#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2020_V3)|| defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
         /*
             Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
         */
@@ -1258,7 +1309,7 @@ private:
 
     }
 
-#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2020_V3)|| defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
     /*
     Interrupt polling is only compatible with 2020-V1, 2020-V2, others are not currently adapted
     */
@@ -1343,6 +1394,19 @@ private:
             power->setPowerOutPut(AXP202_LDO3, true);
 
 #endif  /*LILYGO_WATCH_2020_V2*/
+
+#ifdef  LILYGO_WATCH_2020_V3
+            // New features of Twatch V3
+            power->limitingOff();
+
+            //Audio power domain is AXP202 LDO4
+            power->setPowerOutPut(AXP202_LDO4, false);
+            power->setLDO4Voltage(AXP202_LDO4_3300MV);
+            power->setPowerOutPut(AXP202_LDO4, true);
+            // No use
+            power->setPowerOutPut(AXP202_LDO3, false);
+#endif  /*LILYGO_WATCH_2020_V3*/
+
         }
 #endif /*LILYGO_WATCH_HAS_AXP202*/
     }
@@ -1446,7 +1510,7 @@ protected:
     static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     {
 
-#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)|| defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
+#if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2020_V3)|| defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
         /*
             Interrupt polling is only compatible with 2020-V1, 2020-V2,2019, others are not currently adapted
         */

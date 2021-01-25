@@ -69,11 +69,17 @@
 - [TWATCH 2019 Series pin mapping and other instructions](docs/watch_2019.md)
 - [TWATCH 2020 V1 Pin mapping and other instructions](docs/watch_2020_v1.md)
 - [TWATCH 2020 V2 Pin mapping and other instructions](docs/watch_2020_v2.md)
+- [TWATCH 2020 V3 Pin mapping and other instructions](docs/watch_2020_v3.md)
 
  <h2 align = "left">🔶 More interesting projects</h2>
 
-- [sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch)
 - [Micropython-twatch2020](https://y0no.fr/posts/micropython-ttgo-twatch2020/)
-- [Flight Recorder](https://github.com/lyusupov/SoftRF/wiki/Flight-Recorder)
-- [TTGO_T_Watch_Baidu_Rec](https://github.com/lixy123/TTGO_T_Watch_Baidu_Rec)
-- [TTGO_T_Watch_Alarm_Clock](https://github.com/lixy123/TTGO_T_Watch_Alarm_Clock)
+- [sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch)
+- [lyusupov/Flight Recorder](https://github.com/lyusupov/SoftRF/wiki/Flight-Recorder)
+- [lixy123/TTGO_T_Watch_Baidu_Rec](https://github.com/lixy123/TTGO_T_Watch_Baidu_Rec)
+- [lixy123/TTGO_T_Watch_Alarm_Clock](https://github.com/lixy123/TTGO_T_Watch_Alarm_Clock)
+- [AlexGoodyear/agoodWatch](https://github.com/AlexGoodyear/agoodWatch)
+- [Adosis/TTGO_TWatch_WordClock](https://github.com/Adosis/TTGO_TWatch_WordClock)
+- [SpectralCascade/FancyWatchOS](https://github.com/SpectralCascade/FancyWatchOS)
+
+

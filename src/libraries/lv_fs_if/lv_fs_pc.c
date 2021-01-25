@@ -295,7 +295,7 @@ static lv_fs_res_t fs_trunc (lv_fs_drv_t *drv, void *file_p)
     file_t *fp = file_p;         /*Just avoid the confusing casings*/
 
     fflush(*fp);                    /*If not syncronized fclose can write the truncated part*/
-    uint32_t p  = ftell(*fp);
+    // uint32_t p  = ftell(*fp);
     // ftruncate(fileno(*fp), p);
     return LV_FS_RES_OK;
 }

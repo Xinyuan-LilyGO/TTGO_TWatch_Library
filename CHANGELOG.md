@@ -57,3 +57,18 @@
 ## (14.12.2020)
 - Fix the problem that cannot be compiled in SimpleFramework
 
+## (24.12.2020)
+- Fix <UnitTest/ScreenRotation> coordinate residue
+
+## (29.12.2020)
+- Add Air530 driver for `TWATCH V2`
+- Add Air530Allfunction example <BasicUnit/Air530Allfunction>
+- Add Air530Display example <BasicUnit/Air530Display>
+
+## (3/1/2021)
+- Repair warning
+
+## (5/1/2021)
+- Add TWatch V3 board definition
+- Check the return value before setting the power output <src/drive/axp/axp202.cpp>
+- Move the Air530 example in <BasicUnit/TwatcV2Special/Air530*>

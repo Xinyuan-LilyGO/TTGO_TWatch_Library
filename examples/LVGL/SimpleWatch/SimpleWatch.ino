@@ -46,7 +46,6 @@ enum {
 
 QueueHandle_t g_event_queue_handle = NULL;
 EventGroupHandle_t g_event_group = NULL;
-EventGroupHandle_t isr_group = NULL;
 bool lenergy = false;
 TTGOClass *ttgo;
 
@@ -76,7 +75,6 @@ void setupNetwork()
 void low_energy()
 {
     if (ttgo->bl->isOn()) {
-        xEventGroupSetBits(isr_group, WATCH_FLAG_SLEEP_MODE);
         ttgo->closeBL();
         ttgo->stopLvglTick();
         ttgo->bma->enableStepCountInterrupt(false);
@@ -84,9 +82,6 @@ void low_energy()
         if (!WiFi.isConnected()) {
             lenergy = true;
             WiFi.mode(WIFI_OFF);
-            // rtc_clk_cpu_freq_set(RTC_CPU_FREQ_2M);
-            setCpuFrequencyMhz(20);
-
             Serial.println("ENTER IN LIGHT SLEEEP MODE");
             gpio_wakeup_enable ((gpio_num_t)AXP202_INT, GPIO_INTR_LOW_LEVEL);
             gpio_wakeup_enable ((gpio_num_t)BMA423_INT1, GPIO_INTR_HIGH_LEVEL);
@@ -113,8 +108,6 @@ void setup()
     //Create a program that allows the required message objects and group flags
     g_event_queue_handle = xQueueCreate(20, sizeof(uint8_t));
     g_event_group = xEventGroupCreate();
-    isr_group = xEventGroupCreate();
-
 
     ttgo = TTGOClass::getWatch();
 
@@ -125,12 +118,6 @@ void setup()
     ttgo->power->adc1Enable(AXP202_BATT_VOL_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1, AXP202_ON);
     ttgo->power->enableIRQ(AXP202_VBUS_REMOVED_IRQ | AXP202_VBUS_CONNECT_IRQ | AXP202_CHARGING_FINISHED_IRQ, AXP202_ON);
     ttgo->power->clearIRQ();
-
-    // Turn off unused power
-    ttgo->power->setPowerOutPut(AXP202_EXTEN, AXP202_OFF);
-    ttgo->power->setPowerOutPut(AXP202_DCDC2, AXP202_OFF);
-    ttgo->power->setPowerOutPut(AXP202_LDO3, AXP202_OFF);
-    ttgo->power->setPowerOutPut(AXP202_LDO4, AXP202_OFF);
 
     //Initialize lvgl
     ttgo->lvgl_begin();
@@ -144,17 +131,8 @@ void setup()
     pinMode(BMA423_INT1, INPUT);
     attachInterrupt(BMA423_INT1, [] {
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        EventBits_t  bits = xEventGroupGetBitsFromISR(isr_group);
-        if (bits & WATCH_FLAG_SLEEP_MODE)
-        {
-            //! For quick wake up, use the group flag
-            xEventGroupSetBitsFromISR(isr_group, WATCH_FLAG_SLEEP_EXIT | WATCH_FLAG_BMA_IRQ, &xHigherPriorityTaskWoken);
-        } else
-        {
-            uint8_t data = Q_EVENT_BMA_INT;
-            xQueueSendFromISR(g_event_queue_handle, &data, &xHigherPriorityTaskWoken);
-        }
-
+        uint8_t data = Q_EVENT_BMA_INT;
+        xQueueSendFromISR(g_event_queue_handle, &data, &xHigherPriorityTaskWoken);
         if (xHigherPriorityTaskWoken)
         {
             portYIELD_FROM_ISR ();
@@ -165,16 +143,8 @@ void setup()
     pinMode(AXP202_INT, INPUT);
     attachInterrupt(AXP202_INT, [] {
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        EventBits_t  bits = xEventGroupGetBitsFromISR(isr_group);
-        if (bits & WATCH_FLAG_SLEEP_MODE)
-        {
-            //! For quick wake up, use the group flag
-            xEventGroupSetBitsFromISR(isr_group, WATCH_FLAG_SLEEP_EXIT | WATCH_FLAG_AXP_IRQ, &xHigherPriorityTaskWoken);
-        } else
-        {
-            uint8_t data = Q_EVENT_AXP_INT;
-            xQueueSendFromISR(g_event_queue_handle, &data, &xHigherPriorityTaskWoken);
-        }
+        uint8_t data = Q_EVENT_AXP_INT;
+        xQueueSendFromISR(g_event_queue_handle, &data, &xHigherPriorityTaskWoken);
         if (xHigherPriorityTaskWoken)
         {
             portYIELD_FROM_ISR ();
@@ -227,45 +197,12 @@ void loop()
 {
     bool  rlst;
     uint8_t data;
-    //! Fast response wake-up interrupt
-    EventBits_t  bits = xEventGroupGetBits(isr_group);
-    if (bits & WATCH_FLAG_SLEEP_EXIT) {
-        if (lenergy) {
-            lenergy = false;
-            // rtc_clk_cpu_freq_set(RTC_CPU_FREQ_160M);
-            setCpuFrequencyMhz(160);
-        }
-
-        low_energy();
-
-        if (bits & WATCH_FLAG_BMA_IRQ) {
-            do {
-                rlst =  ttgo->bma->readInterrupt();
-            } while (!rlst);
-            xEventGroupClearBits(isr_group, WATCH_FLAG_BMA_IRQ);
-        }
-        if (bits & WATCH_FLAG_AXP_IRQ) {
-            ttgo->power->readIRQ();
-            ttgo->power->clearIRQ();
-            //TODO: Only accept axp power pek key short press
-            xEventGroupClearBits(isr_group, WATCH_FLAG_AXP_IRQ);
-        }
-        xEventGroupClearBits(isr_group, WATCH_FLAG_SLEEP_EXIT);
-        xEventGroupClearBits(isr_group, WATCH_FLAG_SLEEP_MODE);
-    }
-    if ((bits & WATCH_FLAG_SLEEP_MODE)) {
-        //! No event processing after entering the information screen
-        return;
-    }
-
-    //! Normal polling
     if (xQueueReceive(g_event_queue_handle, &data, 5 / portTICK_RATE_MS) == pdPASS) {
         switch (data) {
         case Q_EVENT_BMA_INT:
             do {
                 rlst =  ttgo->bma->readInterrupt();
             } while (!rlst);
-
             //! setp counter
             if (ttgo->bma->isStepCounter()) {
                 updateStepCounter(ttgo->bma->getCounter());
@@ -299,7 +236,6 @@ void loop()
         default:
             break;
         }
-
     }
     if (lv_disp_get_inactive_time(NULL) < DEFAULT_SCREEN_TIMEOUT) {
         lv_task_handler();

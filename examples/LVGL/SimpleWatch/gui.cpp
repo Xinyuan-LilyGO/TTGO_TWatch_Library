@@ -1125,9 +1125,17 @@ void wifi_kb_event_cb(Keyboard::kb_event_t event)
         Serial.println(kb->getText());
         strlcpy(password, kb->getText(), sizeof(password));
         pl->hidden(false);
+
+        //When calling wifi, touch interruption may cause an exception, please disable it first
+        TTGOClass *ttgo = TTGOClass::getWatch();
+        ttgo->disableTouchIRQ();
+
         WiFi.mode(WIFI_STA);
         WiFi.disconnect();
         WiFi.begin(ssid, password);
+
+        ttgo->enableTouchIRQ();
+
         gTicker = new Ticker;
         gTicker->once_ms(5 * 1000, []() {
             wifi_connect_status(false);
