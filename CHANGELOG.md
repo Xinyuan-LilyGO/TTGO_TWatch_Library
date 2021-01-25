@@ -72,3 +72,6 @@
 - Add TWatch V3 board definition
 - Check the return value before setting the power output <src/drive/axp/axp202.cpp>
 - Move the Air530 example in <BasicUnit/TwatcV2Special/Air530*>
+
+## (25/1/2021)
+- Add Twatch-V2, Twatch-V3 BMA423 different mapping

@@ -1120,12 +1120,28 @@ private:
             log_e("Begin BMA423 FAIL");
             return false;
         }
-        // T-Watch 2020 and 2019 use different mapping axes
-#if defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2)
+
+#if defined(LILYGO_WATCH_2020_V1)
         remap_data.x_axis = 0;
         remap_data.x_axis_sign = 1;
         remap_data.y_axis = 1;
         remap_data.y_axis_sign = 0;
+        remap_data.z_axis  = 2;
+        remap_data.z_axis_sign  = 1;
+
+#elif defined(LILYGO_WATCH_2020_V2)
+        remap_data.x_axis = 1;
+        remap_data.x_axis_sign = 0;
+        remap_data.y_axis = 0;
+        remap_data.y_axis_sign = 0;
+        remap_data.z_axis  = 2;
+        remap_data.z_axis_sign  = 1;
+
+#elif defined(LILYGO_WATCH_2020_V3)
+        remap_data.x_axis = 1;
+        remap_data.x_axis_sign = 1;
+        remap_data.y_axis = 0;
+        remap_data.y_axis_sign = 1;
         remap_data.z_axis  = 2;
         remap_data.z_axis_sign  = 1;
 #else
