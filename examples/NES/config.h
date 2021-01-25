@@ -2,8 +2,9 @@
 // #define LILYGO_LILYPI_V1
 // #define LILYGO_WATCH_2019_WITH_TOUCH     // To use T-Watch2019 with touchscreen, please uncomment this line
 // #define LILYGO_WATCH_2019_NO_TOUCH       // To use T-Watch2019 Not touchscreen , please uncomment this line
-// #define LILYGO_WATCH_2020_V1             //To use T-Watch2020, please uncomment this line
-// #define LILYGO_WATCH_2020_V2             //To use T-Watch2020, please uncomment this line
+// #define LILYGO_WATCH_2020_V1                 // To use T-Watch2020 V1, please uncomment this line
+// #define LILYGO_WATCH_2020_V2                 // To use T-Watch2020 V2, please uncomment this line
+// #define LILYGO_WATCH_2020_V3                 // To use T-Watch2020 V3, please uncomment this line
 
 // Controller select
 // #define HW_CONTROLLER_DABBLE_APP         //Need to install Dabble App on your phone,download link : https://play.google.com/store/apps/details?id=io.dabbleapp&hl=en_US&gl=US

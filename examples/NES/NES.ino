@@ -4,6 +4,8 @@
 * - Added Dabble App Bluetooth control method for watch without handle
 * - Dabble App download link : https://play.google.com/store/apps/details?id=io.dabbleapp&hl=en_US&gl=US
 *   Adapted to Twatch by Lewis 04/11/2020
+*   Please upload to spiffs with esp32fs , If you have not installed it, please see here
+*   https://github.com/me-no-dev/arduino-esp32fs-plugin
 * */
 
 #pragma mark - Depend arduino-nofrendo  & DabbleESP32 library
