@@ -99,16 +99,16 @@
 * The gps power domain is LDO3
 
 ## 3.datasheet
-[Esp32](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf)
-[AXP202](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202)
-[BMA423](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423)
-[ST7789](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf)
-[PCF8563](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC)
-[FT6236](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/TOUCHSCREEN/FT6236-FT6336-FT6436L-FT6436_Datasheet.pdf)
-[MPU6050](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/MPU6050)
-[ACSIP_S7678G](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/ACSIP_S7678G)
-[NFC/PN532](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/NFC)
-[3D Shell](https://github.com/Xinyuan-LilyGO/LilyGo-TWatch-DataSheet/tree/master/3DSHELL)
+- [Esp32](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf)
+- [AXP202](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202)
+- [BMA423](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423)
+- [ST7789](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf)
+- [PCF8563](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC)
+- [FT6236](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/TOUCHSCREEN/FT6236-FT6336-FT6436L-FT6436_Datasheet.pdf)
+- [MPU6050](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/MPU6050)
+- [ACSIP_S7678G](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/ACSIP_S7678G)
+- [NFC/PN532](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/NFC)
+- [3D Shell](https://github.com/Xinyuan-LilyGO/LilyGo-TWatch-DataSheet/tree/master/3DSHELL)
 
 ## 4.other
 - [Acsip S76/78 Library&Examples](https://github.com/lewisxhe/Acsip-S7xG-Library)
