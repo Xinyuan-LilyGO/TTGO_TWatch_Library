@@ -6,6 +6,8 @@
 
 //NOT SUPPORT ...
 // //#define LILYGO_WATCH_2020_V1
+// //#define LILYGO_WATCH_2020_V2
+// //#define LILYGO_WATCH_2020_V3
 //NOT SUPPORT ...
 
 #include <LilyGoWatch.h>

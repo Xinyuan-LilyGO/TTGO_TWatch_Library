@@ -75,3 +75,5 @@
 
 ## (25/1/2021)
 - Add Twatch-V2, Twatch-V3 BMA423 different mapping
+- Update BaseUnit example
+
