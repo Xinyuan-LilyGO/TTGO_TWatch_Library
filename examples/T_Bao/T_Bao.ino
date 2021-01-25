@@ -1,12 +1,12 @@
 /*
- * T_Bao: Steel ball trolley produced by LilyGo
- * Copyright 2020 Lewis he
- */
+   T_Bao: Steel ball trolley produced by LilyGo
+   Copyright 2020 Lewis he
+*/
 #pragma mark - Depend DabbleESP32 & Adafruit_NeoPixel library
 /*
-cd ~/Arduino/libraries
-git clone https://github.com/Xinyuan-LilyGO/DabbleESP32.git
-git clone https://github.com/adafruit/Adafruit_NeoPixel.git
+  cd ~/Arduino/libraries
+  git clone https://github.com/Xinyuan-LilyGO/DabbleESP32.git
+  git clone https://github.com/adafruit/Adafruit_NeoPixel.git
 */
 #include <DabbleESP32.h>
 #include "config.h"
@@ -94,27 +94,27 @@ void loop()
     if (GamePad.isUpPressed()) {
         lv_img_set_src(img, &icon2);
         Motor1.moveMotor(-2.55 * 100);
-        Motor2.moveMotor(2.55 * 100);
+        Motor2.moveMotor(-2.55 * 100);
         start = true;
     } else if (GamePad.isDownPressed()) {
         lv_img_set_src(img, &icon3);
         Motor1.moveMotor(2.55 * 100);
-        Motor2.moveMotor(-2.55 * 100);
+        Motor2.moveMotor(2.55 * 100);
         start = true;
     } else if (GamePad.isLeftPressed()) {
         lv_img_set_src(img, &icon4);
-        Motor1.freeMotor();
-        Motor2.moveMotor(2.55 * 100);
+        Motor1.moveMotor(-2.55 * 100);
+//    Motor2.moveMotor(2.55 * 100);
         start = true;
     } else if (GamePad.isRightPressed()) {
-        lv_img_set_src(img, &icon6);
-        Motor1.moveMotor(-2.55 * 100);
-        Motor2.freeMotor();
+        lv_img_set_src(img, &icon4);
+        Motor1.moveMotor(2.55 * 100);
+//    Motor2.moveMotor(-2.55 * 100);
         start = true;
     } else {
         if (start) {
             start = false;
-            lv_img_set_src(img, &icon5);
+            lv_img_set_src(img, &icon1);
             Motor1.freeMotor();
             Motor2.freeMotor();
         }
@@ -166,5 +166,3 @@ void loop()
         }
     }
 }
-
-
