@@ -51,4 +51,4 @@
 - [BMA423](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423)
 - [ST7789](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf)
 - [PCF8563](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC)
-- [FT6336](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/TOUCHSCREEN/FT6336-FT6336-FT6436L-FT6436_Datasheet.pdf)
+- [FT6336](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/TOUCHSCREEN)
