@@ -6,7 +6,7 @@
 |       Core        |  ESP32-DOWDQ6  |
 |       Flash       |      16MB      |
 |       SPRAM       |      8MB       |
-|   TOUCH Driver    |     FT6236     |
+|   TOUCH Driver    |     FT6336     |
 |    TFT Driver     |     ST7789     |
 |     TFT Size      |  240x240/1.54  |
 |      TFT RST      |      N/A       |
@@ -18,11 +18,11 @@
 |   TFT BackLight   |       12       |
 |    SENSOR SDA     |       21       |
 |    SENSOR SCL     |       22       |
-|    FT6236 SDA     |       23       |
-|    FT6236 SCL     |       32       |
+|    FT6336 SDA     |       23       |
+|    FT6336 SCL     |       32       |
 |       MOTOR       |       4        |
 | BMA423 Interrupt  |       39       |
-| FT6236 Interrupt  |       38       |
+| FT6336 Interrupt  |       38       |
 | PCF8563 Interrupt |       37       |
 | AXP202 Interrupt  |       35       |
 |      I2S BCK      |       26       |
@@ -51,4 +51,4 @@
 - [BMA423](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423)
 - [ST7789](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf)
 - [PCF8563](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC)
-- [FT6236](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/TOUCHSCREEN/FT6236-FT6336-FT6436L-FT6436_Datasheet.pdf)
+- [FT6336](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/TOUCHSCREEN/FT6336-FT6336-FT6436L-FT6436_Datasheet.pdf)

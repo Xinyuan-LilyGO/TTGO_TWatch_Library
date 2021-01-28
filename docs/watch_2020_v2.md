@@ -5,10 +5,10 @@
 | :---------------: | :----------------------: |
 |       Core        |       ESP32-DOWDQ6       |
 |       Flash       |           16MB           |
-|       SPRAM       |           8MB            |
-|   TOUCH Driver    |          FT6236          |
+|       PSRAM       |           4MB            |
+|   TOUCH Driver    |          FT6336          |
 |    TFT Driver     |          ST7789          |
-|    GPS Module     |          Air530          |
+|    GPS Module     |           L76K           |
 |     TFT Size      |       240x240/1.54       |
 |      TFT RST      |           N/A            |
 |     TFT MISO      |           N/A            |
@@ -16,24 +16,22 @@
 |     TFT SCLK      |            18            |
 |      TFT DC       |            27            |
 |      TFT CS       |            5             |
-|   TFT BackLight   |            12            |
+|   TFT BackLight   |            25            |
 |    SENSOR SDA     |            21            |
 |    SENSOR SCL     |            22            |
-|    FT6236 SDA     |            23            |
-|    FT6236 SCL     |            32            |
-|   FT6236 RESET    | AXP202 EXTEN Pin control |
+|    FT6336 SDA     |            23            |
+|    FT6336 SCL     |            32            |
+|   FT6336 RESET    | AXP202 EXTEN Pin control |
 | BMA423 Interrupt  |            39            |
-| FT6236 Interrupt  |            38            |
+| FT6336 Interrupt  |            38            |
 | PCF8563 Interrupt |            37            |
 | AXP202 Interrupt  |            35            |
+|     GPS 1PPS      |            34            |
 |      GPS TX       |            26            |
-|      GPS RX       |            25            |
+|      GPS RX       |            36            |
 |    GPS WAKEUP     |            33            |
-|      IR Send      |            4             |
-|      SD MISO      |            2             |
-|      SD MOSI      |            15            |
-|      SD SCLK      |            14            |
-|       SD CS       |            13            |
+|      IR Send      |            2             |
+
 
 
 ## 2. AXP202 Power domain
@@ -55,7 +53,7 @@
 - [BMA423](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423)
 - [ST7789](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf)
 - [PCF8563](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC)
-- [FT6236](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/TOUCHSCREEN/FT6236-FT6336-FT6436L-FT6436_Datasheet.pdf)
+- [FT6336](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/TOUCHSCREEN/FT6336-FT6336-FT6436L-FT6436_Datasheet.pdf)
 
 
 

@@ -9,7 +9,7 @@
 #define TWATCH_TFT_CS               (gpio_num_t)5
 #define TWATCH_TFT_DC               (gpio_num_t)27
 #define TWATCH_TFT_RST              (gpio_num_t)-1
-#define TWATCH_TFT_BL               (gpio_num_t)12
+#define TWATCH_TFT_BL               (gpio_num_t)25
 
 #define TOUCH_SDA                   23
 #define TOUCH_SCL                   32
@@ -23,11 +23,11 @@
 #define AXP202_INT                  35
 #define BMA423_INT1                 39
 
-#define TWATCH_2020_IR_PIN          4
+#define TWATCH_2020_IR_PIN          2
 
 //GPS power domain is AXP202 LDO4
 #define GPS_1PPS                    34
-#define GPS_RX                      25
+#define GPS_RX                      36
 #define GPS_TX                      26
 #define GPS_WAKE                    33
 #define GPS_BAUD_RATE               9600
