@@ -883,7 +883,7 @@ public:
 
 
 #if defined(LILYGO_WATCH_AIR530_GPS)
-    //Only applicable to TWATCH V2
+    //retain Air530
     Air530 *gps = nullptr;
 
     Air530 *gps_begin()

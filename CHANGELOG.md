@@ -80,4 +80,8 @@
 
 ## (28/1/2021)
 - Add touch three mode test example <BasicUnit/TouchpanelMode>
+- Delete Air530 example 
+- Add basic Twatch 2020 V2 GPS example 
+- Update TWATCH 2020 V2 pin definition 
+- Update pin definition document 
 
