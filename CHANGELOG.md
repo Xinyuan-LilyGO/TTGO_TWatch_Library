@@ -77,3 +77,7 @@
 - Add Twatch-V2, Twatch-V3 BMA423 different mapping
 - Update BaseUnit example
 
+
+## (28/1/2021)
+- Add touch three mode test example <BasicUnit/TouchpanelMode>
+
