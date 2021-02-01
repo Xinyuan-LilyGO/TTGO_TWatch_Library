@@ -71,6 +71,238 @@
 - [TWATCH 2020 V2 Pin mapping and other instructions](docs/watch_2020_v2.md)
 - [TWATCH 2020 V3 Pin mapping and other instructions](docs/watch_2020_v3.md)
 
+
+
+<h2 align = "left">🚩 Version comparison </h2>
+
+
+<table border="0" align="center">
+<tr>
+<td align="center">Product</td>
+<td align="center"><a href="https://www.aliexpress.com/item/33038999162.html">T-Watch-2019</a></td>
+<td align="center"><a href="https://www.aliexpress.com/item/4000971508364.html">T-Watch-2020-V1</a></td>
+<td align="center">T-Watch-2020-V2</a></td>
+<td align="center"><a href="https://www.aliexpress.com/item/1005002053650442.html">T-Watch-2020-V3</a></td>
+<td align="center"><a href="https://www.aliexpress.com/item/1005001824993604.html">T-Block/T-Block-V1</a></td>
+</tr>
+
+<tr>
+<td align="center">Core </td>
+<td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
+<td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
+<td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
+<td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
+<td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
+</tr>
+
+<tr>
+<td align="center">PSRAM </td>
+<!-- 2019 -->
+<td align="center">16MBytes</a></td>
+<!-- 2020 V1 -->
+<td align="center">16MBytes</a></td>
+<!-- 2020 V2 -->
+<td align="center">16MBytes</a></td>
+<!-- 2020 V3 -->
+<td align="center">16MBytes</a></td>
+<!-- TBLOCK -->
+<td align="center">16MBytes</a></td>
+</tr>
+
+<tr>
+<td align="center">Flash </td>
+<!-- 2019 -->
+<td align="center">8MBytes</a></td>
+<!-- 2020 V1 -->
+<td align="center">8MBytes</a></td>
+<!-- 2020 V2 -->
+<td align="center">4MBytes</a></td>
+<!-- 2020 V3 -->
+<td align="center">8MBytes</a></td>
+<!-- TBLOCK -->
+<td align="center">8MBytes</a></td>
+</tr>
+
+
+<tr>
+<td align="center">PMU </td>
+<!-- 2019 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202">AXP202</a></td>
+<!-- 2020 V1 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202">AXP202</a></td>
+<!-- 2020 V2 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202">AXP202</a></td>
+<!-- 2020 V3 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202">AXP202</a></td>
+<!-- TBLOCK -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202">AXP202</a></td>
+</tr>
+
+<tr>
+<td align="center">IMU </td>
+<!-- 2019 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">BMA423</a></td>
+<!-- 2020 V1 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">BMA423</a></td>
+<!-- 2020 V2 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">BMA423</a></td>
+<!-- 2020 V3 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">BMA423</a></td>
+<!-- TBLOCK -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">BMA423</a></td>
+</tr>
+
+
+<tr>
+<td align="center">TFT </td>
+<!-- 2019 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf">1.54"/240X240/ST7789V</a></td>
+<!-- 2020 V1 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf">1.54"/240X240/ST7789V</a></td>
+<!-- 2020 V2 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf">1.54"/240X240/ST7789V</a></td>
+<!-- 2020 V3 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf">1.54"/240X240/ST7789V</a></td>
+<!-- TBLOCK -->
+<td align="center">[1]</a></td>
+</tr>
+
+<tr>
+<td align="center">TouchScreen </td>
+<!-- 2019 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/TOUCHSCREEN">FT6336</a></td>
+<!-- 2020 V1 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/TOUCHSCREEN">FT6336</a></td>
+<!-- 2020 V2 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/TOUCHSCREEN">FT6336</a></td>
+<!-- 2020 V3 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/TOUCHSCREEN">FT6336</a></td>
+<!-- TBLOCK -->
+<td align="center">[1]</a></td>
+</tr>
+
+<tr>
+<td align="center">Real Time Clock </td>
+<!-- 2019 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
+<!-- 2020 V1 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
+<!-- 2020 V2 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
+<!-- 2020 V3 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
+<!-- TBLOCK -->
+<td align="center">[1]</a></td>
+</tr>
+
+
+
+<tr>
+<td align="center">Infrared sensor  </td>
+<!-- 2019 -->
+<td align="center">❌</a></td>
+<!-- 2020 V1 -->
+<td align="center">✅</a></td>
+<!-- 2020 V2 -->
+<td align="center">✅</a></td>
+<!-- 2020 V3 -->
+<td align="center">✅</a></td>
+<!-- TBLOCK -->
+<td align="center">❌</a></td>
+</tr>
+
+
+<tr>
+<td align="center">Scalable </td>
+<!-- 2019 -->
+<td align="center">✅</a></td>
+<!-- 2020 V1 -->
+<td align="center">❌</a></td>
+<!-- 2020 V2 -->
+<td align="center">✅</a></td>
+<!-- 2020 V3 -->
+<td align="center">❌</a></td>
+<!-- TBLOCK -->
+<td align="center">✅</a></td>
+</tr>
+
+<tr>
+<td align="center">Microphone </td>
+<!-- 2019 -->
+<td align="center">[1]</a></td>
+<!-- 2020 V1 -->
+<td align="center">❌</a></td>
+<!-- 2020 V2 -->
+<td align="center">❌</a></td>
+<!-- 2020 V3 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">SPM1423HM4H</a></td>
+<!-- TBLOCK -->
+<td align="center">[1]</a></td>
+</tr>
+
+<tr>
+<td align="center">GPS </td>
+<!-- 2019 -->
+<td align="center">[1]</a></td>
+<!-- 2020 V1 -->
+<td align="center">❌</a></td>
+<!-- 2020 V2 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/L67K"> Quectel L67K</a></td>
+<!-- 2020 V3 -->
+<td align="center">❌</a></td>
+<!-- TBLOCK -->
+<td align="center">[1]</a></td>
+</tr>
+
+<tr>
+<td align="center">Decoder </td>
+<!-- 2019 -->
+<td align="center">[1]</a></td>
+<!-- 2020 V1 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/MAX98357A">MAX98357A</a></td>
+<!-- 2020 V2 -->
+<td align="center">❌</a></td>
+<!-- 2020 V3 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/MAX98357A">MAX98357A</a></td>
+<!-- TBLOCK -->
+<td align="center">[1]</a></td>
+</tr>
+
+
+<tr>
+<td align="center">Tactile  </td>
+<!-- 2019 -->
+<td align="center">[1]</a></td>
+<!-- 2020 V1 -->
+<td align="center">✅(IO Control)</a></td>
+<!-- 2020 V2 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/DRV2605">DRV2605(I2C Control)</a></td>
+<!-- 2020 V3 -->
+<td align="center">✅(IO Control)</td>
+<!-- TBLOCK -->
+<td align="center">[1]</a></td>
+</tr>
+
+
+<tr>
+<td align="center">Button</td>
+<!-- 2019 -->
+<td align="center">✅</a></td>
+<!-- 2020 V1 -->
+<td align="center">✅</a></td>
+<!-- 2020 V2 -->
+<td align="center">✅</a></td>
+<!-- 2020 V3 -->
+<td align="center">✅</a></td>
+<!-- TBLOCK -->
+<td align="center">✅</a></td>
+</tr>
+
+</table>
+
+- [1]:Need expansion board to support 
+- [2]:The buttons are AXP202 PEK programmable buttons 
+
  <h2 align = "left">🔶 More interesting projects</h2>
 
 - [Micropython-twatch2020](https://y0no.fr/posts/micropython-ttgo-twatch2020/)
