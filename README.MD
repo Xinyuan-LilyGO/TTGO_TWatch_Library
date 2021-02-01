@@ -149,7 +149,7 @@
 <!-- 2020 V3 -->
 <td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">BMA423</a></td>
 <!-- TBLOCK -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">BMA423</a></td>
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/MPU6050">MPU6050</a></td>
 </tr>
 
 
