@@ -33,6 +33,6 @@
 #define GPS_BAUD_RATE               9600
 
 #define SD_CS                       13
-#define SD_MISO                     2
+#define SD_MISO                     4
 #define SD_MOSI                     15
 #define SD_SCLK                     14
