@@ -84,7 +84,9 @@
 <td align="center">T-Watch-2020-V2</a></td>
 <td align="center"><a href="https://www.aliexpress.com/item/1005002053650442.html">T-Watch-2020-V3</a></td>
 <td align="center"><a href="https://www.aliexpress.com/item/1005001824993604.html">T-Block/T-Block-V1</a></td>
+<td align="center"><a href="https://www.aliexpress.com/item/1005001447548347.html">LilyPi</a></td>
 </tr>
+
 
 <tr>
 <td align="center">Core </td>
@@ -93,6 +95,7 @@
 <td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
 <td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
 <td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
+<td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32-wrover-b_datasheet_cn.pdf">ESP32-WROVER-B</a></td>
 </tr>
 
 <tr>
@@ -107,6 +110,8 @@
 <td align="center">16MBytes</a></td>
 <!-- TBLOCK -->
 <td align="center">16MBytes</a></td>
+<!-- LILYPI -->
+<td align="center">16MBytes</a></td>
 </tr>
 
 <tr>
@@ -120,6 +125,8 @@
 <!-- 2020 V3 -->
 <td align="center">8MBytes</a></td>
 <!-- TBLOCK -->
+<td align="center">8MBytes</a></td>
+<!-- LILYPI -->
 <td align="center">8MBytes</a></td>
 </tr>
 
@@ -136,6 +143,8 @@
 <td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202">AXP202</a></td>
 <!-- TBLOCK -->
 <td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202">AXP202</a></td>
+<!-- LILYPI -->
+<td align="center">❌</a></td>
 </tr>
 
 <tr>
@@ -150,6 +159,8 @@
 <td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">BMA423</a></td>
 <!-- TBLOCK -->
 <td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/MPU6050">MPU6050</a></td>
+<!-- LILYPI -->
+<td align="center">❌</a></td>
 </tr>
 
 
@@ -165,6 +176,8 @@
 <td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf">1.54"/240X240/ST7789V</a></td>
 <!-- TBLOCK -->
 <td align="center">[1]</a></td>
+<!-- LILYPI -->
+<td align="center">[1]</a></td>
 </tr>
 
 <tr>
@@ -179,6 +192,8 @@
 <td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/TOUCHSCREEN">FT6336</a></td>
 <!-- TBLOCK -->
 <td align="center">[1]</a></td>
+<!-- LILYPI -->
+<td align="center">[1]</a></td>
 </tr>
 
 <tr>
@@ -192,7 +207,9 @@
 <!-- 2020 V3 -->
 <td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
 <!-- TBLOCK -->
-<td align="center">[1]</a></td>
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
+<!-- 2020 V3 -->
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
 </tr>
 
 
@@ -209,6 +226,8 @@
 <td align="center">✅</a></td>
 <!-- TBLOCK -->
 <td align="center">❌</a></td>
+<!-- LILYPI -->
+<td align="center">❌</a></td>
 </tr>
 
 
@@ -224,6 +243,8 @@
 <td align="center">❌</a></td>
 <!-- TBLOCK -->
 <td align="center">✅</a></td>
+<!-- LILYPI -->
+<td align="center">✅</a></td>
 </tr>
 
 <tr>
@@ -238,6 +259,8 @@
 <td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">SPM1423HM4H</a></td>
 <!-- TBLOCK -->
 <td align="center">[1]</a></td>
+<!-- LILYPI -->
+<td align="center">❌</a></td>
 </tr>
 
 <tr>
@@ -252,6 +275,8 @@
 <td align="center">❌</a></td>
 <!-- TBLOCK -->
 <td align="center">[1]</a></td>
+<!-- LILYPI -->
+<td align="center">❌</a></td>
 </tr>
 
 <tr>
@@ -266,6 +291,8 @@
 <td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/MAX98357A">MAX98357A</a></td>
 <!-- TBLOCK -->
 <td align="center">[1]</a></td>
+<!-- LILYPI -->
+<td align="center">❌</a></td>
 </tr>
 
 
@@ -281,6 +308,8 @@
 <td align="center">✅(IO Control)</td>
 <!-- TBLOCK -->
 <td align="center">[1]</a></td>
+<!-- LILYPI -->
+<td align="center">❌</a></td>
 </tr>
 
 
@@ -289,12 +318,14 @@
 <!-- 2019 -->
 <td align="center">✅</a></td>
 <!-- 2020 V1 -->
-<td align="center">✅</a></td>
+<td align="center">✅[2]</a></td>
 <!-- 2020 V2 -->
-<td align="center">✅</a></td>
+<td align="center">✅[2]</a></td>
 <!-- 2020 V3 -->
-<td align="center">✅</a></td>
+<td align="center">✅[2]</a></td>
 <!-- TBLOCK -->
+<td align="center">✅[2]</a></td>
+<!-- LILYPI -->
 <td align="center">✅</a></td>
 </tr>
 
