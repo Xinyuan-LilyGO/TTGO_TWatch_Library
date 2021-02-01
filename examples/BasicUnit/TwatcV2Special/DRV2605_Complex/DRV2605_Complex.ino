@@ -27,6 +27,9 @@ void setup()
     tft->setTextColor(TFT_GREEN, TFT_BLACK);
     tft->println("DRV2605 complex example");
 
+    //Enable DRV2605
+    ttgo->enableDrv2650();
+
     // I2C trigger by sending 'go' command
     drv->setMode(DRV2605_MODE_INTTRIG); // default, internal trigger when sending GO command
 

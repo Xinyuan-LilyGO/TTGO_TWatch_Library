@@ -26,6 +26,9 @@ void setup()
     tft->setCursor(0, 0);
     tft->setTextColor(TFT_GREEN, TFT_BLACK);
 
+    //Enable DRV2605
+    ttgo->enableDrv2650();
+
     drv->selectLibrary(1);
 
     // I2C trigger by sending 'go' command

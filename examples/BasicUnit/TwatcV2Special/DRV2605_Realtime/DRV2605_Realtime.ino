@@ -37,6 +37,9 @@ void setup()
     tft->setTextColor(TFT_GREEN, TFT_BLACK);
     tft->println("DRV2605 realtime example");
 
+    //Enable DRV2605
+    ttgo->enableDrv2650();
+
     // Set Real-Time Playback mode
     drv->setMode(DRV2605_MODE_REALTIME);
 }
