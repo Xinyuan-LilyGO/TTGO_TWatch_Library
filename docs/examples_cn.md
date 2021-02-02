@@ -14,7 +14,6 @@
 │   ├── DRV2605_Complex             #DRV2605 Vibration Complex
 │   ├── DRV2605_Realtime            #DRV2605 Vibration Realtime
 │   ├── DrawSD_BMP                  #画BMP格式图片到屏幕(只适用带SD卡槽主板)
-│   ├── GPS_Unit                    #TWatch-2020-V2 GPS unit test
 │   ├── Motor                       #基本震动驱动示例
 │   ├── PlayMP3FromPROGMEM          #从Flash中获取音频数据播放MP3  
 │   ├── PlayMP3FromSDToDAC          #从SD卡中获取音频数据播放MP3
@@ -25,6 +24,13 @@
 │   ├── TimeSynchronization         #WiFi时间同步
 │   ├── TouchMultitask              #多任务触摸读取
 │   ├── TouchPad                    #基本触摸示例
+│   ├── TwatcV2Special              #T-Watch-V2特有功能
+│   │   ├── DRV2605_Basic           #DRV2605 触觉反馈示例
+│   │   ├── DRV2605_Complex         #DRV2605 触觉反馈示例
+│   │   ├── DRV2605_Realtime        #DRV2605 触觉反馈示例
+│   │   └── GPSDisplay              #GPS定位示例
+│   ├── TwatcV3Special              #T-Watch-V3特有功能
+│   │   └── Microphone              #麦克风测试
 │   ├── UserButton                  #基本用户按键示例
 │   ├── WakeupFormPEKKey            #使用电源管理PEK按键唤醒ESP32
 │   ├── WakeupFormSensor            #使用三轴加速度计唤醒ESP32
@@ -50,6 +56,9 @@
 │   ├── IRRemote                    #使用外部模块红外遥控示例
 │   └── lv_demo_widgets             #lvgl 演示示例
 ├── NES                             #NES游戏模拟器
+├── Retention                       #示例保留目录
+│   ├── Air530Allfunction
+│   └── Air530Display
 ├── Sensor                          #传感器目录
 │   ├── Fingerprint                 #指纹传感器示例
 │   ├── MAX30208                    #MAX30208 温度传感器

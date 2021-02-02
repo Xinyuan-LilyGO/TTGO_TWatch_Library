@@ -10,11 +10,7 @@
 │   ├── BMA423_StepCount            #Three-axis accelerometer built-in steps acquisition example
 │   ├── BluetoothAudio              #Bluetooth playback
 │   ├── BluetoothAudioWeb           #Bluetooth playback, with web control
-│   ├── DRV2605_Basic               #DRV2605 Vibration Basic
-│   ├── DRV2605_Complex             #DRV2605 Vibration Complex
-│   ├── DRV2605_Realtime            #DRV2605 Vibration Realtime
 │   ├── DrawSD_BMP                  #Draw BMP format pictures to the screen (only for motherboards with SD card slot)
-│   ├── GPS_Unit                    #TWatch-2020-V2 GPS unit test
 │   ├── Motor                       #Basic Vibration Drive
 │   ├── PlayMP3FromPROGMEM          #Get audio data from Flash and play MP3      
 │   ├── PlayMP3FromSDToDAC          #Get audio data from SD card to play MP3
@@ -26,6 +22,13 @@
 │   ├── TouchMultitask              #Touch multitasking
 │   ├── TouchPad                    #Basic touch example
 │   ├── UserButton                  #Basic user button example
+│   ├── TwatcV2Special              #T-Watch-2020-V2 unique features 
+│   │   ├── DRV2605_Basic           #DRV2605 haptic feedback example 
+│   │   ├── DRV2605_Complex         #DRV2605 haptic feedback example 
+│   │   ├── DRV2605_Realtime        #DRV2605 haptic feedback example 
+│   │   └── GPSDisplay              #GPS positioning example 
+│   ├── TwatcV3Special              #T-Watch-2020-V3 unique features 
+│   │   └── Microphone              #Microphone test 
 │   ├── WakeupFormPEKKey            #Use the power management PEK button to wake up ESP32
 │   ├── WakeupFormSensor            #Use the three-axis accelerometer to wake up the ESP32
 │   ├── WakeupFormTimer             #Use built-in timer to wake up ESP32
@@ -50,6 +53,9 @@
 │   ├── IRRemote                    #Example of using external module infrared remote control
 │   └── lv_demo_widgets             #lvgl example
 ├── NES                             #NES emulator
+├── Retention                       #示例保留目录
+│   ├── Air530Allfunction
+│   └── Air530Display
 ├── Sensor                          
 │   ├── Fingerprint                 #Fingerprint sensor example
 │   ├── MAX30208                    #MAX30208 temperature sensor
