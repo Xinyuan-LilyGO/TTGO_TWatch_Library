@@ -85,3 +85,5 @@
 - Update TWATCH 2020 V2 pin definition 
 - Update pin definition document 
 
+## (23/2/2021)
+- <BasicUnit/AXP20x_ADC> example compatible with T-Block 
