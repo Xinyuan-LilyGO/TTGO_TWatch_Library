@@ -122,6 +122,7 @@ typedef FocalTech_Class CapacitiveTouch ;
 #include "libraries/Adafruit_DRV2605_Library/Adafruit_DRV2605.h"
 #endif
 
+
 #if !defined(EXTERNAL_TFT_ESPI_LIBRARY) && !defined(LILYGO_BLOCK_ILI9488_MODULE) && !defined(TWATCH_USE_PSRAM_ALLOC_LVGL)
 // #define ENABLE_LVGL_FLUSH_DMA       //Use DMA for transmission by default
 #endif
@@ -737,7 +738,7 @@ public:
 #endif  /*LILYGO_WATCH_HAS_TOUCH*/
 
 
-#ifdef  LILYGO_WATCH_2020_V1
+#if defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2020_V3)
 #define LILYGO_WATCH_LVGL_FS_SPIFFS
 #endif
 
