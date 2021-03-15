@@ -270,7 +270,7 @@
 <!-- 2020 V1 -->
 <td align="center">❌</a></td>
 <!-- 2020 V2 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/L67K"> Quectel L67K</a></td>
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/L76K"> Quectel L76K</a></td>
 <!-- 2020 V3 -->
 <td align="center">❌</a></td>
 <!-- TBLOCK -->
