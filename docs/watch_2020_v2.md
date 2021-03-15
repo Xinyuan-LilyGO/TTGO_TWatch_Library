@@ -48,7 +48,7 @@
 
 ## 3.datasheet
 - [Esp32](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf)
-- [L67K](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/L67K)
+- [L76K](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/L76K)
 - [AXP202](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202)
 - [BMA423](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423)
 - [ST7789](https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf)
