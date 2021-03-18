@@ -634,18 +634,24 @@ int AXP20X_Class::readIRQ()
 {
     if (!_init)
         return AXP_NOT_INIT;
+
+	AXP_DEBUG("readIRQ() : ");
     switch (_chip_id) {
     case AXP192_CHIP_ID:
         for (int i = 0; i < 4; ++i) {
             _readByte(AXP192_INTSTS1 + i, 1, &_irq[i]);
+			AXP_DEBUG("%02x:%02x ", AXP202_INTSTS1 + i, _irq[i]);
         }
         _readByte(AXP192_INTSTS5, 1, &_irq[4]);
+		AXP_DEBUG("%02x:%02x\n", AXP192_INTSTS5, _irq[4]);
         return AXP_PASS;
 
     case AXP202_CHIP_ID:
         for (int i = 0; i < 5; ++i) {
             _readByte(AXP202_INTSTS1 + i, 1, &_irq[i]);
+			AXP_DEBUG("%02x:%02x ", AXP202_INTSTS1 + i, _irq[i]);
         }
+		AXP_DEBUG("\n");
         return AXP_PASS;
     default:
         return AXP_FAIL;
@@ -655,6 +661,7 @@ int AXP20X_Class::readIRQ()
 void AXP20X_Class::clearIRQ()
 {
     uint8_t val = 0xFF;
+	AXP_DEBUG("clearIRQ()\n");
     switch (_chip_id) {
     case AXP192_CHIP_ID:
         for (int i = 0; i < 3; i++) {
@@ -1019,6 +1026,19 @@ int AXP20X_Class::setStartupTime(uint8_t param)
     return AXP_PASS;
 }
 
+int AXP20X_Class::getStartupTime(){
+    uint8_t val;
+	_readByte(AXP202_POK_SET, 1, &val);
+
+	static const int trans[]={
+		13, 30, 10, 20
+	};
+	val &= 0b11000000;
+	AXP_DEBUG("%x -> %x\n", val, val>>6);
+
+	return trans[ val>>6 ];
+}
+
 int AXP20X_Class::setlongPressTime(uint8_t param)
 {
     uint8_t val;
@@ -1033,6 +1053,21 @@ int AXP20X_Class::setlongPressTime(uint8_t param)
     return AXP_PASS;
 }
 
+
+int AXP20X_Class::getlongPressTime(){
+    uint8_t val;
+	_readByte(AXP202_POK_SET, 1, &val);
+
+	static const int trans[]={
+		10, 15, 20, 25
+	};
+	
+	val &= 0b00110000;
+	AXP_DEBUG("%x -> %x\n", val, val>>4);
+
+	return trans[ val>>4 ];
+}
+
 int AXP20X_Class::setShutdownTime(uint8_t param)
 {
     uint8_t val;
@@ -1045,6 +1080,19 @@ int AXP20X_Class::setShutdownTime(uint8_t param)
     val |= shutdownParams[param];
     _writeByte(AXP202_POK_SET, 1, &val);
     return AXP_PASS;
+}
+
+int AXP20X_Class::getShutdownTime(){
+    uint8_t val;
+	_readByte(AXP202_POK_SET, 1, &val);
+
+	static const int trans[]={
+		40, 60, 80, 100
+	};
+	val &= 0b00000011;
+	AXP_DEBUG("%x\n", val);
+
+	return trans[ val ];
 }
 
 int AXP20X_Class::setTimeOutShutdown(bool en)

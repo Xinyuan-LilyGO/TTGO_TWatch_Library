@@ -139,6 +139,14 @@ typedef FocalTech_Class CapacitiveTouch ;
 
 #define TOUCH_IRQ_BIT           (_BV(1))
 
+	/* Selectively disable some initialisation */
+#define NO_HARDWARE		(_BV(0))
+#define NO_POWER		(_BV(1))
+#define NO_TFT			(_BV(2))
+#define NO_TOUCH		(_BV(3))
+#define NO_SENSOR		(_BV(4))
+#define NO_BACKLIGHT	(_BV(5))
+
 class TTGOClass
 {
 public:
@@ -158,9 +166,8 @@ public:
     }
 #endif
 
-    void begin()
+    void begin( uint8_t disable = 0 )
     {
-
         i2c = new I2CBus();
 
 #ifdef LILYGO_WATCH_HAS_PCF8563
@@ -192,12 +199,23 @@ public:
         drv = new Adafruit_DRV2605();
 #endif  /*LILYGO_WATCH_DRV2605*/
 
-        initHardware();
-        initPower();
-        initTFT();
-        initTouch();
-        initSensor();
-        initBlacklight();
+		if(!(disable & NO_HARDWARE))
+	        initHardware();
+	
+		if(!(disable & NO_HARDWARE))
+        	initPower();
+
+		if(!(disable & NO_HARDWARE))
+	        initTFT();
+
+		if(!(disable & NO_HARDWARE))
+    	    initTouch();
+
+		if(!(disable & NO_HARDWARE))
+	        initSensor();
+
+		if(!(disable & NO_HARDWARE))
+    	    initBlacklight();
     }
 
 #ifdef LILYGO_WATCH_HAS_BMA423
