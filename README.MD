@@ -81,7 +81,7 @@
 <td align="center">Product</td>
 <td align="center"><a href="https://www.aliexpress.com/item/33038999162.html">T-Watch-2019</a></td>
 <td align="center"><a href="https://www.aliexpress.com/item/4000971508364.html">T-Watch-2020-V1</a></td>
-<td align="center">T-Watch-2020-V2</a></td>
+<td align="center"><a href="https://www.aliexpress.com/item/1005002264354524.html">T-Watch-2020-V2</a></td>
 <td align="center"><a href="https://www.aliexpress.com/item/1005002053650442.html">T-Watch-2020-V3</a></td>
 <td align="center"><a href="https://www.aliexpress.com/item/1005001824993604.html">T-Block/T-Block-V1</a></td>
 <td align="center"><a href="https://www.aliexpress.com/item/1005001447548347.html">LilyPi</a></td>
