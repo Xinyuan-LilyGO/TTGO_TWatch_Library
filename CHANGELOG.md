@@ -91,3 +91,4 @@
 ## (27/3/2021)
 - [Merged#119](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/pull/119)
 - Update `library.properties`,up to `1.4.2` version
+- Added <examples/Shield/S7xG_Debug> examples
