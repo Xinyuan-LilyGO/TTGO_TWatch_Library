@@ -87,3 +87,7 @@
 
 ## (23/2/2021)
 - <BasicUnit/AXP20x_ADC> example compatible with T-Block 
+
+## (27/3/2021)
+- [Merged#119](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/pull/119)
+- Update `library.properties`,up to `1.4.2` version
