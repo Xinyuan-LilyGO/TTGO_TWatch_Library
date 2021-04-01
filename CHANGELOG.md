@@ -95,3 +95,4 @@
 
 ## (4/1/2021)
 - Update TWATCH-N touch to IO33 
+- Added <examples/UnitTest/HardwareTest> examples
