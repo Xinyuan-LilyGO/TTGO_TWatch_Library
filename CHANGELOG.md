@@ -96,3 +96,7 @@
 ## (4/1/2021)
 - Update TWATCH-N touch to IO33 
 - Added <examples/UnitTest/HardwareTest> examples
+
+
+## (4/6/2021)
+- Add S7XG sample code <examples/Shield/S7xG/*>

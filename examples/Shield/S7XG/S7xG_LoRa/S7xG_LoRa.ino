@@ -1,3 +1,4 @@
+// Old time example, not recommended
 #include "config.h"
 
 TTGOClass *ttgo;
