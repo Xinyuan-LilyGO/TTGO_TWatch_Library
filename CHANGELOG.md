@@ -100,3 +100,7 @@
 
 ## (4/6/2021)
 - Add S7XG sample code <examples/Shield/S7xG/*>
+
+
+## (4/13/2021)
+- Add PN532 NFC examples, The example comes from <https://github.com/adafruit/Adafruit-PN532>
