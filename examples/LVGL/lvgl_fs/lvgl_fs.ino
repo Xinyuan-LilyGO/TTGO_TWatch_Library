@@ -1,4 +1,11 @@
 
+/*
+Use Arduino ESP32 Sketch data Upload files,
+if you not install
+[download ESP32FS-vX.zip](https://github.com/me-no-dev/arduino-esp32fs-plugin/releases),
+Extract to <C:\Users\Your User Name\Documents\Arduino\tools>
+* */
+
 #include "config.h"
 
 TTGOClass *ttgo;
