@@ -36,9 +36,17 @@ void setup()
     ttgo->button->setPressedHandler(pressed);
     ttgo->button->setReleasedHandler(released);
 
+#ifdef LILYGO_WATCH_2019_NO_TOUCH
+    pinMode(TOUCH_INT, INPUT);
+#endif
 }
 
 void loop()
 {
+#ifdef LILYGO_WATCH_2019_NO_TOUCH
+    if (digitalRead(TOUCH_INT)) {
+        Serial.println("TWatchN touch pressed");
+    }
+#endif
     ttgo->button->loop();
 }

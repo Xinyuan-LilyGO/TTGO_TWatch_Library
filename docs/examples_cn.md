@@ -38,7 +38,7 @@
 │   └── WakeupFormTouchScreen       #从触摸屏唤醒ESP32
 ├── ClientProject                   #客户的示例目录
 │   └── SimpleFramework             #使用TFT_eSPI构成的框架
-├── ExternTFTLibrary                #使用PlatfromIO,外部TFT_eSPI与TTGO_TWatch_Library搭配使用示例
+├── ExternTFTLibrary                #使用PlatformIO,外部TFT_eSPI与TTGO_TWatch_Library搭配使用示例
 │   └── src
 ├── LVGL                            #LVGL图形框架演示目录
 │   ├── AnalogRead                  #获取模拟数据在显示屏中绘制曲线

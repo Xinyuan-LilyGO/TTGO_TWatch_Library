@@ -162,7 +162,7 @@ public:
     bool isTimerActive();
     void enableTimer();
     void disableTimer();
-    void setTimer(uint8_t val, uint8_t freq, bool enIntrrupt);
+    void setTimer(uint8_t val, uint8_t freq, bool enInterrupt);
     void clearTimer();
 
     bool enableCLK(uint8_t freq);
@@ -171,7 +171,7 @@ public:
     void syncToSystem();
     void syncToRtc();
 
-    const char *formatDateTime(uint8_t sytle = PCF_TIMEFORMAT_HMS);
+    const char *formatDateTime(uint8_t style = PCF_TIMEFORMAT_HMS);
     uint32_t getDayOfWeek(uint32_t day, uint32_t month, uint32_t year);
     uint8_t status2();
 

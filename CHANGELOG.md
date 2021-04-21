@@ -87,3 +87,20 @@
 
 ## (23/2/2021)
 - <BasicUnit/AXP20x_ADC> example compatible with T-Block 
+
+## (27/3/2021)
+- [Merged#119](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/pull/119)
+- Update `library.properties`,up to `1.4.2` version
+- Added <examples/Shield/S7xG_Debug> examples
+
+## (4/1/2021)
+- Update TWATCH-N touch to IO33 
+- Added <examples/UnitTest/HardwareTest> examples
+
+
+## (4/6/2021)
+- Add S7XG sample code <examples/Shield/S7xG/*>
+
+
+## (4/13/2021)
+- Add PN532 NFC examples, The example comes from <https://github.com/adafruit/Adafruit-PN532>

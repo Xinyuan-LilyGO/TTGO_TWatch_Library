@@ -23,6 +23,8 @@ void setup()
     //!Clear IRQ unprocessed  first
     ttgo->power->enableIRQ(AXP202_PEK_SHORTPRESS_IRQ, true);
     ttgo->power->clearIRQ();
+
+    pinMode(TOUCH_INT, INPUT);
 }
 
 void loop()
