@@ -16,10 +16,11 @@ extern "C" {
 #include "../lv_conf_internal.h"
 
 #include <stdbool.h>
-#include "lv_area.h"
+#include <stdarg.h>
 #include "lv_area.h"
 #include "../lv_font/lv_font.h"
 #include "lv_printf.h"
+
 /*********************
  *      DEFINES
  *********************/
@@ -135,7 +136,7 @@ void _lv_txt_cut(char * txt, uint32_t pos, uint32_t len);
 char * _lv_txt_set_text_vfmt(const char * fmt, va_list ap);
 
 /***************************************************************
- *  GLOBAL FUNCTION POINTERS FOR CAHRACTER ENCODING INTERFACE
+ *  GLOBAL FUNCTION POINTERS FOR CHARACTER ENCODING INTERFACE
  ***************************************************************/
 
 /**
