@@ -173,7 +173,7 @@ void lv_arc_set_start_angle(lv_obj_t * arc, uint16_t start)
                      LV_ARC_PART_INDIC);
     }
     /*Only a smaller incremental move*/
-    else  if(ext->arc_angle_start < ext->arc_angle_end && start < ext->arc_angle_end) {
+    else if(ext->arc_angle_start < ext->arc_angle_end && start < ext->arc_angle_end) {
         inv_arc_area(arc, LV_MATH_MIN(ext->arc_angle_start, start), LV_MATH_MAX(ext->arc_angle_start, start),
                      LV_ARC_PART_INDIC);
     }
@@ -207,7 +207,7 @@ void lv_arc_set_end_angle(lv_obj_t * arc, uint16_t end)
         inv_arc_area(arc, LV_MATH_MIN(ext->arc_angle_end, end), LV_MATH_MAX(ext->arc_angle_end, end), LV_ARC_PART_INDIC);
     }
     /*Only a smaller incremental move*/
-    else  if(ext->arc_angle_end < ext->arc_angle_start && end < ext->arc_angle_start) {
+    else if(ext->arc_angle_end < ext->arc_angle_start && end < ext->arc_angle_start) {
         inv_arc_area(arc, LV_MATH_MIN(ext->arc_angle_end, end), LV_MATH_MAX(ext->arc_angle_end, end), LV_ARC_PART_INDIC);
     }
     /*Crossing the end angle makes the whole arc change*/
@@ -217,7 +217,6 @@ void lv_arc_set_end_angle(lv_obj_t * arc, uint16_t end)
 
     ext->arc_angle_end = end;
 }
-
 
 /**
  * Set the start and end angles
@@ -264,7 +263,7 @@ void lv_arc_set_bg_start_angle(lv_obj_t * arc, uint16_t start)
         inv_arc_area(arc, LV_MATH_MIN(ext->bg_angle_start, start), LV_MATH_MAX(ext->bg_angle_start, start), LV_ARC_PART_BG);
     }
     /*Only a smaller incremental move*/
-    else  if(ext->bg_angle_start < ext->bg_angle_end && start < ext->bg_angle_end) {
+    else if(ext->bg_angle_start < ext->bg_angle_end && start < ext->bg_angle_end) {
         inv_arc_area(arc, LV_MATH_MIN(ext->bg_angle_start, start), LV_MATH_MAX(ext->bg_angle_start, start), LV_ARC_PART_BG);
     }
     /*Crossing the start angle makes the whole arc change*/
@@ -299,7 +298,7 @@ void lv_arc_set_bg_end_angle(lv_obj_t * arc, uint16_t end)
         inv_arc_area(arc, LV_MATH_MIN(ext->bg_angle_end, end), LV_MATH_MAX(ext->bg_angle_end, end), LV_ARC_PART_BG);
     }
     /*Only a smaller incremental move*/
-    else  if(ext->bg_angle_end < ext->bg_angle_start && end < ext->bg_angle_start) {
+    else if(ext->bg_angle_end < ext->bg_angle_start && end < ext->bg_angle_start) {
         inv_arc_area(arc, LV_MATH_MIN(ext->bg_angle_end, end), LV_MATH_MAX(ext->bg_angle_end, end), LV_ARC_PART_BG);
     }
     /*Crossing the end angle makes the whole arc change*/
@@ -352,7 +351,6 @@ void lv_arc_set_rotation(lv_obj_t * arc, uint16_t rotation_angle)
 
     lv_obj_invalidate(arc);
 }
-
 
 /**
  * Set the type of arc.
@@ -529,7 +527,6 @@ uint16_t lv_arc_get_bg_angle_end(lv_obj_t * arc)
     return ext->bg_angle_end;
 }
 
-
 /**
  * Get the value of a arc
  * @param arc pointer to a arc object
@@ -661,7 +658,6 @@ static lv_design_res_t lv_arc_design(lv_obj_t * arc, const lv_area_t * clip_area
                         &arc_dsc);
         }
 
-
         /*make the indicator arc smaller or larger according to its greatest padding value*/
         lv_coord_t left_indic = lv_obj_get_style_pad_left(arc, LV_ARC_PART_INDIC);
         lv_coord_t right_indic = lv_obj_get_style_pad_right(arc, LV_ARC_PART_INDIC);
@@ -768,7 +764,6 @@ static lv_res_t lv_arc_signal(lv_obj_t * arc, lv_signal_t sign, void * param)
             bg_end = ext->bg_angle_end + 360;
         }
 
-
         angle = _lv_atan2(p.y, p.x);
         angle -= ext->rotation_angle;
         angle -= ext->bg_angle_start;   /*Make the angle relative to the start angle*/
@@ -860,6 +855,12 @@ static lv_res_t lv_arc_signal(lv_obj_t * arc, lv_signal_t sign, void * param)
             res = lv_event_send(arc, LV_EVENT_VALUE_CHANGED, NULL);
             if(res != LV_RES_OK) return res;
         }
+    }
+    else if(sign == LV_SIGNAL_GET_EDITABLE) {
+#if LV_USE_GROUP
+        bool * editable = (bool *)param;
+        *editable = true;
+#endif
     }
     else if(sign == LV_SIGNAL_CLEANUP) {
         lv_obj_clean_style_list(arc, LV_ARC_PART_KNOB);
@@ -1037,7 +1038,6 @@ static void get_center(lv_obj_t * arc, lv_point_t * center, lv_coord_t * arc_r)
     *arc_r = r;
     center->x = arc->coords.x1 + r + left_bg;
     center->y = arc->coords.y1 + r + top_bg;
-
 
     lv_coord_t indic_width = lv_obj_get_style_line_width(arc, LV_ARC_PART_INDIC);
     r -= indic_width;

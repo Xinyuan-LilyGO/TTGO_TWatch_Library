@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file lv_label.c
  *
  */
@@ -119,7 +119,6 @@ lv_obj_t * lv_label_create(lv_obj_t * par, const lv_obj_t * copy)
     ext->dot.tmp_ptr   = NULL;
     ext->dot_tmp_alloc = 0;
 
-
     lv_obj_set_design_cb(new_label, lv_label_design);
     lv_obj_set_signal_cb(new_label, lv_label_signal);
 
@@ -185,11 +184,8 @@ void lv_label_set_text(lv_obj_t * label, const char * text)
 
     lv_label_ext_t * ext = lv_obj_get_ext_attr(label);
 
-    /*If text is NULL then refresh */
-    if(text == NULL) {
-        lv_label_refr_text(label);
-        return;
-    }
+    /*If text is NULL then just refresh with the current text */
+    if(text == NULL) text = ext->text;
 
     LV_ASSERT_STR(text);
 
@@ -373,11 +369,11 @@ void lv_label_set_recolor(lv_obj_t * label, bool en)
     ext->recolor = en == false ? 0 : 1;
 
     lv_label_refr_text(label); /*Refresh the text because the potential color codes in text needs to
-                                  be hided or revealed*/
+                                  be hidden or revealed*/
 }
 
 /**
- * Set the label's animation speed in LV_LABEL_LONG_SROLL/SCROLL_CIRC modes
+ * Set the label's animation speed in LV_LABEL_LONG_SROLL/SROLL_CIRC modes
  * @param label pointer to a label object
  * @param anim_speed speed of animation in px/sec unit
  */
@@ -615,7 +611,6 @@ void lv_label_get_letter_pos(const lv_obj_t * label, uint32_t char_id, lv_point_
     visual_byte_pos = byte_id - line_start;
 #endif
 
-
     /*Calculate the x coordinate*/
     lv_coord_t x = _lv_txt_get_width(bidi_txt, visual_byte_pos, font, letter_space, flag);
     if(char_id != line_start) x += letter_space;
@@ -743,7 +738,7 @@ uint32_t lv_label_get_letter_on(const lv_obj_t * label, lv_point_t * pos_in)
             lv_coord_t gw = lv_font_get_glyph_width(font, letter, letter_next);
 
             /*Finish if the x position or the last char of the next line is reached*/
-            if(pos.x < x + gw || i + line_start == new_line_start ||  txt[i_act + line_start] == '\0') {
+            if(pos.x < x + gw || i + line_start == new_line_start || txt[i_act + line_start] == '\0') {
                 i = i_act;
                 break;
             }
@@ -770,7 +765,7 @@ uint32_t lv_label_get_letter_on(const lv_obj_t * label, lv_point_t * pos_in)
     logical_pos = _lv_txt_encoded_get_char_id(bidi_txt, i);
 #endif
 
-    return  logical_pos + _lv_txt_encoded_get_char_id(txt, line_start);
+    return logical_pos + _lv_txt_encoded_get_char_id(txt, line_start);
 }
 
 /**
@@ -962,7 +957,7 @@ void lv_label_ins_text(lv_obj_t * label, uint32_t pos, const char * txt)
 #else
     _lv_txt_ins(ext->text, pos, txt);
 #endif
-    lv_label_refr_text(label);
+    lv_label_set_text(label, NULL);
 }
 
 /**
@@ -1039,7 +1034,26 @@ void lv_label_refr_text(lv_obj_t * label)
 
         bool hor_anim = false;
         if(size.x > lv_area_get_width(&txt_coords)) {
+#if LV_USE_BIDI
+            lv_anim_value_t start, end;
+            lv_bidi_dir_t base_dir = lv_obj_get_base_dir(label);
+
+            if(base_dir == LV_BIDI_DIR_AUTO)
+                base_dir = _lv_bidi_detect_base_dir(ext->text);
+
+            if(base_dir == LV_BIDI_DIR_RTL) {
+                start = lv_area_get_width(&txt_coords) - size.x;
+                end = 0;
+            }
+            else {
+                start = 0;
+                end = lv_area_get_width(&txt_coords) - size.x;
+            }
+
+            lv_anim_set_values(&a, start, end);
+#else
             lv_anim_set_values(&a, 0, lv_area_get_width(&txt_coords) - size.x);
+#endif
             lv_anim_set_exec_cb(&a, (lv_anim_exec_xcb_t)lv_label_set_offset_x);
             lv_anim_set_time(&a, lv_anim_speed_to_time(ext->anim_speed, a.start, a.end));
             lv_anim_set_playback_time(&a, a.time);
@@ -1118,7 +1132,27 @@ void lv_label_refr_text(lv_obj_t * label)
 
         bool hor_anim = false;
         if(size.x > lv_area_get_width(&txt_coords)) {
+#if LV_USE_BIDI
+            lv_anim_value_t start, end;
+            lv_bidi_dir_t base_dir = lv_obj_get_base_dir(label);
+
+            if(base_dir == LV_BIDI_DIR_AUTO)
+                base_dir = _lv_bidi_detect_base_dir(ext->text);
+
+            if(base_dir == LV_BIDI_DIR_RTL) {
+                start = -size.x - lv_font_get_glyph_width(font, ' ', ' ') * LV_LABEL_WAIT_CHAR_COUNT;
+                end = 0;
+            }
+            else {
+                start = 0;
+                end = -size.x - lv_font_get_glyph_width(font, ' ', ' ') * LV_LABEL_WAIT_CHAR_COUNT;
+            }
+
+            lv_anim_set_values(&a, start, end);
+#else
             lv_anim_set_values(&a, 0, -size.x - lv_font_get_glyph_width(font, ' ', ' ') * LV_LABEL_WAIT_CHAR_COUNT);
+#endif
+
             lv_anim_set_exec_cb(&a, (lv_anim_exec_xcb_t)lv_label_set_offset_x);
             lv_anim_set_time(&a, lv_anim_speed_to_time(ext->anim_speed, a.start, a.end));
 
@@ -1185,7 +1219,6 @@ void lv_label_refr_text(lv_obj_t * label)
             }
 
             uint32_t letter_id = lv_label_get_letter_on(label, &p);
-
 
             /*Be sure there is space for the dots*/
             size_t txt_len = strlen(ext->text);
@@ -1289,7 +1322,7 @@ static lv_design_res_t lv_label_design(lv_obj_t * label, const lv_area_t * clip_
         label_draw_dsc.flag = flag;
         lv_obj_init_draw_label_dsc(label, LV_LABEL_PART_MAIN, &label_draw_dsc);
 
-        /* In SCROLL and SCROLL_CIRC mode the CENTER and RIGHT are pointless so remove them.
+        /* In SROLL and SROLL_CIRC mode the CENTER and RIGHT are pointless so remove them.
          * (In addition they will result misalignment is this case)*/
         if((ext->long_mode == LV_LABEL_LONG_SROLL || ext->long_mode == LV_LABEL_LONG_SROLL_CIRC) &&
            (ext->align == LV_LABEL_ALIGN_CENTER || ext->align == LV_LABEL_ALIGN_RIGHT)) {
@@ -1387,14 +1420,6 @@ static lv_res_t lv_label_signal(lv_obj_t * label, lv_signal_t sign, void * param
 #if LV_USE_BIDI
         if(ext->static_txt == 0) lv_label_set_text(label, NULL);
 #endif
-    }
-    else if(sign == LV_SIGNAL_GET_TYPE) {
-        lv_obj_type_t * buf = param;
-        uint8_t i;
-        for(i = 0; i < LV_MAX_ANCESTOR_NUM - 1; i++) { /*Find the last set data*/
-            if(buf->type[i] == NULL) break;
-        }
-        buf->type[i] = "lv_label";
     }
 
     return res;
