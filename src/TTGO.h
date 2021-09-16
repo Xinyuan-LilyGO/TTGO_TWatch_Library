@@ -704,7 +704,7 @@ public:
         lv_init();
         lv_indev_drv_t indev_drv;
         lv_disp_drv_init(&disp_drv);
-        static lv_disp_buf_t disp_buf;
+        static lv_disp_draw_buf_t disp_buf;
 
 #ifdef  TWATCH_USE_PSRAM_ALLOC_LVGL
         if (psramFound()) {
