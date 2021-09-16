@@ -744,7 +744,7 @@ public:
         disp_drv.ver_res = tft->height();
         disp_drv.flush_cb = disp_flush;
         /*Set a display buffer*/
-        disp_drv.buffer = &disp_buf;
+        disp_drv.draw_buf = &disp_buf;
         lv_disp_drv_register(&disp_drv);
 
 #if  defined(LILYGO_WATCH_HAS_TOUCH)
