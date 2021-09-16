@@ -1524,7 +1524,7 @@ protected:
     }
 
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_TOUCH)
-    static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
+    static void touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     {
 
 #if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2020_V3)|| defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
