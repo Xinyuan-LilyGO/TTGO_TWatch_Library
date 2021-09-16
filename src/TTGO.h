@@ -734,9 +734,9 @@ public:
 
 
 #ifdef  TWATCH_LVGL_DOUBLE_BUFFER
-        lv_disp_buf_init(&disp_buf, buf1, buf2, LVGL_BUFFER_SIZE);
+        lv_disp_draw_buf_init(&disp_buf, buf1, buf2, LVGL_BUFFER_SIZE);
 #else
-        lv_disp_buf_init(&disp_buf, buf1, NULL, LVGL_BUFFER_SIZE);
+        lv_disp_draw_buf_init(&disp_buf, buf1, NULL, LVGL_BUFFER_SIZE);
 #endif
 
 
