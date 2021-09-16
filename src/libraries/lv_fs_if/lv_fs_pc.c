@@ -89,7 +89,6 @@ void lv_fs_if_pc_init(void)
     lv_fs_drv_init(&fs_drv);
 
     /*Set up fields...*/
-    fs_drv.file_size = sizeof(file_t);
     fs_drv.letter = LV_FS_IF_PC;
     fs_drv.open_cb = fs_open;
     fs_drv.close_cb = fs_close;
