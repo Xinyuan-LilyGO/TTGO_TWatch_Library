@@ -1546,7 +1546,7 @@ protected:
         data->state = _ttgo->getTouch(data->point.x, data->point.y) ?  LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
 #endif /*LILYGO_WATCH_2020_V1 & LILYGO_WATCH_2020_V2*/
 
-        return false; /*Return false because no moare to be read*/
+      
     }
 
 #endif /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_TOUCH*/
