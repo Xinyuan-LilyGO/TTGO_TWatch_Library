@@ -7,7 +7,7 @@
  * COPY THIS FILE AS `lv_conf.h` NEXT TO the `lvgl` FOLDER
  */
 
-#if 0 /*Set it to "1" to enable content*/
+#if 1 /*Set it to "1" to enable content*/
 
 #ifndef LV_CONF_H
 #define LV_CONF_H
@@ -15,6 +15,9 @@
 
 #include <stdint.h>
 
+
+#define LV_HOR_RES_MAX          (480)
+#define LV_VER_RES_MAX          (320)
 
 /*====================
    COLOR SETTINGS
@@ -39,7 +42,7 @@
  *=========================*/
 
 /*1: use custom malloc/free, 0: use the built-in `lv_mem_alloc()` and `lv_mem_free()`*/
-#define LV_MEM_CUSTOM      0
+#define LV_MEM_CUSTOM      1
 #if LV_MEM_CUSTOM == 0
 /*Size of the memory available for `lv_mem_alloc()` in bytes (>= 2kB)*/
 #  define LV_MEM_SIZE    (32U * 1024U)          /*[bytes]*/
@@ -47,10 +50,18 @@
 /*Set an address for the memory pool instead of allocating it as a normal array. Can be in external SRAM too.*/
 #  define LV_MEM_ADR          0     /*0: unused*/
 #else       /*LV_MEM_CUSTOM*/
-#  define LV_MEM_CUSTOM_INCLUDE <stdlib.h>   /*Header for the dynamic memory function*/
-#  define LV_MEM_CUSTOM_ALLOC     malloc
-#  define LV_MEM_CUSTOM_FREE      free
-#  define LV_MEM_CUSTOM_REALLOC   realloc
+#if defined(BOARD_HAS_PSRAM)
+/* Until Espressif corrects their own hearder */
+#  include <stddef.h>
+#  include <stdbool.h>
+
+/* declare ps_malloc()'s prototype */
+#  include <esp32-hal-psram.h>
+#  define LV_MEM_CUSTOM_ALLOC   ps_malloc       /*Wrapper to malloc*/
+#else
+#  define LV_MEM_CUSTOM_ALLOC   malloc       /*Wrapper to malloc*/
+#endif
+#  define LV_MEM_CUSTOM_FREE    free         /*Wrapper to free*/
 #endif     /*LV_MEM_CUSTOM*/
 
 /*Use the standard `memcpy` and `memset` instead of LVGL's own functions. (Might or might not be faster).*/
@@ -202,7 +213,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 #  define lv_snprintf     snprintf
 #  define lv_vsnprintf    vsnprintf
 #else   /*LV_SPRINTF_CUSTOM*/
-#  define LV_SPRINTF_USE_FLOAT 0
+#  define LV_SPRINTF_USE_FLOAT 1
 #endif  /*LV_SPRINTF_CUSTOM*/
 
 #define LV_USE_USER_DATA      1
@@ -503,7 +514,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 *==================*/
 
 /*Enable the examples to be built with the library*/
-#define LV_BUILD_EXAMPLES   1
+#define LV_BUILD_EXAMPLES   0
 
 /*--END OF LV_CONF_H--*/
 
