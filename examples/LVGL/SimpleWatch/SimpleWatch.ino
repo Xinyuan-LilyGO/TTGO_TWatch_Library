@@ -54,20 +54,20 @@ void setupNetwork()
     WiFi.mode(WIFI_STA);
     WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
         xEventGroupClearBits(g_event_group, G_EVENT_WIFI_CONNECTED);
-    }, WiFiEvent_t::SYSTEM_EVENT_STA_DISCONNECTED);
+    }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
 
     WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
         uint8_t data = Q_EVENT_WIFI_SCAN_DONE;
         xQueueSend(g_event_queue_handle, &data, portMAX_DELAY);
-    }, WiFiEvent_t::SYSTEM_EVENT_SCAN_DONE);
+    }, WiFiEvent_t::ARDUINO_EVENT_WIFI_SCAN_DONE);
 
     WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
         xEventGroupSetBits(g_event_group, G_EVENT_WIFI_CONNECTED);
-    }, WiFiEvent_t::SYSTEM_EVENT_STA_CONNECTED);
+    }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
 
     WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
         wifi_connect_status(true);
-    }, WiFiEvent_t::SYSTEM_EVENT_STA_GOT_IP);
+    }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
 }
 
 
