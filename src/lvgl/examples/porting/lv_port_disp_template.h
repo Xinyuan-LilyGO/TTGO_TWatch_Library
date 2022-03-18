@@ -29,14 +29,14 @@ extern "C" {
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
+void lv_port_disp_init(void);
 
 /**********************
  *      MACROS
  **********************/
 
-
 #ifdef __cplusplus
-} /* extern "C" */
+} /*extern "C"*/
 #endif
 
 #endif /*LV_PORT_DISP_TEMPL_H*/
