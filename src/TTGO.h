@@ -150,20 +150,20 @@ typedef FocalTech_Class CapacitiveTouch ;
 
 
 #if defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2019_WITH_TOUCH) || defined(LILYGO_WATCH_2019_NO_TOUCH)
-#define WATCH_V1_TOP_EDGE           0
-#define WATCH_V1_LEFT_EDGE          1
-#define WATCH_V1_BOTTOM_EDGE        2
-#define WATCH_V1_RIGHT_EDGE         3
+#define WATCH_SCREEN_TOP_EDGE           0
+#define WATCH_SCREEN_LEFT_EDGE          1
+#define WATCH_SCREEN_BOTTOM_EDGE        2
+#define WATCH_SCREEN_RIGHT_EDGE         3
 #elif defined(LILYGO_WATCH_2020_V2)
-#define WATCH_V1_TOP_EDGE           1
-#define WATCH_V1_LEFT_EDGE          2
-#define WATCH_V1_BOTTOM_EDGE        3
-#define WATCH_V1_RIGHT_EDGE         0
+#define WATCH_SCREEN_TOP_EDGE           1
+#define WATCH_SCREEN_LEFT_EDGE          2
+#define WATCH_SCREEN_BOTTOM_EDGE        3
+#define WATCH_SCREEN_RIGHT_EDGE         0
 #elif defined(LILYGO_WATCH_2020_V3)
-#define WATCH_V1_TOP_EDGE           3
-#define WATCH_V1_LEFT_EDGE          0
-#define WATCH_V1_BOTTOM_EDGE        1
-#define WATCH_V1_RIGHT_EDGE         2
+#define WATCH_SCREEN_TOP_EDGE           3
+#define WATCH_SCREEN_LEFT_EDGE          0
+#define WATCH_SCREEN_BOTTOM_EDGE        1
+#define WATCH_SCREEN_RIGHT_EDGE         2
 #endif
 
 
