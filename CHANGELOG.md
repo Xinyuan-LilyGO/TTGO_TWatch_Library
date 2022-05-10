@@ -1,7 +1,11 @@
 # Changelog
 ## (05.10.2022)
 - Come back again . Fix BMA423_Direction rotate in wrong direction in V1/V2
-
+- Optimize BMA423 startup time
+  * Before optimization: Start  using 2151 millis
+  * After optimization : 
+  * Cold Start: Start  using 987 millis
+  * Sleep Wake: Start  using 603 millis
 
 
 ## (10.13.2020)

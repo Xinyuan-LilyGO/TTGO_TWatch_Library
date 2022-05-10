@@ -25,6 +25,7 @@ uint16_t BMA::write(uint8_t addr, uint8_t reg, uint8_t *data, uint16_t len)
 
 bool BMA::begin()
 {
+    uint8_t data;
     if (_init) {
         return true;
     }
@@ -34,22 +35,25 @@ bool BMA::begin()
     _dev.bus_read        = read;
     _dev.bus_write       = write;
     _dev.delay           = delay;
-    _dev.read_write_len  = 8;
+    _dev.read_write_len  = 32;
     _dev.resolution      = 12;
     _dev.feature_len     = BMA423_FEATURE_SIZE;
 
-    reset();
-
-    delay(20);
+    // reset();
+    // delay(20);
 
     if (bma423_init(&_dev) != BMA4_OK) {
         log_e("bma423_init FAIL");
         return false;
     }
 
-    if (bma423_write_config_file(&_dev) != BMA4_OK) {
-        log_e("bma423_write_config_file FAIL");
-        return false;
+    read(BMA4_I2C_ADDR_SECONDARY, BMA4_INTERNAL_STAT, &data, 1);
+    if (data != BMA4_ASIC_INITIALIZED ) {
+        log_i("bma423 reconfig!");
+        if (bma423_write_config_file(&_dev) != BMA4_OK) {
+            log_e("bma423_write_config_file FAIL");
+            return false;
+        }
     }
 
     _init = true;

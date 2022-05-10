@@ -12,6 +12,7 @@ public:
         _port = &port;
         _port->begin(sda, scl);
         _i2c_mux = xSemaphoreCreateRecursiveMutex();
+        _port->setClock(400000);
     };
     void scan();
     uint16_t readBytes(uint8_t addr, uint8_t *data, uint16_t len, uint16_t delay_ms = 0);
