@@ -1,3 +1,12 @@
+/**
+ * @file      BMA423_Direction.ino
+ * @author    Lewis He (lewishe@outlook.com)
+ * @license   MIT
+ * @copyright Copyright (c) 2022  深圳市芯元电子科技有限公司
+ * @date      2022-05-10
+ *
+ */
+
 #include "config.h"
 
 TTGOClass *watch;
@@ -78,6 +87,7 @@ void setup()
 }
 
 
+
 void loop()
 {
     // Obtain the BMA423 direction,
@@ -85,7 +95,7 @@ void loop()
     uint8_t rotation = sensor->direction();
     if (prevRotation != rotation) {
         prevRotation = rotation;
-        Serial.println(rotation);
+        Serial.printf("tft:%u sens:%u ", tft->getRotation(), rotation);
         switch (rotation) {
         case DIRECTION_DISP_DOWN:
             //No use
@@ -94,16 +104,20 @@ void loop()
             //No use
             break;
         case DIRECTION_BOTTOM_EDGE:
-            tft->setRotation(2);
+            Serial.printf(" set %u\n", WATCH_V1_BOTTOM_EDGE);
+            tft->setRotation(WATCH_V1_BOTTOM_EDGE);
             break;
         case DIRECTION_TOP_EDGE:
-            tft->setRotation(0);
+            Serial.printf(" set %u\n", WATCH_V1_TOP_EDGE);
+            tft->setRotation(WATCH_V1_TOP_EDGE);
             break;
         case DIRECTION_RIGHT_EDGE:
-            tft->setRotation(3);
+            Serial.printf(" set %u\n", WATCH_V1_RIGHT_EDGE);
+            tft->setRotation(WATCH_V1_RIGHT_EDGE);
             break;
         case DIRECTION_LEFT_EDGE:
-            tft->setRotation(1);
+            Serial.printf(" set %u\n", WATCH_V1_LEFT_EDGE);
+            tft->setRotation(WATCH_V1_LEFT_EDGE);
             break;
         default:
             break;

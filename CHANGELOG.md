@@ -1,4 +1,8 @@
 # Changelog
+## (05.10.2022)
+- Come back again . Fix BMA423_Direction rotate in wrong direction in V1/V2
+
+
 
 ## (10.13.2020)
 - Change 2020V1, 2020V2 LVGL touch I2C polling to interrupt polling, others are not currently adapted

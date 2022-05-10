@@ -139,13 +139,34 @@ typedef FocalTech_Class CapacitiveTouch ;
 
 #define TOUCH_IRQ_BIT           (_BV(1))
 
-	/* Selectively disable some initialisation */
-#define NO_HARDWARE		(_BV(0))
-#define NO_POWER		(_BV(1))
-#define NO_TFT			(_BV(2))
-#define NO_TOUCH		(_BV(3))
-#define NO_SENSOR		(_BV(4))
-#define NO_BACKLIGHT	(_BV(5))
+/* Selectively disable some initialisation */
+#define NO_HARDWARE     (_BV(0))
+#define NO_POWER        (_BV(1))
+#define NO_TFT          (_BV(2))
+#define NO_TOUCH        (_BV(3))
+#define NO_SENSOR       (_BV(4))
+#define NO_BACKLIGHT    (_BV(5))
+
+
+
+#if defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2019_WITH_TOUCH) || defined(LILYGO_WATCH_2019_NO_TOUCH)
+#define WATCH_V1_TOP_EDGE           0
+#define WATCH_V1_LEFT_EDGE          1
+#define WATCH_V1_BOTTOM_EDGE        2
+#define WATCH_V1_RIGHT_EDGE         3
+#elif defined(LILYGO_WATCH_2020_V2)
+#define WATCH_V1_TOP_EDGE           1
+#define WATCH_V1_LEFT_EDGE          2
+#define WATCH_V1_BOTTOM_EDGE        3
+#define WATCH_V1_RIGHT_EDGE         0
+#elif defined(LILYGO_WATCH_2020_V3)
+#define WATCH_V1_TOP_EDGE           3
+#define WATCH_V1_LEFT_EDGE          0
+#define WATCH_V1_BOTTOM_EDGE        1
+#define WATCH_V1_RIGHT_EDGE         2
+#endif
+
+
 
 class TTGOClass
 {
@@ -199,23 +220,23 @@ public:
         drv = new Adafruit_DRV2605();
 #endif  /*LILYGO_WATCH_DRV2605*/
 
-		if(!(disable & NO_HARDWARE))
-	        initHardware();
-	
-		if(!(disable & NO_HARDWARE))
-        	initPower();
+        if (!(disable & NO_HARDWARE))
+            initHardware();
 
-		if(!(disable & NO_HARDWARE))
-	        initTFT();
+        if (!(disable & NO_HARDWARE))
+            initPower();
 
-		if(!(disable & NO_HARDWARE))
-    	    initTouch();
+        if (!(disable & NO_HARDWARE))
+            initTFT();
 
-		if(!(disable & NO_HARDWARE))
-	        initSensor();
+        if (!(disable & NO_HARDWARE))
+            initTouch();
 
-		if(!(disable & NO_HARDWARE))
-    	    initBlacklight();
+        if (!(disable & NO_HARDWARE))
+            initSensor();
+
+        if (!(disable & NO_HARDWARE))
+            initBlacklight();
     }
 
 #ifdef LILYGO_WATCH_HAS_BMA423
