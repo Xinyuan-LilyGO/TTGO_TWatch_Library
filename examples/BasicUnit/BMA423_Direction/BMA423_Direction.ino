@@ -104,20 +104,20 @@ void loop()
             //No use
             break;
         case DIRECTION_BOTTOM_EDGE:
-            Serial.printf(" set %u\n", WATCH_V1_BOTTOM_EDGE);
-            tft->setRotation(WATCH_V1_BOTTOM_EDGE);
+            Serial.printf(" set %u\n", WATCH_SCREEN_BOTTOM_EDGE);
+            tft->setRotation(WATCH_SCREEN_BOTTOM_EDGE);
             break;
         case DIRECTION_TOP_EDGE:
-            Serial.printf(" set %u\n", WATCH_V1_TOP_EDGE);
-            tft->setRotation(WATCH_V1_TOP_EDGE);
+            Serial.printf(" set %u\n", WATCH_SCREEN_TOP_EDGE);
+            tft->setRotation(WATCH_SCREEN_TOP_EDGE);
             break;
         case DIRECTION_RIGHT_EDGE:
-            Serial.printf(" set %u\n", WATCH_V1_RIGHT_EDGE);
-            tft->setRotation(WATCH_V1_RIGHT_EDGE);
+            Serial.printf(" set %u\n", WATCH_SCREEN_RIGHT_EDGE);
+            tft->setRotation(WATCH_SCREEN_RIGHT_EDGE);
             break;
         case DIRECTION_LEFT_EDGE:
-            Serial.printf(" set %u\n", WATCH_V1_LEFT_EDGE);
-            tft->setRotation(WATCH_V1_LEFT_EDGE);
+            Serial.printf(" set %u\n", WATCH_SCREEN_LEFT_EDGE);
+            tft->setRotation(WATCH_SCREEN_LEFT_EDGE);
             break;
         default:
             break;
