@@ -16,6 +16,34 @@ TTGOClass *ttgo;
 TFT_eSPI *tft ;
 VEML6075 uv;
 
+void scan(void)
+{
+    uint8_t err, addr;
+    int nDevices = 0;
+    for (addr = 1; addr < 127; addr++) {
+        Wire1.beginTransmission(addr);
+        err = Wire1.endTransmission();
+        if (err == 0) {
+            Serial.print("I2C device found at address 0x");
+            if (addr < 16)
+                Serial.print("0");
+            Serial.print(addr, HEX);
+            Serial.println(" !");
+            nDevices++;
+        } else if (err == 4) {
+            Serial.print("Unknow error at address 0x");
+            if (addr < 16)
+                Serial.print("0");
+            Serial.println(addr, HEX);
+        }
+    }
+    if (nDevices == 0)
+        Serial.println("No I2C devices found\n");
+    else
+        Serial.println("done\n");
+}
+
+
 void setup(void)
 {
     Serial.begin(115200);
@@ -24,6 +52,12 @@ void setup(void)
     tft = ttgo->tft;
     tft->fillScreen(TFT_BLACK);
     ttgo->openBL();
+
+    //TODO:twatch 2019 touch panel occupies Wire1, it needs to be closed first,need repair !!!
+#ifdef LILYGO_WATCH_2019_WITH_TOUCH
+    Wire1.end();
+#endif
+
     Wire1.begin(25, 26);
     if (uv.begin(Wire1) == false) {
         Serial.println("Unable to communicate with VEML6075.");
@@ -36,7 +70,7 @@ void setup(void)
 
 void loop(void)
 {
-    tft->fillRect(30, 90, 120, 80, TFT_BLACK);
+    tft->fillRect(30, 90, 200, 80, TFT_BLACK);
     tft->setCursor(30, 90);
     tft->println("UVA:" + String(uv.uva()));
     tft->setCursor(30, tft->getCursorY());
