@@ -1,6 +1,6 @@
 /*
-* Based on the test code written by GxEPD / U8g2_for_Adafruit_GFX
-* https://github.com/ZinggJM/GxEPD
+* Based on the test code written by GxEPD2 / U8g2_for_Adafruit_GFX
+* https://github.com/ZinggJM/GxEPD2
 * https://github.com/olikraus/U8g2_for_Adafruit_GFX
 *
 */
@@ -13,7 +13,6 @@ extern const unsigned char logoIcon[280];
 
 U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 TTGOClass *twatch = nullptr;
-GxEPD_Class *ePaper = nullptr;
 PCF8563_Class *rtc = nullptr;
 AXP20X_Class *power = nullptr;
 Button2 *btn = nullptr;
@@ -24,7 +23,7 @@ bool pwIRQ = false;
 
 void setupDisplay()
 {
-    u8g2Fonts.begin(*ePaper); // connect u8g2 procedures to Adafruit GFX
+    u8g2Fonts.begin(twatch->display); // connect u8g2 procedures to Adafruit GFX
     u8g2Fonts.setFontMode(1);                   // use u8g2 transparent mode (this is default)
     u8g2Fonts.setFontDirection(0);              // left to right (this is default)
     u8g2Fonts.setForegroundColor(GxEPD_BLACK);  // apply Adafruit GFX color
@@ -72,7 +71,12 @@ void mainPage(bool fullScreen)
     if (fullScreen) {
         lastX = 25;
         lastY = 100;
-        ePaper->drawBitmap(5, 5, logoIcon, 75, 28, GxEPD_BLACK);
+
+        twatch->display.setFullWindow();
+
+        twatch->display.fillScreen(GxEPD_WHITE);
+
+        twatch->display.drawBitmap(5, 5, logoIcon, 75, 28, GxEPD_BLACK);
 
         //BATTERY ICON
         u8g2Fonts.setFont(u8g2_font_battery19_tn);
@@ -81,12 +85,10 @@ void mainPage(bool fullScreen)
         u8g2Fonts.print(4);
         u8g2Fonts.setFontDirection(0);              // left to right (this is default)
 
-
-        ePaper->drawFastHLine(10, 40, ePaper->width() - 20, GxEPD_BLACK);
-        ePaper->drawFastHLine(10, 150, ePaper->width() - 20, GxEPD_BLACK);
+        twatch->display.drawFastHLine(10, 40,  twatch->display.width() - 20, GxEPD_BLACK);
+        twatch->display.drawFastHLine(10, 150, twatch->display.width() - 20, GxEPD_BLACK);
 
         u8g2Fonts.setFont(u8g2_font_inr38_mn  ); // select u8g2 font from here: https://github.com/olikraus/u8g2/wiki/fntlistall
-
         u8g2Fonts.setCursor(lastX, lastY);                // start writing at this position
         u8g2Fonts.print(buff);
 
@@ -102,8 +104,8 @@ void mainPage(bool fullScreen)
         tbw = u8g2Fonts.getUTF8Width(buff);
 
         int16_t x, y;
-        x = ((ePaper->width() - tbw) / 2) ;
-        y = ((ePaper->height() - tbh) / 2) + 40  ;
+        x = ((twatch->display.width() - tbw) / 2) ;
+        y = ((twatch->display.height() - tbh) / 2) + 40  ;
 
         u8g2Fonts.setCursor(x, y);
         u8g2Fonts.print(buff);
@@ -116,18 +118,25 @@ void mainPage(bool fullScreen)
         getY = u8g2Fonts.getCursorY();
         getH  = u8g2Fonts.getFontAscent() - u8g2Fonts.getFontDescent();
         getW = u8g2Fonts.getUTF8Width("1000步");
-        ePaper->update();
+
+        twatch->display.nextPage();
+
 
 
     } else {
         u8g2Fonts.setFont(u8g2_font_inr38_mn); // select u8g2 font from here: https://github.com/olikraus/u8g2/wiki/fntlistall
-        ePaper->fillRect(lastX, lastY - u8g2Fonts.getFontAscent() - 3, lastW, lastH, GxEPD_WHITE);
-        ePaper->fillScreen(GxEPD_WHITE);
-        ePaper->setTextColor(GxEPD_BLACK);
-        lastW = u8g2Fonts.getUTF8Width(buff);
-        u8g2Fonts.setCursor(lastX, lastY);
-        u8g2Fonts.print(buff);
-        ePaper->updateWindow(lastX, lastY - u8g2Fonts.getFontAscent() - 3, lastW, lastH, false);
+        twatch->display.setPartialWindow(lastX, lastY - u8g2Fonts.getFontAscent() - 3, lastW, lastH);
+        twatch->display.firstPage();
+        do {
+
+            twatch->display.fillRect(lastX, lastY - u8g2Fonts.getFontAscent() - 3, lastW, lastH, GxEPD_WHITE);
+            twatch->display.fillScreen(GxEPD_WHITE);
+            twatch->display.setTextColor(GxEPD_BLACK);
+            lastW = u8g2Fonts.getUTF8Width(buff);
+            u8g2Fonts.setCursor(lastX, lastY);
+            u8g2Fonts.print(buff);
+        } while (twatch->display.nextPage());
+
     }
 }
 
@@ -150,8 +159,6 @@ void setup()
     power = twatch->power;
 
     btn = twatch->button;
-
-    ePaper = twatch->ePaper;
 
     // Use compile time as RTC input time
     rtc->check();
@@ -191,7 +198,6 @@ void setup()
 
     // Reduce CPU frequency
     setCpuFrequencyMhz(40);
-
 }
 
 uint32_t loopMillis = 0;

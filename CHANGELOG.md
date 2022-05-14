@@ -1,4 +1,12 @@
 # Changelog
+
+
+## (05.14.2022)
+- Update GxEPD to GxEPD2 , Update e-paper example to fit new screen
+- Remove <examples/Sensor/VEMl6075> I2C scan
+
+
+
 ## (05.10.2022)
 - Come back again . Fix BMA423_Direction rotate in wrong direction in V1/V2
 - Optimize BMA423 startup time

@@ -1,4 +1,4 @@
-#pragma mark - Depend ESPAsyncWebServer & AsyncTCP &  ArduinoJson libraries
+// #pragma mark - Depend ESPAsyncWebServer & AsyncTCP &  ArduinoJson libraries
 /**
  * Base on https://github.com/lewisxhe/TTGO-EPaper-Series
  *
@@ -45,7 +45,6 @@ git clone -b 6.x https://github.com/bblanchon/ArduinoJson.git
 
 
 TTGOClass       *twatch = nullptr;
-GxEPD_Class     *ePaper = nullptr;
 PCF8563_Class   *rtc    = nullptr;
 AXP20X_Class    *power  = nullptr;
 Button2         *btn    = nullptr;
@@ -85,23 +84,23 @@ void displayText(const String &str, int16_t y, uint8_t alignment)
     int16_t x = 0;
     int16_t x1, y1;
     uint16_t w, h;
-    ePaper->setCursor(x, y);
-    ePaper->getTextBounds(str, x, y, &x1, &y1, &w, &h);
+    twatch->display.setCursor(x, y);
+    twatch->display.getTextBounds(str, x, y, &x1, &y1, &w, &h);
 
     switch (alignment) {
     case RIGHT_ALIGNMENT:
-        ePaper->setCursor(ePaper->width() - w - x1, y);
+        twatch->display.setCursor(twatch->display.width() - w - x1, y);
         break;
     case LEFT_ALIGNMENT:
-        ePaper->setCursor(0, y);
+        twatch->display.setCursor(0, y);
         break;
     case CENTER_ALIGNMENT:
-        ePaper->setCursor(ePaper->width() / 2 - ((w + x1) / 2), y);
+        twatch->display.setCursor(twatch->display.width() / 2 - ((w + x1) / 2), y);
         break;
     default:
         break;
     }
-    ePaper->println(str);
+    twatch->display.println(str);
 }
 
 void saveBadgeInfo(Badge_Info_t *info)
@@ -201,16 +200,19 @@ void WebServerStart(void)
     char apName[18] = {0};
     esp_wifi_get_mac(WIFI_IF_STA, mac);
     sprintf(apName, "T-Badge-%02X:%02X", mac[4], mac[5]);
+
+
     if (!WiFi.softAP(apName)) {
         Serial.println("AP Config failed.");
         return;
     } else {
-        Serial.println("AP Config Success.");
-        Serial.print("AP MAC: ");
+
+        Serial.print("MAC: ");
         Serial.println(WiFi.softAPmacAddress());
         IPAddress myIP = WiFi.softAPIP();
-        Serial.print("AP IP address: ");
+        Serial.print("IP: ");
         Serial.println(myIP);
+        Serial.printf("Please connect to the %s hotspot and use a browser to fill in the address in the address bar to access.\n", apName);
     }
 #else
     WiFi.mode(WIFI_STA);
@@ -305,26 +307,25 @@ void WebServerStart(void)
 
 void showMianPage(void)
 {
-    ePaper->fillScreen(GxEPD_WHITE);
     drawBitmap(DEFALUT_AVATAR_BMP, 50, 5, true);
-    ePaper->setFont(&FreeMonoBold18pt7b);
+    twatch->display.setFont(&FreeMonoBold18pt7b);
     displayText(String(info.name), 120, CENTER_ALIGNMENT);
-    ePaper->setFont(&FreeMono9pt7b);
+    twatch->display.setFont(&FreeMono9pt7b);
     displayText(String(info.company), 150, CENTER_ALIGNMENT);
     displayText(String(info.email), 170, CENTER_ALIGNMENT);
     displayText(String(info.link), 190, CENTER_ALIGNMENT);
-    ePaper->update();
+    twatch->display.display(false);
+
 }
 
 void showQrPage(void)
 {
-    ePaper->fillScreen(GxEPD_WHITE);
+    twatch->display.setFont(&FreeMono9pt7b);
     drawBitmap(DEFALUT_QR_CODE_BMP, 50, 5, true);
-    ePaper->setFont(&FreeMono9pt7b);
     displayText(String(info.address), 130, CENTER_ALIGNMENT);
     displayText(String(info.tel), 150, CENTER_ALIGNMENT);
     displayText(String(info.email), 170, CENTER_ALIGNMENT);
-    ePaper->update();
+    twatch->display.display(false);
 }
 
 uint16_t read16(File &f)
@@ -353,7 +354,7 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
     bool valid = false; // valid format to be handled
     bool flip = true;   // bitmap is stored bottom-to-top
     uint32_t startTime = millis();
-    if ((x >= ePaper->width()) || (y >= ePaper->height()))
+    if ((x >= twatch->display.width()) || (y >= twatch->display.height()))
         return;
     Serial.println();
     Serial.print("Loading image '");
@@ -402,10 +403,10 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
             }
             uint16_t w = width;
             uint16_t h = height;
-            if ((x + w - 1) >= ePaper->width())
-                w = ePaper->width() - x;
-            if ((y + h - 1) >= ePaper->height())
-                h = ePaper->height() - y;
+            if ((x + w - 1) >= twatch->display.width())
+                w = twatch->display.width() - x;
+            if ((y + h - 1) >= twatch->display.height())
+                h = twatch->display.height() - y;
             valid = true;
             uint8_t bitmask = 0xFF;
             uint8_t bitshift = 8 - depth;
@@ -432,7 +433,7 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
                     color_palette_buffer[pn / 8] |= colored << pn % 8;
                 }
             }
-            ePaper->fillScreen(GxEPD_WHITE);
+            twatch->display.fillScreen(GxEPD_WHITE);
             uint32_t rowPosition = flip ? imageOffset + (height - h) * rowSize : imageOffset;
             for (uint16_t row = 0; row < h; row++, rowPosition += rowSize) {
                 // for each line
@@ -501,7 +502,7 @@ void drawBitmap(const char *filename, int16_t x, int16_t y, bool with_color)
                         color = GxEPD_BLACK;
                     }
                     uint16_t yrow = y + (flip ? h - row - 1 : row);
-                    ePaper->drawPixel(x + col, yrow, color);
+                    twatch->display.drawPixel(x + col, yrow, color);
                 } // end pixel
             }     // end line
             Serial.print("loaded in ");
@@ -548,15 +549,17 @@ void setup()
 
     btn = twatch->button;
 
-    ePaper = twatch->ePaper;
-
-    ePaper->setTextColor(GxEPD_BLACK);
-    ePaper->setFont(&DEFALUT_FONT);
+    twatch->display.setTextColor(GxEPD_BLACK);
+    twatch->display.setFont(&DEFALUT_FONT);
     // Use compile time as RTC input time
     rtc->check();
 
     // Turn on power management button interrupt
-    power->enableIRQ(AXP202_PEK_SHORTPRESS_IRQ, true);
+    power->enableIRQ(AXP202_PEK_SHORTPRESS_IRQ | AXP202_PEK_LONGPRESS_IRQ, true);
+
+    //Prohibit long-pressing the power button of the watch to shut down,
+    //the shutdown action will be processed after long-pressing the power button
+    power->setTimeOutShutdown(false);
 
     // Clear power interruption
     power->clearIRQ();
@@ -571,7 +574,7 @@ void setup()
     }, FALLING);
 
     btn->setPressedHandler([]() {
-
+        twatch->display.clearScreen();
         if (!page) {
             showQrPage();
         } else {
@@ -593,13 +596,15 @@ void setup()
 
     WebServerStart();
 
-    pinMode(USER_BUTTON, INPUT);
+
+
 }
 
 void loop()
 {
 #ifdef LILYGO_WATCH_HAS_TOUCH
     if (twatch->touched()) {
+        twatch->display.clearScreen();
         if (!page) {
             showQrPage();
         } else {
@@ -612,13 +617,27 @@ void loop()
         pwIRQ = false;
         // Get interrupt status
         power->readIRQ();
+
         if (power->isPEKShortPressIRQ()) {
 #ifdef LILYGO_WATCH_HAS_BACKLIGHT
             twatch->bl->isOn() ? twatch->bl->off() : twatch->bl->adjust(DEFAULT_BRIGHTNESS);
 #endif
+        } else if (power->isPEKLongtPressIRQ()) {
+
+            Serial.println("enter power off!!!!");
+            /**
+             * The long-press shutdown action is handled here.
+             * Before turning off the power,need to set the e-paper to sleep,
+             * otherwise the display of the e-pape will be distorted when the power is turned off.
+             */
+            twatch->display.hibernate();
+            power->clearIRQ();
+            delay(500);
+            twatch->shutdown();
         }
         // After the interruption, you need to manually clear the interruption status
         power->clearIRQ();
     }
     btn->loop();
+
 }
