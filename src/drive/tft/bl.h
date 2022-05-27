@@ -20,7 +20,7 @@ public:
 
     virtual void begin()
     {
-        ledcSetup(_channel, 12000, 8);
+        ledcSetup(_channel, 1000, 8);
         ledcAttachPin(_pin, _channel);
         ledcWrite(_channel, 0);
     };

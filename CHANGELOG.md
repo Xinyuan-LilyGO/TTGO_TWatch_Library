@@ -1,6 +1,10 @@
 # Changelog
 
 
+## (05.27.2022)
+- Reduce the PWM frequency to 1000HZ
+
+
 ## (05.14.2022)
 - Update GxEPD to GxEPD2 , Update e-paper example to fit new screen
 - Remove <examples/Sensor/VEMl6075> I2C scan
