@@ -1156,10 +1156,13 @@ private:
     {
 #if defined(LILYGO_WATCH_HAS_BMA423)
         struct bma423_axes_remap remap_data;
+        i2c->setClock(400000);
         if (!bma->begin()) {
             log_e("Begin BMA423 FAIL");
+            i2c->setClock(200000);
             return false;
         }
+        i2c->setClock(200000);
 
 #if defined(LILYGO_WATCH_2020_V1)
         remap_data.x_axis = 0;

@@ -1,5 +1,7 @@
 # Changelog
 
+## (06.4.2022)
+- Fixed increasing the I2C rate causing the backlight to turn on abnormally, only increasing the rate when initializing the sensor
 
 ## (05.27.2022)
 - Reduce the PWM frequency to 1000HZ
