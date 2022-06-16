@@ -26,7 +26,10 @@ public:
 
     int readBytes_u16(int addr, uint16_t reg, uint8_t *data, int len);
     int writeBytes_u16(int addr, uint16_t reg, uint8_t *data, int len);
-
+    TwoWire *getHandler()
+    {
+        return _port;
+    }
 private:
     TwoWire *_port;
     SemaphoreHandle_t _i2c_mux = NULL;

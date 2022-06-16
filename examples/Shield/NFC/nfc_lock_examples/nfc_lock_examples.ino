@@ -31,6 +31,11 @@ void setup(void)
     ledcAttachPin(BUZZER_PIN, 7);
     ledcSetup(7, 1000, 16);
 
+    ledcWriteTone(7, 1000);
+    delay(200);
+    ledcWriteTone(7, 0);
+
+
     //! Initialize the nfc module
     ttgo->nfc_begin();
     //! Create a new pointer to save the nfc object
@@ -145,6 +150,12 @@ void loop(void)
             success = nfc->mifareclassic_AuthenticateBlock(uid, uidLength, 4, 0, keya);
 
             if (success) {
+
+                ledcWriteTone(7, 1000);
+                delay(200);
+                ledcWriteTone(7, 0);
+
+
                 Serial.println("Sector 1 (Blocks 4..7) has been authenticated");
                 tft->println("Sector 1 (Blocks 4..7) has been authenticated");
                 uint8_t data[16];
@@ -167,6 +178,9 @@ void loop(void)
                 }, sizeof data);
 
                 if (ret == 0) {
+                    ledcWriteTone(7, 1000);
+                    delay(200);
+                    ledcWriteTone(7, 0);
                     ledcWriteTone(7, 1000);
                     delay(200);
                     ledcWriteTone(7, 0);

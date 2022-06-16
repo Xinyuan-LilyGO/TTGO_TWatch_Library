@@ -51,7 +51,7 @@ typedef FocalTech_Class CapacitiveTouch ;
 #endif
 
 #ifdef LILYGO_WATCH_HAS_NFC
-#include "drive/nfc/Adafruit_PN532.h"
+#include "libraries/Adafruit-PN532/Adafruit_PN532.h"
 #endif
 
 #ifdef LILYGO_WATCH_HAS_BUTTON
@@ -467,6 +467,31 @@ public:
 
 
 #endif  /*LILYGO_WATCH_HAS_TOUCH*/
+
+
+
+    /******************************************
+     *              Wire1
+     * ***************************************/
+
+
+#if defined(LILYGO_WATCH_2019_WITH_TOUCH) ||  defined(LILYGO_WATCH_2019_NO_TOUCH)  || defined(LILYGO_WATCH_BLOCK)
+
+    I2CBus *wire;
+    
+    //Use the second set of I2C interfaces
+    void beginWire(uint8_t sda = 25, uint8_t scl = 26)
+    {
+        wire = new I2CBus(Wire1, sda, scl);
+    }
+
+    TwoWire &getWire()
+    {
+        return (*wire->getHandler());
+    }
+
+#endif  /*TWI1*/
+
 
     /******************************************
      *              Power
@@ -1156,13 +1181,17 @@ private:
     {
 #if defined(LILYGO_WATCH_HAS_BMA423)
         struct bma423_axes_remap remap_data;
+
+#ifndef LILYGO_WATCH_HAS_NFC
+        // The speed cannot be adjusted to 400K using the NFC module, 
+        // the speed needs to be adjusted to the default
         i2c->setClock(400000);
+#endif
+
         if (!bma->begin()) {
             log_e("Begin BMA423 FAIL");
-            i2c->setClock(200000);
             return false;
         }
-        i2c->setClock(200000);
 
 #if defined(LILYGO_WATCH_2020_V1)
         remap_data.x_axis = 0;
