@@ -478,7 +478,7 @@ public:
 #if defined(LILYGO_WATCH_2019_WITH_TOUCH) ||  defined(LILYGO_WATCH_2019_NO_TOUCH)  || defined(LILYGO_WATCH_BLOCK)
 
     I2CBus *wire;
-    
+
     //Use the second set of I2C interfaces
     void beginWire(uint8_t sda = 25, uint8_t scl = 26)
     {
@@ -932,6 +932,7 @@ public:
     {
         if (!sdhander) {
             sdhander = new SPIClass(HSPI);
+            pinMode(SD_MISO, INPUT_PULLUP);
             sdhander->begin(SD_SCLK, SD_MISO, SD_MOSI, SD_CS);
         }
         if (!SD.begin(SD_CS, *sdhander)) {
@@ -1183,7 +1184,7 @@ private:
         struct bma423_axes_remap remap_data;
 
 #ifndef LILYGO_WATCH_HAS_NFC
-        // The speed cannot be adjusted to 400K using the NFC module, 
+        // The speed cannot be adjusted to 400K using the NFC module,
         // the speed needs to be adjusted to the default
         i2c->setClock(400000);
 #endif
