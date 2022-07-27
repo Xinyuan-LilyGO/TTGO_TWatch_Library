@@ -1,4 +1,6 @@
 # Changelog
+## (7.27.2022)
+- Add T-Block Epaper DEPG0150BN driver 
 
 ## (06.4.2022)
 - Fixed increasing the I2C rate causing the backlight to turn on abnormally, only increasing the rate when initializing the sensor

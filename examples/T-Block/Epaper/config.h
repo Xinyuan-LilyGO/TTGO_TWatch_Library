@@ -9,7 +9,8 @@
 //NOT SUPPORT ...
 
 // => Function select
-#define LILYGO_EINK_GDEP015OC1  //Separate ink screen, no backlight, no touch
+#define LILYGO_EINK_DEPG0150BN                 //Separate ink screen, no backlight, no touch     -- Version on sale
+// #define LILYGO_EINK_GDEP015OC1              //Single electronic paper, no backlight, no touch -- Stop producing
 
 #include <LilyGoWatch.h>
 
