@@ -39,8 +39,8 @@ bool BMA::begin()
     _dev.resolution      = 12;
     _dev.feature_len     = BMA423_FEATURE_SIZE;
 
-    // reset();
-    // delay(20);
+    reset();
+    delay(20);
 
     if (bma423_init(&_dev) != BMA4_OK) {
         log_e("bma423_init FAIL");
