@@ -15,6 +15,10 @@ Written by Lewis he //https://github.com/lewisxhe
 
 #include <SPI.h>
 
+#if defined(LILYGO_WATCH_HAS_S76_S78G)
+#define LILYGO_WATCH_HAS_SDCARD
+#endif
+
 #ifdef LILYGO_WATCH_LVGL
 #include <Ticker.h>
 #endif
@@ -929,6 +933,8 @@ public:
         nfc->setI2CRead(nfcReadBytes);
     }
 #endif
+
+
 
 #ifdef LILYGO_WATCH_HAS_SDCARD
     SPIClass *sdhander = nullptr;

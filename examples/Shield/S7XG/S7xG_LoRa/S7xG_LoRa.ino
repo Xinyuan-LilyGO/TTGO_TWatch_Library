@@ -9,7 +9,7 @@ Ticker btnTicker;
 uint32_t state = 0, prev_state = 0;
 bool isInit = false;
 lv_obj_t *btn2, *btn1, *btn3, *ta1, *gContainer;
-
+bool sdOnline = false;
 void createWin();
 void stop_prev();
 
@@ -172,12 +172,25 @@ void pressed()
 
 void setup(void)
 {
+    uint32_t cardSize = 0;
     Serial.begin(115200);
 
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->tft->fillScreen(TFT_BLACK);
     ttgo->openBL();
+
+
+    if (ttgo->sdcard_begin()) {
+        Serial.println("SDCard begin SUCCESS!");
+        cardSize = SD.cardSize() / (1024 * 1024);
+        Serial.print("setupSDCard PASS . SIZE = ");
+        Serial.print(cardSize);
+        Serial.println(" MB");
+        sdOnline = true;
+    } else {
+        Serial.println("SDCard begin FAILED!");
+    }
 
     ttgo->lvgl_begin();
 
@@ -200,6 +213,15 @@ void setup(void)
     lv_label_set_text(label, "Begin S7xG");
     lv_obj_align(label, NULL, LV_ALIGN_CENTER, 0, 0);
 
+    lv_obj_t *label1 = lv_label_create(gContainer, NULL);
+    lv_label_set_text_fmt(label1, "SD Begin %s ", sdOnline ? "SUCCESS" : "FAILED");
+    lv_obj_align(label1, label, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+
+    if (sdOnline) {
+        label = lv_label_create(gContainer, NULL);
+        lv_label_set_text_fmt(label, "SDCard:[%u] MB", cardSize);
+        lv_obj_align(label, label1, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+    }
     int len = 0;
     int retry = 0;
     do {

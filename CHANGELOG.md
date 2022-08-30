@@ -1,4 +1,8 @@
 # Changelog
+## (8.30.22)
+- <examples/Shield/S7XG/S7xG_LoRa> Added SDCard test
+
+
 ## (8.19.2022)
 - Update wifi event macro name <examples/LVGL/SimpleWatch>
 
