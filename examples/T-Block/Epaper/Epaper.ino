@@ -166,6 +166,10 @@ void setup()
         pwIRQ = true;
     }, FALLING);
 
+#ifdef LILYGO_WATCH_HAS_BACKLIGHT
+    twatch->openBL();
+#endif
+
     btn->setPressedHandler([]() {
 
         delay(2000);
