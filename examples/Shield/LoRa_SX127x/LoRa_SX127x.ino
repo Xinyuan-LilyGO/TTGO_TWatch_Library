@@ -22,7 +22,7 @@ char buf[256];
 void createWin();
 void add_message(const char *txt);
 
-#define LORA_PERIOD 470
+#define LORA_PERIOD 923
 
 #if LORA_PERIOD == 433
 #define BAND 433E6
@@ -30,6 +30,8 @@ void add_message(const char *txt);
 #define BAND 868E6
 #elif LORA_PERIOD == 915
 #define BAND 915E6
+#elif LORA_PERIOD == 923
+#define BAND 923E6
 #else
 #define BAND 470E6
 #endif
@@ -142,7 +144,9 @@ void setup(void)
         ret = LoRa.begin(BAND);
         delay(500);
     } while (!ret);
-    Serial.println("LORA Begin PASS");
+    Serial.print("LORA setup pass:");
+    Serial.print(BAND);
+    Serial.println("MHZ");
 
     createGui();
 
