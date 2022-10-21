@@ -89,7 +89,6 @@ void lv_fs_if_pc_init(void)
     lv_fs_drv_init(&fs_drv);
 
     /*Set up fields...*/
-    fs_drv.file_size = sizeof(file_t);
     fs_drv.letter = LV_FS_IF_PC;
     fs_drv.open_cb = fs_open;
     fs_drv.close_cb = fs_close;
@@ -97,13 +96,7 @@ void lv_fs_if_pc_init(void)
     fs_drv.write_cb = fs_write;
     fs_drv.seek_cb = fs_seek;
     fs_drv.tell_cb = fs_tell;
-    fs_drv.free_space_cb = fs_free;
-    fs_drv.size_cb = fs_size;
-    fs_drv.remove_cb = fs_remove;
-    fs_drv.rename_cb = fs_rename;
-    fs_drv.trunc_cb = fs_trunc;
-
-    fs_drv.rddir_size = sizeof(dir_t);
+    
     fs_drv.dir_close_cb = fs_dir_close;
     fs_drv.dir_open_cb = fs_dir_open;
     fs_drv.dir_read_cb = fs_dir_read;
