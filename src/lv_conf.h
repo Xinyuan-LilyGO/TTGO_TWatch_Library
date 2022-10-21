@@ -11,7 +11,6 @@
 
 #ifndef LV_CONF_H
 #define LV_CONF_H
-	@@ -16,6 +16,9 @@
 #include <stdint.h>
 
 
@@ -283,7 +282,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 #define LV_FONT_MONTSERRAT_34    0
 #define LV_FONT_MONTSERRAT_36    0
 #define LV_FONT_MONTSERRAT_38    0
-	@@ -413,360 +284,226 @@ typedef void *lv_indev_drv_user_data_t;             /*Type of user data in the i
+typedef void *lv_indev_drv_user_data_t;             /*Type of user data in the i
 #define LV_FONT_MONTSERRAT_46    0
 #define LV_FONT_MONTSERRAT_48    0
 
