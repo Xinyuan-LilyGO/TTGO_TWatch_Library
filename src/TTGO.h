@@ -759,7 +759,7 @@ public:
         lv_init();
         lv_indev_drv_t indev_drv;
         lv_disp_drv_init(&disp_drv);
-        static lv_disp_buf_t disp_buf;
+        static lv_disp_draw_buf_t disp_buf;
 
 #ifdef  TWATCH_USE_PSRAM_ALLOC_LVGL
         if (psramFound()) {
@@ -789,9 +789,9 @@ public:
 
 
 #ifdef  TWATCH_LVGL_DOUBLE_BUFFER
-        lv_disp_buf_init(&disp_buf, buf1, buf2, LVGL_BUFFER_SIZE);
+        lv_disp_draw_buf_init(&disp_buf, buf1, buf2, LVGL_BUFFER_SIZE);
 #else
-        lv_disp_buf_init(&disp_buf, buf1, NULL, LVGL_BUFFER_SIZE);
+        lv_disp_draw_buf_init(&disp_buf, buf1, NULL, LVGL_BUFFER_SIZE);
 #endif
 
 
@@ -799,7 +799,7 @@ public:
         disp_drv.ver_res = tft->height();
         disp_drv.flush_cb = disp_flush;
         /*Set a display buffer*/
-        disp_drv.buffer = &disp_buf;
+        disp_drv.draw_buf = &disp_buf;
         lv_disp_drv_register(&disp_drv);
 
 #if  defined(LILYGO_WATCH_HAS_TOUCH)
@@ -1589,7 +1589,7 @@ protected:
     }
 
 #if defined(LILYGO_WATCH_LVGL) && defined(LILYGO_WATCH_HAS_TOUCH)
-    static bool touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
+    static void touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
     {
 
 #if (defined(LILYGO_WATCH_2020_V1) || defined(LILYGO_WATCH_2020_V2) || defined(LILYGO_WATCH_2020_V3)|| defined(LILYGO_WATCH_2019_WITH_TOUCH)) &&  defined(LILYGO_WATCH_LVGL)
@@ -1611,7 +1611,7 @@ protected:
         data->state = _ttgo->getTouch(data->point.x, data->point.y) ?  LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
 #endif /*LILYGO_WATCH_2020_V1 & LILYGO_WATCH_2020_V2*/
 
-        return false; /*Return false because no moare to be read*/
+       
     }
 
 #endif /*LILYGO_WATCH_LVGL , LILYGO_WATCH_HAS_TOUCH*/

@@ -15,7 +15,7 @@ extern "C" {
  *********************/
 
 #include "../lvgl.h"
-
+#include "lv_conf_internal.h"
 /*********************
  *      DEFINES
  *********************/
@@ -33,7 +33,7 @@ extern "C" {
  **********************/
 
 #ifdef __cplusplus
-}
+} /*extern "C"*/
 #endif
 
 #endif /*LVGL_SRC_H*/
