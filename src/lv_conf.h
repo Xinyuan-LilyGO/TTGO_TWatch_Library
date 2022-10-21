@@ -509,3 +509,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 #define LV_BUILD_EXAMPLES   1
 
 /*--END OF LV_CONF_H--*/
+
+#endif /*LV_CONF_H*/
+
+#endif /*End of "Content enable"*/
