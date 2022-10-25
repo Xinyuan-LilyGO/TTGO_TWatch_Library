@@ -52,6 +52,14 @@
     + [Instructions for Fedora](docs/arduino-ide/fedora.md)
     + [Instructions for openSUSE](docs/arduino-ide/opensuse.md)
 
+
+<h2 align = "left">🔷 FAQ</h2>
+
+- The following code is reported as an error when uploading. Please change the default upload baud rate in ArduinoIDE from '20000' to '921600`
+  ```
+  A fatal error occurred: Failed to write to target RAM(result was 01070000)
+  ```
+
 <h2 align = "left">🔶 How to find the sample program</h2>
 
 * T-Watch & LilyPi
