@@ -1,9 +1,8 @@
 
-#pragma mark - Depend ArduinoJson 6.x and CoinMarketCapApi2 libraries
+#pragma mark - Depend CryptocurrencyLib libraries
 /*
 cd ~/Arduino/libraries
-git clone https://github.com/lewisxhe/CoinMarketCapApi2
-git clone -b 6.x https://github.com/bblanchon/ArduinoJson.git
+git clone https://github.com/lewisxhe/CryptocurrencyLib.git
 */
 
 #include "config.h"
@@ -73,6 +72,8 @@ void setup()
         Serial.print(".");
     }
 
+    client.setCACert(api.getRootCA());
+
     Serial.println("");
     Serial.println("WiFi connected");
     tft->setTextColor(TFT_GREEN);
@@ -97,7 +98,7 @@ void printTickerData(String ticker)
     //For the new API, you can use the currency ID or abbreviated name, such as
     //Bitcoin, you can view the letter after Circulating Supply at https://coinmarketcap.com/, it is BTC
 
-    CMCTickerResponse response = api.GetTickerInfo(ticker, "USD");
+    CMCTickerResponse response = api.update(ticker, "USD");
     if (response.error == "") {
         Serial.print("ID: ");
         Serial.println(response.id);
