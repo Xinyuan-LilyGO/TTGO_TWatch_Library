@@ -1,4 +1,8 @@
 # Changelog
+## (11.9.22)
+- <examples/TFT_eSPI/IOTA_Price> Update library description and usage examples
+
+
 ## (8.30.22)
 - <examples/Shield/S7XG/S7xG_LoRa> Added SDCard test
 
