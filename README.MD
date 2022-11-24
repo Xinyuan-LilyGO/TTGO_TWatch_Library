@@ -55,10 +55,11 @@
 
 <h2 align = "left">🔷 FAQ</h2>
 
-- The following code is reported as an error when uploading. Please change the default upload baud rate in ArduinoIDE from '20000' to '921600`
+- The following code is reported as an error when uploading. Please change the default upload baud rate in ArduinoIDE from '20000' to '921600'.
   ```
   A fatal error occurred: Failed to write to target RAM(result was 01070000)
   ```
+- This error may also occur on MacOS if using a poorly compatible USB to serial driver.  The driver at [wch.cn](https://www.wch.cn/downloads/CH34XSER_MAC_ZIP.html) is a better match.  The webpage is in Chinese but the driver is digitally signed for security.
 
 <h2 align = "left">🔶 How to find the sample program</h2>
 
