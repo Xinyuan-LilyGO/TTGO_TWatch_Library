@@ -24,7 +24,7 @@
 ![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen10.png)
 
 - Demonstration effect of T-Watch2020-V3 from lunokjod
-- 
+
 ![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/watchface0.png)
 ![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/day_watchface0.png)
 ![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/playground0.png)
