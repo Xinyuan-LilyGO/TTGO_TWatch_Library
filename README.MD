@@ -12,17 +12,28 @@
 - Example [description](docs/examples_en.md)
 - The latest factory firmware is made by [sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch)
 
-![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen1.png)
-![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen2.png)
-![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen3.png)
-![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen4.png)
-![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen5.png)
-![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen6.png)
-![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen7.png)
-![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen8.png)
-![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen9.png)
-![screenshot](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen10.png)
+![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen1.png)
+![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen2.png)
+![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen3.png)
+![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen4.png)
+![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen5.png)
+![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen6.png)
+![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen7.png)
+![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen8.png)
+![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen9.png)
+![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen10.png)
 
+- Demonstration effect of T-Watch2020-V3 from lunokjod
+- 
+![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/watchface0.png)
+![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/day_watchface0.png)
+![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/playground0.png)
+![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/playground3.png)
+![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/settime.png)
+![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/battery.png)
+![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/ble_upload.png)
+![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/mainmenu_provisioning.png)
+![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/provisioning.png)
 
 
 <h2 align = "left">🚀 Characteristics</h2>
@@ -345,6 +356,7 @@
 
  <h2 align = "left">🔶 More interesting projects</h2>
 
+- [lunokjod/watch](https://github.com/lunokjod/watch)
 - [Micropython-twatch2020](https://y0no.fr/posts/micropython-ttgo-twatch2020/)
 - [sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch)
 - [lyusupov/Flight Recorder](https://github.com/lyusupov/SoftRF/wiki/Flight-Recorder)
