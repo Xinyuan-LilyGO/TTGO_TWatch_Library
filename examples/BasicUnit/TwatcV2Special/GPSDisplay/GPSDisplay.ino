@@ -17,9 +17,44 @@ TFT_eSprite *eSpDate = nullptr;
 TFT_eSprite *eSpTime = nullptr;
 TFT_eSprite *eSpSpeed = nullptr;
 TFT_eSprite *eSpSatellites = nullptr;
+HardwareSerial *GNSS = NULL;
 
 uint32_t last = 0;
 uint32_t updateTimeout = 0;
+
+bool Quectel_L76X_Probe()
+{
+    bool result = false;
+    GNSS->write("$PCAS03,0,0,0,0,0,0,0,0,0,0,,,0,0*02\r\n");
+    delay(5);
+    // Get version information
+    GNSS->write("$PCAS06,0*1B\r\n");
+    uint32_t startTimeout = millis() + 500;
+    while (millis() < startTimeout) {
+        if (GNSS->available()) {
+            String ver = GNSS->readStringUntil('\r');
+            // Get module info , If the correct header is returned,
+            // it can be determined that it is the MTK chip
+            int index = ver.indexOf("$");
+            if (index != -1) {
+                ver = ver.substring(index);
+                if (ver.startsWith("$GPTXT,01,01,02")) {
+                    Serial.println("L76K GNSS init succeeded, using L76K GNSS Module");
+                    result = true;
+                }
+            }
+        }
+    }
+    // Initialize the L76K Chip, use GPS + GLONASS
+    GNSS->write("$PCAS04,5*1C\r\n");
+    delay(250);
+    // only ask for RMC and GGA
+    GNSS->write("$PCAS03,1,0,0,0,1,0,0,0,0,0,,,0,0*02\r\n");
+    delay(250);
+    // Switch to Vehicle Mode, since SoftRF enables Aviation < 2g
+    GNSS->write("$PCAS11,3*1E\r\n");
+    return result;
+}
 
 void setup(void)
 {
@@ -42,10 +77,16 @@ void setup(void)
 
     ttgo->gps_begin();
 
+    GNSS = ttgo->hwSerial;
     gps = ttgo->gps;
 
-    // Display on the screen, latitude and longitude, number of satellites, and date and time
+    if (!Quectel_L76X_Probe()) {
+        tft->setCursor(0, 0);
+        tft->setTextColor(TFT_RED);
+        tft->println("GNSS Probe failed!"); while (1);
+    }
 
+    // Display on the screen, latitude and longitude, number of satellites, and date and time
     eSpLoaction   = new TFT_eSprite(tft); // Sprite object for eSpLoaction
     eSpDate   = new TFT_eSprite(tft); // Sprite object for eSpDate
     eSpTime   = new TFT_eSprite(tft); // Sprite object for eSpTime
@@ -69,7 +110,12 @@ void setup(void)
 
 void loop(void)
 {
-    ttgo->gpsHandler();
+
+    while (GNSS->available()) {
+        int r = GNSS->read();
+        Serial.write(r);
+        gps->encode(r);
+    }
 
     if (gps->location.isUpdated()) {
         updateTimeout = millis();
@@ -101,6 +147,8 @@ void loop(void)
         Serial.print(gps->location.lat(), 6);
         Serial.print(F(" Long="));
         Serial.println(gps->location.lng(), 6);
+
+
     } else {
         if (millis() - updateTimeout > 3000) {
             updateTimeout = millis();
