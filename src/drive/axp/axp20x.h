@@ -608,7 +608,7 @@ public:
     bool isBattTempHighIRQ();
 
     bool isPEKShortPressIRQ();
-    bool isPEKLongtPressIRQ();
+    bool isPEKLongPressIRQ();
     bool isTimerTimeoutIRQ();
 
     //! Group4 ADC data
