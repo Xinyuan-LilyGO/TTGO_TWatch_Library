@@ -1,1 +1,0 @@
-The code in this folder contains interesting examples written by users who use T-Watch
