@@ -1,369 +1,78 @@
 <h1 align = "center">🌟LilyGO T-Watch🌟</h1>
 
-**English | [中文](docs/details_cn.md)**
+**English | [中文](README_CN.MD)**
+
+## News:
+- Currently `T-Watch-Lib` is only compatible with `T-Watch S3` version, esp32 version is planned to support
+
+## 1️⃣ PlatformIO Quick Start <Recommended>
+
+1. Install [Visual Studio Code](https://code.visualstudio.com/) and [Python](https://www.python.org/)
+2. Search for the `PlatformIO` plugin in the `VisualStudioCode` extension and install it.
+3. After the installation is complete, you need to restart `VisualStudioCode`
+4. After restarting `VisualStudioCode`, select `File` in the upper left corner of `VisualStudioCode` -> `Open Folder` -> select the `TTGO_TWatch_Library` directory
+5. Wait for the installation of third-party dependent libraries to complete
+6. Click on the `platformio.ini` file, and in the `platformio` column, cancel the sample line that needs to be used, please make sure that only one line is valid
+7. Click the (✔) symbol in the lower left corner to compile
+8. Connect the board to the computer USB
+9. Click (→) to upload firmware
+10. Click (plug symbol) to monitor serial output
 
 
-<h2 align = "left">⭐ News </h2>
+## 2️⃣ Arduino IDE Quick Start
 
-1. In order to be compatible with multiple versions of T-Watch, all examples include a `config.h` file. For the first use, you need to define the **T-Watch** model you use in the `config.h` file
-2. In the `config.h` file, you can also see similar definitions, such as **LILYGO_WATCH_LVGL**, **LILYGO_WATCH_HAS_MOTOR**, this type of definition, it will be responsible for opening the defined module function, all definitions Will be available here [View](./docs/defined_en.md)
-3. Most of the examples are only used as hardware function demonstrations. This library only completes some initialization work and some demonstrations. For more advanced gameplay, please see [TTGO.h](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/blob/master/src/TTGO.h), to understand how to initialize, after being familiar with it, you can completely leave this library for more advanced gameplay
-- About API, please check the source code
-- Example [description](docs/examples_en.md)
-- The latest factory firmware is made by [sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch)
-
-![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen1.png)
-![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen2.png)
-![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen3.png)
-![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen4.png)
-![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen5.png)
-![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen6.png)
-![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen7.png)
-![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen8.png)
-![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen9.png)
-![sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch/blob/master/images/screen10.png)
-
-- Demonstration effect of T-Watch2020-V3 from lunokjod
-
-![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/watchface0.png)
-![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/day_watchface0.png)
-![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/playground0.png)
-![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/playground3.png)
-![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/settime.png)
-![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/battery.png)
-![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/ble_upload.png)
-![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/mainmenu_provisioning.png)
-![lunokjod/watch](https://github.com/lunokjod/watch/blob/devel/doc/provisioning.png)
+1. Install [Arduino IDE](https://www.arduino.cc/en/software)
+2. Install [Arduino ESP32](https://docs.espressif.com/projects/arduino-esp32/en/latest/) 
+3. Install [TTGO_TWatch_Library](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library)
+   1. Download a zipfile from github using the "Download ZIP" button and install it using the IDE ("Sketch" -> "Include Library" -> "Add .ZIP Library...")
+   2. Clone this git repository into your sketchbook/libraries folder. For more info, see https://www.arduino.cc/en/Guide/Libraries
+4. Install [T-Watch-Deps](https://github.com/Xinyuan-LilyGO/T-Watch-Deps)
+    - Copy all directories in [T-Watch-Deps](https://github.com/Xinyuan-LilyGO/T-Watch-Deps) to `<C:\Users\UserName\Documents\Arduino\libraries>` , if there is no `libraries` directory, please create it.
+    - Please note that instead of copying the `T-Watch-Deps` directory, copy the folders in the `T-Watch-Deps` directory to <libraries>
+    - Please note that currently only <TFT_eSPI> has been [preconfigured](https://github.com/Xinyuan-LilyGO/T-Watch-Deps/blob/be311130018708903d5ed1e524b73d670a2e18f1/TFT_eSPI/User_Setup_Select.h#L143) , after upgrading <TFT_eSPI>, you need to re-move <extras/Setup212_LilyGo_T_Watch_S3.h> to <TFT_eSPI/User_Setups> directory, and in [TFT_eSPI/User_Setup_Select.h](https://github.com/Xinyuan-LilyGO/T-Watch-Deps/blob/be311130018708903d5ed1e524b73d670a2e18f1/TFT_eSPI/User_Setup_Select.h#L143) add `#include <User_Setups/Setup212_LilyGo_T_Watch_S3.h>`
+5. Open ArduinoIDE -> Tools
+   - Board -> ESP32S3 Dev Module
+   - USB CDC On Boot -> Enable  ## Note that you need to change Enable to Disable when USB is not connected, so USB CDC will not prevent the board from starting
+   - CPU Frequency -> 240MHz
+   - USB DFU On Boot -> Disable
+   - Flash Mode -> QIO 80MHz
+   - Flash Size -> 16MB(128Mb)
+   - USB Firmware MSC On Boot -> Disable
+   - PSRAM -> OPI PSRAM
+   - Partition Scheme -> 16M Flash(3MB APP/9.9MB FATFS)
+   - USB Mode -> Hardware CDC and JIAG
+   - Upload Mode -> UART0/Hardware CDC
+   - Upload Speed -> 921600
+6. Insert USB into the PC and click Upload <If the upload fails, View the FAQ below>
 
 
-<h2 align = "left">🚀 Characteristics</h2>
+<h2 align = "left">4️⃣ Example Source </h2>
 
-1. The library already contains all the hardware drivers for `T-Watch`
-2. Using **TFT_eSPI** as the display driver, you can directly call **TFT_eSPI** through the construction object.
-3. Using **lvgl v7.7.2** as the display graphics framework, the driver method has been implemented, you only need to call lvgl api according to your own needs.
-4. For the use of lvgl please refer to **[lvgl docs](https://docs.lvgl.io/v7/en/html/)**
-
-
-<h2 align = "left">🔷 Install</h2>
-
-- Install the [Arduino IDE](https://www.arduino.cc/en/Main/Software). Note: Later instructions may not work if you use Arduino via Flatpak.
-- Download a zipfile from github using the "Download ZIP" button and install it using the IDE ("Sketch" -> "Include Library" -> "Add .ZIP Library...", OR:
-- Clone this git repository into your sketchbook/libraries folder. For more info, see https://www.arduino.cc/en/Guide/Libraries
+- **display directory**  examples are all from [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI/tree/master/examples) internal examples
+- **lvgl directory** examples are all from [lvgl](https://github.com/lvgl/lvgl/tree/master/examples)  internal examples
+- **radio directory** examples are all from [RadioLib](https://github.com/jgromes/RadioLib/tree/master/examples/SX126x) internal examples
+- **peripheral directory** examples are all from [XPowersLib](https://github.com/lewisxhe/XPowersLib/tree/master/examples) & [SensorsLib](https://github.com/lewisxhe/SensorsLib/tree/master/examples) internal examples
 
 
-<h2 align = "left">🔷 Note</h2>
+<h2 align = "left">5️⃣ ESP32 basic examples </h2>
 
-- If you don't have the `TTGO T-Watch` option in your board manager, please update the esp32 board as follows:
-  - Using Arduino IDE Boards Manager (preferred)
-    + [Instructions for Boards Manager](docs/arduino-ide/boards_manager.md)
-  - Using Arduino IDE with the development repository
-    + [Instructions for Windows](docs/arduino-ide/windows.md)
-    + [Instructions for Mac](docs/arduino-ide/mac.md)
-    + [Instructions for Debian/Ubuntu Linux](docs/arduino-ide/debian_ubuntu.md)
-    + [Instructions for Fedora](docs/arduino-ide/fedora.md)
-    + [Instructions for openSUSE](docs/arduino-ide/opensuse.md)
+- [BLE Examples](https://github.com/espressif/arduino-esp32/tree/master/libraries/BLE)
+- [WiFi Examples](https://github.com/espressif/arduino-esp32/tree/master/libraries/WiFi)
+- [SPIFFS Examples](https://github.com/espressif/arduino-esp32/tree/master/libraries/SPIFFS)
+- [OTA Examples](https://github.com/espressif/arduino-esp32/tree/master/libraries/ArduinoOTA)
+- [FFat Examples](https://github.com/espressif/arduino-esp32/tree/master/libraries/FFat)
+- For more examples of esp32 chip functions, please refer to [ardioio-esp32-libraries](https://github.com/espressif/arduino-esp32/tree/master/libraries)
 
 
-<h2 align = "left">🔷 FAQ</h2>
+<h2 align = "left">6️⃣ FAQ </h2>
 
-- The following code is reported as an error when uploading. Please change the default upload baud rate in ArduinoIDE from '20000' to '921600'.
-  ```
-  A fatal error occurred: Failed to write to target RAM(result was 01070000)
-  ```
-- This error may also occur on MacOS if using a poorly compatible USB to serial driver.  The driver at [wch.cn](https://www.wch.cn/downloads/CH34XSER_MAC_ZIP.html) is a better match.  The webpage is in Chinese but the driver is digitally signed for security.
-
-<h2 align = "left">🔶 How to find the sample program</h2>
-
-* T-Watch & LilyPi
-- In the Arduino board select `TTGO T-Watch`
-- In the Arduino File -> Examples -> `TTGO_TWatch_Library`
-
- <h2 align = "left">🔶 Precautions</h2>
-
-- T-Watch-2019 & LilyPi: Since uses a special IO as the SD interface, please remove the SD card when downloading the program.
-
-
- <h2 align = "left">🔷 Resources </h2>
-
-- [LilyPi Pin mapping and other instructions](docs/lilypi_pinmap.md)
-- [TWATCH 2019 Series pin mapping and other instructions](docs/watch_2019.md)
-- [TWATCH 2020 V1 Pin mapping and other instructions](docs/watch_2020_v1.md)
-- [TWATCH 2020 V2 Pin mapping and other instructions](docs/watch_2020_v2.md)
-- [TWATCH 2020 V3 Pin mapping and other instructions](docs/watch_2020_v3.md)
-
-
-
-<h2 align = "left">🚩 Version comparison </h2>
-
-
-<table border="0" align="center">
-<tr>
-<td align="center">Product</td>
-<td align="center"><a href="https://www.aliexpress.com/item/33038999162.html">T-Watch-2019</a></td>
-<td align="center"><a href="https://www.aliexpress.com/item/4000971508364.html">T-Watch-2020-V1</a></td>
-<td align="center"><a href="https://www.aliexpress.com/item/1005002264354524.html">T-Watch-2020-V2</a></td>
-<td align="center"><a href="https://www.aliexpress.com/item/1005002053650442.html">T-Watch-2020-V3</a></td>
-<td align="center"><a href="https://www.aliexpress.com/item/1005001824993604.html">T-Block/T-Block-V1</a></td>
-<td align="center"><a href="https://www.aliexpress.com/item/1005001447548347.html">LilyPi</a></td>
-</tr>
-
-
-<tr>
-<td align="center">Core </td>
-<td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
-<td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
-<td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
-<td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
-<td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf">ESP32-D0WDQ6</a></td>
-<td align="center"><a href="https://www.espressif.com/sites/default/files/documentation/esp32-wrover-b_datasheet_cn.pdf">ESP32-WROVER-B</a></td>
-</tr>
-
-<tr>
-<td align="center">PSRAM </td>
-<!-- 2019 -->
-<td align="center">16MBytes</a></td>
-<!-- 2020 V1 -->
-<td align="center">16MBytes</a></td>
-<!-- 2020 V2 -->
-<td align="center">16MBytes</a></td>
-<!-- 2020 V3 -->
-<td align="center">16MBytes</a></td>
-<!-- TBLOCK -->
-<td align="center">16MBytes</a></td>
-<!-- LILYPI -->
-<td align="center">16MBytes</a></td>
-</tr>
-
-<tr>
-<td align="center">Flash </td>
-<!-- 2019 -->
-<td align="center">8MBytes</a></td>
-<!-- 2020 V1 -->
-<td align="center">8MBytes</a></td>
-<!-- 2020 V2 -->
-<td align="center">4MBytes</a></td>
-<!-- 2020 V3 -->
-<td align="center">8MBytes</a></td>
-<!-- TBLOCK -->
-<td align="center">8MBytes</a></td>
-<!-- LILYPI -->
-<td align="center">8MBytes</a></td>
-</tr>
-
-
-<tr>
-<td align="center">PMU </td>
-<!-- 2019 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202">AXP202</a></td>
-<!-- 2020 V1 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202">AXP202</a></td>
-<!-- 2020 V2 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202">AXP202</a></td>
-<!-- 2020 V3 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202">AXP202</a></td>
-<!-- TBLOCK -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/AXP202">AXP202</a></td>
-<!-- LILYPI -->
-<td align="center">❌</a></td>
-</tr>
-
-<tr>
-<td align="center">IMU </td>
-<!-- 2019 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">BMA423</a></td>
-<!-- 2020 V1 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">BMA423</a></td>
-<!-- 2020 V2 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">BMA423</a></td>
-<!-- 2020 V3 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">BMA423</a></td>
-<!-- TBLOCK -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/MPU6050">MPU6050</a></td>
-<!-- LILYPI -->
-<td align="center">❌</a></td>
-</tr>
-
-
-<tr>
-<td align="center">TFT </td>
-<!-- 2019 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf">1.54"/240X240/ST7789V</a></td>
-<!-- 2020 V1 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf">1.54"/240X240/ST7789V</a></td>
-<!-- 2020 V2 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf">1.54"/240X240/ST7789V</a></td>
-<!-- 2020 V3 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/blob/master/DISPLAY/ST7789V.pdf">1.54"/240X240/ST7789V</a></td>
-<!-- TBLOCK -->
-<td align="center">[1]</a></td>
-<!-- LILYPI -->
-<td align="center">[1]</a></td>
-</tr>
-
-<tr>
-<td align="center">TouchScreen </td>
-<!-- 2019 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/TOUCHSCREEN">FT6336</a></td>
-<!-- 2020 V1 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/TOUCHSCREEN">FT6336</a></td>
-<!-- 2020 V2 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/TOUCHSCREEN">FT6336</a></td>
-<!-- 2020 V3 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/TOUCHSCREEN">FT6336</a></td>
-<!-- TBLOCK -->
-<td align="center">[1]</a></td>
-<!-- LILYPI -->
-<td align="center">[1]</a></td>
-</tr>
-
-<tr>
-<td align="center">Real Time Clock </td>
-<!-- 2019 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
-<!-- 2020 V1 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
-<!-- 2020 V2 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
-<!-- 2020 V3 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
-<!-- TBLOCK -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
-<!-- 2020 V3 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/RTC">PCF8563</a></td>
-</tr>
-
-
-
-<tr>
-<td align="center">Infrared sensor  </td>
-<!-- 2019 -->
-<td align="center">❌</a></td>
-<!-- 2020 V1 -->
-<td align="center">✅</a></td>
-<!-- 2020 V2 -->
-<td align="center">✅</a></td>
-<!-- 2020 V3 -->
-<td align="center">✅</a></td>
-<!-- TBLOCK -->
-<td align="center">❌</a></td>
-<!-- LILYPI -->
-<td align="center">❌</a></td>
-</tr>
-
-
-<tr>
-<td align="center">Scalable </td>
-<!-- 2019 -->
-<td align="center">✅</a></td>
-<!-- 2020 V1 -->
-<td align="center">❌</a></td>
-<!-- 2020 V2 -->
-<td align="center">✅</a></td>
-<!-- 2020 V3 -->
-<td align="center">❌</a></td>
-<!-- TBLOCK -->
-<td align="center">✅</a></td>
-<!-- LILYPI -->
-<td align="center">✅</a></td>
-</tr>
-
-<tr>
-<td align="center">Microphone </td>
-<!-- 2019 -->
-<td align="center">[1]</a></td>
-<!-- 2020 V1 -->
-<td align="center">❌</a></td>
-<!-- 2020 V2 -->
-<td align="center">❌</a></td>
-<!-- 2020 V3 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">SPM1423HM4H</a></td>
-<!-- TBLOCK -->
-<td align="center">[1]</a></td>
-<!-- LILYPI -->
-<td align="center">❌</a></td>
-</tr>
-
-<tr>
-<td align="center">GPS </td>
-<!-- 2019 -->
-<td align="center">[1]</a></td>
-<!-- 2020 V1 -->
-<td align="center">❌</a></td>
-<!-- 2020 V2 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/L76K"> Quectel L76K</a></td>
-<!-- 2020 V3 -->
-<td align="center">❌</a></td>
-<!-- TBLOCK -->
-<td align="center">[1]</a></td>
-<!-- LILYPI -->
-<td align="center">❌</a></td>
-</tr>
-
-<tr>
-<td align="center">Decoder </td>
-<!-- 2019 -->
-<td align="center">[1]</a></td>
-<!-- 2020 V1 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/MAX98357A">MAX98357A</a></td>
-<!-- 2020 V2 -->
-<td align="center">❌</a></td>
-<!-- 2020 V3 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/MAX98357A">MAX98357A</a></td>
-<!-- TBLOCK -->
-<td align="center">[1]</a></td>
-<!-- LILYPI -->
-<td align="center">❌</a></td>
-</tr>
-
-
-<tr>
-<td align="center">Tactile  </td>
-<!-- 2019 -->
-<td align="center">[1]</a></td>
-<!-- 2020 V1 -->
-<td align="center">✅(IO Control)</a></td>
-<!-- 2020 V2 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/DRV2605">DRV2605(I2C Control)</a></td>
-<!-- 2020 V3 -->
-<td align="center">✅(IO Control)</td>
-<!-- TBLOCK -->
-<td align="center">[1]</a></td>
-<!-- LILYPI -->
-<td align="center">❌</a></td>
-</tr>
-
-
-<tr>
-<td align="center">Button</td>
-<!-- 2019 -->
-<td align="center">✅</a></td>
-<!-- 2020 V1 -->
-<td align="center">✅[2]</a></td>
-<!-- 2020 V2 -->
-<td align="center">✅[2]</a></td>
-<!-- 2020 V3 -->
-<td align="center">✅[2]</a></td>
-<!-- TBLOCK -->
-<td align="center">✅[2]</a></td>
-<!-- LILYPI -->
-<td align="center">✅</a></td>
-</tr>
-
-</table>
-
-- [1]:Need expansion board to support 
-- [2]:The buttons are AXP202 PEK programmable buttons 
-
- <h2 align = "left">🔶 More interesting projects</h2>
-
-- [lunokjod/watch](https://github.com/lunokjod/watch)
-- [Micropython-twatch2020](https://y0no.fr/posts/micropython-ttgo-twatch2020/)
-- [sharandac/My-TTGO-Watch](https://github.com/sharandac/My-TTGO-Watch)
-- [lyusupov/Flight Recorder](https://github.com/lyusupov/SoftRF/wiki/Flight-Recorder)
-- [lixy123/TTGO_T_Watch_Baidu_Rec](https://github.com/lixy123/TTGO_T_Watch_Baidu_Rec)
-- [lixy123/TTGO_T_Watch_Alarm_Clock](https://github.com/lixy123/TTGO_T_Watch_Alarm_Clock)
-- [AlexGoodyear/agoodWatch](https://github.com/AlexGoodyear/agoodWatch)
-- [Adosis/TTGO_TWatch_WordClock](https://github.com/Adosis/TTGO_TWatch_WordClock)
-- [SpectralCascade/FancyWatchOS](https://github.com/SpectralCascade/FancyWatchOS)
-
+1. Unable to upload sample
+    1. Make sure that the T-Watch is turned on, you can check it according to the following method, open the computer device manager, check the port, plug the USB port into the computer, and if the new COM device is displayed, it has been turned on, if it is not displayed, press the crown Press the button on the button for one second, and then the device port will pop up, click upload at this time
+2. The USB port of the device keeps connecting and disconnecting repeatedly
+    1. This is the abnormal operation of the program and the phenomenon caused by the continuous restart of the esp32. First, open the Arduino IDE, select the corresponding port, and then shut down the T-Watch first (keep the USB connected to the computer, press and hold the crown, and then until the USB device is not in the list), then click upload, wait for the sketch compilation to be completed, and press the crown for one second to start the machine. At this time, it should be able to upload normally. This method needs to grasp the time
+    2. If the first method cannot grasp the time, you can use the second method, first plug in the USB, shut down the T-Watch, and then remove the USB cable after seeing that there is no device displayed in the USB port, and disassemble the T-Watch On the back cover, there is a button on the PCB, press and hold the button, and then insert the USB cable, at this time T-Watch enters the download mode, click upload, after the upload is complete, you need to shut down the T-Watch, and then turn it on again, the program will be normal run.
+3. Where to query the pin definition?
+    1. Look [here](./src/utilities.h)
+4. The screen is not displayed after uploading the sketch?
+    1. Please check the fourth line of [Arduino IDE Quick Start]()
 
