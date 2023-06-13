@@ -330,7 +330,7 @@ bool LilyGoLib::beginPower()
 
     // Set the maximum current of the PMU VBUS input,
     // higher than this value will turn off the PMU
-    setVbusCurrentLimit(XPOWERS_AXP2101_VBUS_CUR_LIM_1500MA);
+    setVbusCurrentLimit(XPOWERS_AXP2101_VBUS_CUR_LIM_100MA);
 
     // Set VSY off voltage as 2600mV , Adjustment range 2600mV ~ 3300mV
     setSysPowerDownVoltage(2600);
@@ -437,12 +437,12 @@ bool LilyGoLib::beginPower()
     // Set the precharge charging current
     setPrechargeCurr(XPOWERS_AXP2101_PRECHARGE_50MA);
     // Set constant current charge current limit
-    setChargerConstantCurr(XPOWERS_AXP2101_CHG_CUR_125MA);
+    setChargerConstantCurr(XPOWERS_AXP2101_CHG_CUR_100MA);
     // Set stop charging termination current
     setChargerTerminationCurr(XPOWERS_AXP2101_CHG_ITERM_25MA);
 
     // Set charge cut-off voltage
-    setChargeTargetVoltage(XPOWERS_AXP2101_CHG_VOL_4V2);
+    setChargeTargetVoltage(XPOWERS_AXP2101_CHG_VOL_4V35);
 
     enableButtonBatteryCharge();
 #else
