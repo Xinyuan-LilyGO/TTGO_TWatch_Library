@@ -29,7 +29,7 @@
 1. 该库已经包含`T-Watch`所有硬件驱动
 2. 使用**TFT_eSPI** 作为显示屏驱动，可直接通过通过构造对象调用**TFT_eSPI**的方法
 3. 使用**lvgl v7.7.2**作为显示图形框架,驱动方法已经实现，只需要按自己的需求调用lvgl api即可
-4. 关于lvgl的使用请参考 **[lvgl 文档](https://docs.lvgl.io/v7/en/html/)**
+4. 关于lvgl的使用请参考 **[lvgl 文档](https://docs.lvgl.io/master/)**
   
 
 <h2 align = "left">安装</h2>
