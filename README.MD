@@ -75,4 +75,13 @@
     1. Look [here](./src/utilities.h)
 4. The screen is not displayed after uploading the sketch?
     1. Please check the fourth line of [Arduino IDE Quick Start]()
-
+ 5. Power Domain 
+    | Power Domain | Role                          |
+    | ------------ | ----------------------------- |
+    | ALDO1        | RTC backup battery (3.1-3.3v) |
+    | ALDO2        | Backlight                     |
+    | ALDO3        | 3V3 for FT6336 and st7889     |
+    | ALDO4        | SX1262                        |
+    | BLDO2        | DRV2605 Enable pin            |
+    | DC1          | ESP32 3V3                     |
+    | VRTC         | Nothing                       |

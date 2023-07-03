@@ -73,5 +73,14 @@
    1. 看[这里](./src/utilities.h)
 4. 上传草图之后屏幕没有显示?
    1. 请查看[Arduino IDE Quick Start]()第四行
-
+5. 电源域
+   | Power Domain | Role                          |
+   | ------------ | ----------------------------- |
+   | ALDO1        | RTC backup battery (3.1-3.3v) |
+   | ALDO2        | Backlight                     |
+   | ALDO3        | 3V3 for FT6336 and st7889     |
+   | ALDO4        | SX1262                        |
+   | BLDO2        | DRV2605 Enable pin            |
+   | DC1          | ESP32 3V3                     |
+   | VRTC         | Nothing                       |
 
