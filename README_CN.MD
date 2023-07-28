@@ -59,7 +59,7 @@
 - [SPIFFS Examples](https://github.com/espressif/arduino-esp32/tree/master/libraries/SPIFFS)
 - [OTA Examples](https://github.com/espressif/arduino-esp32/tree/master/libraries/ArduinoOTA)
 - [FFat Examples](https://github.com/espressif/arduino-esp32/tree/master/libraries/FFat)
-- 更多esp32示例,请在这里查看 [ardioio-esp32-libraries](https://github.com/espressif/arduino-esp32/tree/master/libraries)
+- 更多esp32示例,请在这里查看 [arduino-esp32-libraries](https://github.com/espressif/arduino-esp32/tree/master/libraries)
 
 
 <h2 align = "left">6️⃣ FAQ </h2>

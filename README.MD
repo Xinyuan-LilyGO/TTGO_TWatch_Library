@@ -61,7 +61,7 @@
 - [SPIFFS Examples](https://github.com/espressif/arduino-esp32/tree/master/libraries/SPIFFS)
 - [OTA Examples](https://github.com/espressif/arduino-esp32/tree/master/libraries/ArduinoOTA)
 - [FFat Examples](https://github.com/espressif/arduino-esp32/tree/master/libraries/FFat)
-- For more examples of esp32 chip functions, please refer to [ardioio-esp32-libraries](https://github.com/espressif/arduino-esp32/tree/master/libraries)
+- For more examples of esp32 chip functions, please refer to [arduino-esp32-libraries](https://github.com/espressif/arduino-esp32/tree/master/libraries)
 
 
 <h2 align = "left">6️⃣ FAQ </h2>
