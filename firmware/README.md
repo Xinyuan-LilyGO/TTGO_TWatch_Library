@@ -23,8 +23,12 @@ Please follow the steps below
    3. Open Windows Device Manager
    4. Press and hold the crown of the watch until the USB device does not appear in the Windows COM port
    5. Press the button in the picture below and keep pressing
+
+
     ![](../images/BUTTON.jpg)
+
+    
    6. Press the crown button for one second
    7. Now the COM port is fixed
    8. Select Port in `ESP32 DOWNLOADER TOOL`
-   9. Click `START`
+   9.  Click `START`
