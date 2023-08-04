@@ -74,7 +74,7 @@ Please follow the steps below
    1. Remove the back cover
    2. Insert Micro-USB
    3. Open Windows Device Manager
-   4. Press and hold the crown of the watch until the CH9102 device does not appear in the Windows COM port
+   4. Press and hold the crown of the watch until the USB device does not appear in the Windows COM port
    5. Press the button in the picture below and keep pressing
     ![](./images/BUTTON.jpg)
    6. Press the crown button for one second

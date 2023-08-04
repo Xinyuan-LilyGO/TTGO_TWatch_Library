@@ -73,7 +73,7 @@
   1. 拆开后盖
   2. 插入Micro-USB
   3. 打开Windows设备管理器
-  4. 长按手表表冠,直到WindowsCOM端口中不出现 CH9102 的设备
+  4. 长按手表表冠,直到 Windows COM 端口中不出现 USB 的设备
   5. 按压下图按键保持按压
    ![](./images/BUTTON.jpg)
   6. 按压表冠按钮一秒
