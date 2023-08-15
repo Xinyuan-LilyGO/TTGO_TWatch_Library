@@ -142,7 +142,7 @@ public:
 
     bool readMicrophone(void *dest, size_t size, size_t *bytes_read, TickType_t ticks_to_wait = portMAX_DELAY);
 
-
+    void sleepLora(bool config);
     void setSleepMode(SleepMode_t mode);
 
     void sleep(uint32_t second) ;
