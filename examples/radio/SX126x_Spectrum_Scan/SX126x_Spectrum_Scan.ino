@@ -39,6 +39,18 @@ void setup()
 
     beginLvglHelper();
 
+    // initialize SX1262 FSK modem at the initial frequency
+    Serial.print(F("[SX1262] Initializing ... "));
+    int state = watch.beginFSK();
+    if (state == RADIOLIB_ERR_NONE) {
+        Serial.println(F("success!"));
+    } else {
+        Serial.print(F("failed, code "));
+        Serial.println(state);
+        while (true);
+    }
+
+
     // upload a patch to the SX1262 to enable spectral scan
     // NOTE: this patch is uploaded into volatile memory,
     //       and must be re-uploaded on every power up
