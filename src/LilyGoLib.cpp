@@ -444,6 +444,9 @@ bool LilyGoLib::beginPower()
     // Set charge cut-off voltage
     setChargeTargetVoltage(XPOWERS_AXP2101_CHG_VOL_4V35);
 
+    // Set RTC Battery voltage to 3.3V
+    setButtonBatteryChargeVoltage(3300);
+
     enableButtonBatteryCharge();
 #else
 
