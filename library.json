@@ -58,7 +58,7 @@
     },
     {
       "name": "SensorLib",
-      "version": "https://github.com/lewisxhe/SensorsLib.git#6083c840bd8c54c6ec7c6814b1c2b66fdb3defe3"
+      "version": "https://github.com/lewisxhe/SensorsLib.git#745383b60d696e501f0f04ec39e06c7bb04b2c4f"
     }
   ],
   "examples": ["examples/*/*.ino"],
