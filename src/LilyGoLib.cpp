@@ -144,6 +144,7 @@ bool LilyGoLib::begin(Stream *stream)
         log_println("Failed to find PCF8563 - check your wiring!");
     } else {
         log_println("Initializing PCF8563 succeeded");
+        disableCLK();   //Disable clock output ， Conserve Backup Battery Current Consumption
         hwClockRead();  //Synchronize RTC clock to system clock
     }
 
