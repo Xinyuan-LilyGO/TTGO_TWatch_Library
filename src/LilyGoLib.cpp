@@ -110,6 +110,7 @@ bool LilyGoLib::begin(Stream *stream)
     log_println("Init SPIFFS");
     if (!SPIFFS.begin()) {
         fillScreen(TFT_BLACK);
+        setBrightness(50);
         drawString("Format SPIFFS...", 120, 120);
         SPIFFS.format();
     }
