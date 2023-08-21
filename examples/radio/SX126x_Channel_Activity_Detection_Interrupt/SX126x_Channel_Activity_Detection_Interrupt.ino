@@ -29,6 +29,12 @@ void setup()
 
     beginLvglHelper();
 
+    // set carrier frequency to 433.5 MHz
+    if (watch.setFrequency(433.5) == RADIOLIB_ERR_INVALID_FREQUENCY) {
+        Serial.println(F("Selected frequency is invalid for this module!"));
+        while (true);
+    }
+
     // set the function that will be called
     // when LoRa packet or timeout is detected
     watch.setDio1Action(setFlag);

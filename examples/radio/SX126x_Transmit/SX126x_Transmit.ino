@@ -28,6 +28,12 @@ void setup()
 
     watch.begin();
 
+    // set carrier frequency to 433.5 MHz
+    if (watch.setFrequency(433.5) == RADIOLIB_ERR_INVALID_FREQUENCY) {
+        Serial.println(F("Selected frequency is invalid for this module!"));
+        while (true);
+    }
+
     beginLvglHelper();
 
     label1 = lv_label_create(lv_scr_act());
