@@ -2,5 +2,4 @@
 .DS_Store
 build
 make
-bin
 .gitignore
