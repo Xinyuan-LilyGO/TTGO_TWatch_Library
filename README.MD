@@ -85,7 +85,7 @@ Please follow the steps below
     1. Look [here](./src/utilities.h)
 4. The screen is not displayed after uploading the sketch?
     1. Please check the fourth line of [Arduino IDE Quick Start]()
- 5. Power Domain 
+5. Power Domain 
     | Power Domain | Role                          |
     | ------------ | ----------------------------- |
     | ALDO1        | RTC backup battery (3.1-3.3v) |
@@ -95,3 +95,5 @@ Please follow the steps below
     | BLDO2        | DRV2605 Enable pin            |
     | DC1          | ESP32 3V3                     |
     | VRTC         | Nothing                       |
+6. Battery 
+   1. Lilygo T-Watch fits 502530 size (5x25x30mm) batteries of any chemistry supported by the AXP2101.
