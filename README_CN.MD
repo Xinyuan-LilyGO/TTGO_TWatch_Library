@@ -22,7 +22,7 @@
 ## 2️⃣ Arduino IDE Quick Start
 
 1. 安装 [ArduinoIDE](https://www.arduino.cc/en/software)
-2. 安装 [Arduino ESP32](https://docs.espressif.com/projects/arduino-esp32/en/latest/) 
+2. 安装 [Arduino ESP32 latest](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html#windows-manual-installation) ,**请查看手动安装方法， 请不要从板安装管理器安装，会缺失部分文件**
 3. 安装 [TTGO_TWatch_Library](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library)
 4. 安装 [T-Watch-Deps](https://github.com/Xinyuan-LilyGO/T-Watch-Deps)
    - 将[T-Watch-Deps](https://github.com/Xinyuan-LilyGO/T-Watch-Deps)里的所有目录拷贝到 `<C:\Users\UserName\Documents\Arduino\libraries>`,如果没有`libraries`目录,请新建.
