@@ -1,5 +1,5 @@
 /**
- * @file      obj.ino
+ * @file      switch.ino
  * @author    Lewis He (lewishe@outlook.com)
  * @license   MIT
  * @copyright Copyright (c) 2023  Shenzhen Xinyuan Electronic Technology Co., Ltd
@@ -10,9 +10,9 @@
 #include <LV_Helper.h>
 
 extern "C" {
-    void lv_example_obj_1(void);
-    void lv_example_obj_2(void);
+    void lv_example_switch_1(void);
 };
+
 
 void setup()
 {
@@ -22,9 +22,7 @@ void setup()
 
     beginLvglHelper();
 
-    //Tips : Select a separate function to see the effect
-    lv_example_obj_1();
-    // lv_example_obj_2();
+    lv_example_switch_1();
 }
 
 
