@@ -17,10 +17,10 @@ Apple  : https://apps.apple.com/us/app/lightblue/id557428110
 
 */
 
-#include "config.h"
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
+#include "config.h"
 
 TTGOClass *ttgo;
 TFT_eSPI *tft;
