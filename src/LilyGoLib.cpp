@@ -110,6 +110,7 @@ bool LilyGoLib::begin(Stream *stream)
     log_println("Init SPIFFS");
     if (!SPIFFS.begin()) {
         fillScreen(TFT_BLACK);
+        setBrightness(50);
         drawString("Format SPIFFS...", 120, 120);
         SPIFFS.format();
     }
@@ -144,6 +145,7 @@ bool LilyGoLib::begin(Stream *stream)
         log_println("Failed to find PCF8563 - check your wiring!");
     } else {
         log_println("Initializing PCF8563 succeeded");
+        disableCLK();   //Disable clock output ， Conserve Backup Battery Current Consumption
         hwClockRead();  //Synchronize RTC clock to system clock
     }
 
@@ -443,6 +445,9 @@ bool LilyGoLib::beginPower()
 
     // Set charge cut-off voltage
     setChargeTargetVoltage(XPOWERS_AXP2101_CHG_VOL_4V35);
+
+    // Set RTC Battery voltage to 3.3V
+    setButtonBatteryChargeVoltage(3300);
 
     enableButtonBatteryCharge();
 #else

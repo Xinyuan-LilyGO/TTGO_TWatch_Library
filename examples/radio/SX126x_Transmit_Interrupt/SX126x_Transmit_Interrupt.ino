@@ -32,6 +32,12 @@ void setup()
 
     beginLvglHelper();
 
+    // set carrier frequency to 433.5 MHz
+    if (watch.setFrequency(433.5) == RADIOLIB_ERR_INVALID_FREQUENCY) {
+        Serial.println(F("Selected frequency is invalid for this module!"));
+        while (true);
+    }
+
     // set the function that will be called
     // when packet transmission is finished
     watch.setDio1Action(setFlag);

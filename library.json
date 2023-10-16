@@ -3,7 +3,8 @@
   "version": "2.0.0",
   "description": "LilyGo T-Watch series Arduino library",
   "keywords": "lilygo,t-watch",
-  "authors": [{
+  "authors": [
+    {
       "name": "LewisHe",
       "url": "https://github.com/lewisxhe",
       "maintainer": true
@@ -29,7 +30,8 @@
       "examples/*"
     ]
   },
-  "dependencies": [{
+  "dependencies": [
+    {
       "name": "ESP8266Audio",
       "version": "^1.9.7"
     },
@@ -56,7 +58,7 @@
     },
     {
       "name": "SensorLib",
-      "version": "https://github.com/lewisxhe/SensorsLib.git#b3ad77af6e100801c7125aaf45fea61f0d358b5a"
+      "version": "https://github.com/lewisxhe/SensorsLib.git#745383b60d696e501f0f04ec39e06c7bb04b2c4f"
     }
   ],
   "examples": ["examples/*/*.ino"],

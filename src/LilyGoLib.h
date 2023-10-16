@@ -9,6 +9,13 @@
 #pragma once
 
 #include <Arduino.h>
+
+
+// Please check the manual installation method. Please do not install from the board installation manager, some files will be missing.
+#if ESP_ARDUINO_VERSION < ESP_ARDUINO_VERSION_VAL(2,0,5)
+#error "Please manually update and install Arduino Core ESP32 to the latest version, how to update, please see here https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html#windows-manual-installation"
+#endif
+
 #include <SPIFFS.h>
 #include <FS.h>
 #include <Wire.h>

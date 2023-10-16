@@ -92,8 +92,8 @@ void setup()
     Serial.printf("Connecting to %s ", ssid);
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
+        delay(5);
+        lv_task_handler();
     }
     Serial.println(" CONNECTED");
     lv_label_set_text_fmt(label1, "%s Connected", ssid);
@@ -111,7 +111,7 @@ void loop()
         Serial.print("Hardware clock :");
         Serial.println(&hwTimeinfo, "%A, %B %d %Y %H:%M:%S");
         strftime(buf, 64, "%A, %B %d %Y %H:%M:%S", &hwTimeinfo);
-        lv_label_set_text_fmt(label2, "HW Clock:", ssid);
+        lv_label_set_text_fmt(label2, "HW Clock:%s", buf);
 
         // system clock
         struct tm timeinfo;
@@ -125,7 +125,7 @@ void loop()
         Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
         Serial.println();
         strftime(buf, 64, "%A, %B %d %Y %H:%M:%S", &timeinfo);
-        lv_label_set_text_fmt(label3, "SYS Clock:", buf);
+        lv_label_set_text_fmt(label3, "SYS Clock:%s", buf);
 
     }
     lv_task_handler();
