@@ -1,5 +1,8 @@
 <h1 align = "center">🌟LilyGO T-Watch🌟</h1>
 
+
+[![PlatformIO CI](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/actions/workflows/platformio.yml/badge.svg)](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/actions/workflows/platformio.yml)
+
 **English | [中文](README_CN.MD)**
 
 ## News:
