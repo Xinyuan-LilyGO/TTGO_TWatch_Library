@@ -277,7 +277,7 @@
 <!-- 2020 V2 -->
 <td align="center">❌</a></td>
 <!-- 2020 V3 -->
-<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/BMA423">SPM1423HM4H</a></td>
+<td align="center"><a href="https://github.com/Xinyuan-LilyGO/LilyGo-HAL/tree/master/MICROPHONE">SPM1423HM4H</a></td>
 <!-- TBLOCK -->
 <td align="center">[1]</a></td>
 <!-- LILYPI -->
