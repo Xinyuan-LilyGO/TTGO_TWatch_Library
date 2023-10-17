@@ -8,6 +8,7 @@
  *********************/
 #include <stdarg.h>
 #include "lv_txt.h"
+#include "lv_txt_ap.h"
 #include "lv_math.h"
 #include "lv_log.h"
 #include "lv_debug.h"
@@ -120,7 +121,7 @@ void _lv_txt_get_size(lv_point_t * size_res, const char * text, const lv_font_t 
             size_res->y += line_space;
         }
 
-        /*Calculate the the longest line*/
+        /*Calculate the longest line*/
         lv_coord_t act_line_length = _lv_txt_get_width(&text[line_start], new_line_start - line_start, font, letter_space,
                                                        flag);
 
@@ -224,7 +225,7 @@ static uint32_t lv_txt_get_next_word(const char * txt, const lv_font_t * font,
         /*Check for new line chars and breakchars*/
         if(letter == '\n' || letter == '\r' || is_break_char(letter)) {
             /* Update the output width on the first character if it fits.
-             * Must do this here incase first letter is a break character. */
+             * Must do this here in case first letter is a break character. */
             if(i == 0 && break_index == NO_BREAK_FOUND && word_w_ptr != NULL) *word_w_ptr = cur_w;
             word_len--;
             break;
@@ -232,7 +233,6 @@ static uint32_t lv_txt_get_next_word(const char * txt, const lv_font_t * font,
 
         /* Update the output width */
         if(word_w_ptr != NULL && break_index == NO_BREAK_FOUND) *word_w_ptr = cur_w;
-
 
         i = i_next;
         i_next = i_next_next;
@@ -357,6 +357,7 @@ lv_coord_t _lv_txt_get_width(const char * txt, uint32_t length, const lv_font_t 
 {
     if(txt == NULL) return 0;
     if(font == NULL) return 0;
+    if(txt[0] == '\0') return 0;
 
     uint32_t i                   = 0;
     lv_coord_t width             = 0;
@@ -391,7 +392,7 @@ lv_coord_t _lv_txt_get_width(const char * txt, uint32_t length, const lv_font_t 
 /**
  * Check next character in a string and decide if the character is part of the command or not
  * @param state pointer to a txt_cmd_state_t variable which stores the current state of command
- * processing (Initied. to TXT_CMD_STATE_WAIT )
+ * processing (Inited to TXT_CMD_STATE_WAIT )
  * @param c the current character
  * @return true: the character is part of a command and should not be written,
  *         false: the character should be written
@@ -525,7 +526,7 @@ char * _lv_txt_set_text_vfmt(const char * fmt, va_list ap)
 
 #if LV_TXT_ENC == LV_TXT_ENC_UTF8
 /*******************************
- *   UTF-8 ENCODER/DECOER
+ *   UTF-8 ENCODER/DECODER
  ******************************/
 
 /**
@@ -581,7 +582,7 @@ static uint32_t lv_txt_unicode_to_utf8(uint32_t letter_uni)
 
 /**
  * Convert a wide character, e.g. 'Á' little endian to be UTF-8 compatible
- * @param c a wide character or a  Little endian number
+ * @param c a wide character or a Little endian number
  * @return `c` in big endian
  */
 static uint32_t lv_txt_utf8_conv_wc(uint32_t c)
@@ -723,7 +724,7 @@ static uint32_t lv_txt_utf8_get_byte_id(const char * txt, uint32_t utf8_id)
 {
     uint32_t i;
     uint32_t byte_cnt = 0;
-    for(i = 0; i < utf8_id; i++) {
+    for(i = 0; i < utf8_id && txt[byte_cnt] != '\0'; i++) {
         uint8_t c_size = _lv_txt_encoded_size(&txt[byte_cnt]);
         byte_cnt += c_size > 0 ? c_size : 1;
     }
@@ -793,7 +794,7 @@ static uint8_t lv_txt_iso8859_1_size(const char * str)
  */
 static uint32_t lv_txt_unicode_to_iso8859_1(uint32_t letter_uni)
 {
-    if(letter_uni < 128)
+    if(letter_uni < 256)
         return letter_uni;
     else
         return ' ';

@@ -9,12 +9,13 @@
 #include "lv_table.h"
 #if LV_USE_TABLE != 0
 
-#include "../lv_misc/lv_debug.h"
 #include "../lv_core/lv_indev.h"
+#include "../lv_misc/lv_debug.h"
 #include "../lv_misc/lv_txt.h"
+#include "../lv_misc/lv_txt_ap.h"
 #include "../lv_misc/lv_math.h"
-#include "../lv_draw/lv_draw_label.h"
 #include "../lv_misc/lv_printf.h"
+#include "../lv_draw/lv_draw_label.h"
 #include "../lv_themes/lv_theme.h"
 
 /*********************
@@ -189,7 +190,6 @@ void lv_table_set_cell_value(lv_obj_t * table, uint16_t row, uint16_t col, const
     ext->cell_data[cell][0] = format.format_byte;
     refr_size(table);
 }
-
 
 /**
  * Set the value of a cell.  Memory will be allocated to store the text by the table.
@@ -467,6 +467,8 @@ void lv_table_set_cell_type(lv_obj_t * table, uint16_t row, uint16_t col, uint8_
     ext->cell_data[cell][0] = format.format_byte;
 
     ext->cell_types |= 1 << type;
+
+    lv_obj_invalidate(table);
 }
 
 /**
@@ -1052,7 +1054,6 @@ static lv_res_t lv_table_signal(lv_obj_t * table, lv_signal_t sign, void * param
     return res;
 }
 
-
 /**
  * Get the style descriptor of a part of the object
  * @param table pointer the object
@@ -1111,7 +1112,6 @@ static void refr_size(lv_obj_t * table)
         line_space[i] = lv_obj_get_style_text_line_space(table, LV_TABLE_PART_CELL1 + i);
         font[i] = lv_obj_get_style_text_font(table, LV_TABLE_PART_CELL1 + i);
     }
-
 
     for(i = 0; i < ext->row_cnt; i++) {
         ext->row_h[i] = get_row_height(table, i, font, letter_space, line_space,
