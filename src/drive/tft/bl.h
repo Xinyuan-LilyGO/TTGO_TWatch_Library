@@ -120,7 +120,7 @@ protected:
 class Motor : public PWMToneBase
 {
 public:
-    Motor(uint8_t pin, uint8_t channel = 1, int freq = 1000) : PWMToneBase(pin, channel, freq)
+    Motor(uint8_t pin, uint8_t channel = 4, int freq = 1000) : PWMToneBase(pin, channel, freq)
     {
     };
 };
