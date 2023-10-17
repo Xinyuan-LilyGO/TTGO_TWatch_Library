@@ -55,7 +55,7 @@ void setup()
     // NOTE: this patch is uploaded into volatile memory,
     //       and must be re-uploaded on every power up
     Serial.print(F("[SX1262] Uploading patch ... "));
-    int state = watch.uploadPatch(sx126x_patch_scan, sizeof(sx126x_patch_scan));
+    state = watch.uploadPatch(sx126x_patch_scan, sizeof(sx126x_patch_scan));
     if (state == RADIOLIB_ERR_NONE) {
         Serial.println(F("success!"));
     } else {

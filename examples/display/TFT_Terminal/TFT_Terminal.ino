@@ -132,7 +132,7 @@ int scroll_line()
 // We are using a hardware feature of the display, so we can only scroll in portrait orientation
 void setupScrollArea(uint16_t tfa, uint16_t bfa)
 {
-    watch.writecommand(ILI9341_VSCRDEF); // Vertical scroll definition
+    watch.writecommand(ST7789_VSCRDEF); // Vertical scroll definition
     watch.writedata(tfa >> 8);           // Top Fixed Area line count
     watch.writedata(tfa);
     watch.writedata((YMAX - tfa - bfa) >> 8); // Vertical Scrolling Area line count
@@ -146,7 +146,7 @@ void setupScrollArea(uint16_t tfa, uint16_t bfa)
 // ##############################################################################################
 void scrollAddress(uint16_t vsp)
 {
-    watch.writecommand(ILI9341_VSCRSADD); // Vertical scrolling pointer
+    watch.writecommand(ST7789_VSCRSADD); // Vertical scrolling pointer
     watch.writedata(vsp >> 8);
     watch.writedata(vsp);
 }

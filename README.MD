@@ -1,5 +1,8 @@
 <h1 align = "center">🌟LilyGO T-Watch🌟</h1>
 
+
+[![PlatformIO CI](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/actions/workflows/platformio.yml/badge.svg)](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/actions/workflows/platformio.yml)
+
 **English | [中文](README_CN.MD)**
 
 ## News:
@@ -22,7 +25,7 @@
 ## 2️⃣ Arduino IDE Quick Start
 
 1. Install [Arduino IDE](https://www.arduino.cc/en/software)
-2. Install [Arduino ESP32](https://docs.espressif.com/projects/arduino-esp32/en/latest/) 
+2. Install [Arduino ESP32 latest](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html#windows-manual-installation) ,**Please check the manual installation method. Please do not install from the board installation manager, some files will be missing.**
 3. Install [TTGO_TWatch_Library](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library)
    1. Download a zipfile from github using the "Download ZIP" button and install it using the IDE ("Sketch" -> "Include Library" -> "Add .ZIP Library...")
    2. Clone this git repository into your sketchbook/libraries folder. For more info, see https://www.arduino.cc/en/Guide/Libraries
@@ -95,5 +98,9 @@ Please follow the steps below
     | BLDO2        | DRV2605 Enable pin            |
     | DC1          | ESP32 3V3                     |
     | VRTC         | Nothing                       |
+
 6. Battery 
    1. Lilygo T-Watch fits 502530 size (5x25x30mm) batteries of any chemistry supported by the AXP2101.
+7. **esp_vad.h: No such file or directory**
+ - [Arduino ESP32 latest](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html#windows-manual-installation) , **Please check the manual installation method. Please do not install from the board installation manager, some files will be missing.**
+
