@@ -530,6 +530,12 @@ void LilyGoLib::setSleepMode(SleepMode_t mode)
     sleepMode = mode;
 }
 
+void LilyGoLib::sleepLora(bool config){
+    #ifdef USING_TWATCH_S3
+        SX126x::sleep(config);
+    #endif
+}
+
 void LilyGoLib::sleep(uint32_t second)
 {
     // SX126x::sleep();
