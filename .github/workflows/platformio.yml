@@ -38,7 +38,6 @@ jobs:
             examples/display/TFT_Pong,
             examples/display/TFT_Print_Test,
             examples/display/TFT_Rainbow_one_lib,
-            examples/display/TFT_Read_Reg,
             examples/display/TFT_Spiro,
             examples/display/TFT_Starfield,
             examples/display/TFT_String_Align,
