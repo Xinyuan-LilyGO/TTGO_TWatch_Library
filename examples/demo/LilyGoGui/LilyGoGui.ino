@@ -1,9 +1,8 @@
 /**
- * @file      factory.ino
- * @author    Lewis He (lewishe@outlook.com)
+ * @file      LilyGoGui.ino
+ * @author    zhanguichen
  * @license   MIT
  * @copyright Copyright (c) 2023  Shenzhen Xinyuan Electronic Technology Co., Ltd
- * @date      2023-04-05
  * @note      Arduino Setting
  *            Tools ->
  *                  Board:"ESP32S3 Dev Module"
@@ -70,7 +69,7 @@ extern lv_obj_t *step_counter_label;
 extern lv_obj_t *batt_voltage_label;
 extern lv_obj_t *chart;
 
-extern void set_text_radio_ta(const char * txt);
+extern void set_text_radio_ta(const char *txt);
 
 void suspend_playMP3Handler(void);
 void resume_playMP3Handler(void);
@@ -100,8 +99,8 @@ uint8_t boot_music[4365];
 #define VAD_FRAME_LENGTH_MS                     30
 #define VAD_BUFFER_LENGTH                       (VAD_FRAME_LENGTH_MS * MIC_I2S_SAMPLE_RATE / 1000)
 
-#define WIFI_SSID             "xinyuandianzi"
-#define WIFI_PASSWORD         "AA15994823428"
+#define WIFI_SSID             "Your WiFi SSID"
+#define WIFI_PASSWORD         "Your WiFi PASSWORD"
 
 #define WIFI_CONNECT_WAIT_MAX (30 * 1000)
 
@@ -130,14 +129,15 @@ LV_FONT_DECLARE(font_siegra);
 
 void radioTask(lv_timer_t *parent);
 
-void my_print(const char *buf) {
+void my_print(const char *buf)
+{
     Serial.printf(buf);
     Serial.flush();
 }
 
 lv_obj_t *wifi_test_obj = NULL;
-const char* ntpServer1 = "pool.ntp.org";
-const char* ntpServer2 = "time.nist.gov";
+const char *ntpServer1 = "pool.ntp.org";
+const char *ntpServer2 = "time.nist.gov";
 const long  gmtOffset_sec = 3600;
 const int   daylightOffset_sec = 3600;
 struct tm timeinfo;
@@ -215,9 +215,9 @@ typedef  struct _lv_datetime {
 
 
 
-const char* cn_week[7] = { "周一","周二","周三","周四","周五","周六","周日" };
-const char* cn_month[12] = { "一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"};
-const char* cn_state[5] = {"上午","中午","下午","傍晚", "晚上"};
+const char *cn_week[7] = { "周一", "周二", "周三", "周四", "周五", "周六", "周日" };
+const char *cn_month[12] = { "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"};
+const char *cn_state[5] = {"上午", "中午", "下午", "傍晚", "晚上"};
 
 typedef bool (*player_cb_t)(void);
 static player_cb_t player_task_cb = NULL;
@@ -362,14 +362,13 @@ void setup()
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer1, ntpServer2);
     wifi_test();
 
-    while(show_timeinfo.tm_year <= 0)
-    {
+    while (show_timeinfo.tm_year <= 0) {
         printLocalTime();
     }
 
     setupGUI();
-    if(wifi_test_obj != NULL)
-        lv_obj_del_delayed(wifi_test_obj,1);
+    if (wifi_test_obj != NULL)
+        lv_obj_del_delayed(wifi_test_obj, 1);
 
     xTaskCreate(playMP3Task, "mp3", 8192, NULL, 10, &playMP3Handler);
     xTaskCreatePinnedToCore(wav_task, "wav_task", 1024 * 4, NULL, 2, NULL, 0);
@@ -413,70 +412,62 @@ lv_obj_t *week = NULL;
 lv_obj_t *day = NULL;
 lv_obj_t *state = NULL;
 
-static void but_implement(lv_event_t* event)
+static void but_implement(lv_event_t *event)
 {
-    lv_obj_t* btn = lv_event_get_target(event); 
-    lv_obj_t* obj = lv_obj_get_parent(btn); 
+    lv_obj_t *btn = lv_event_get_target(event);
+    lv_obj_t *obj = lv_obj_get_parent(btn);
 
-    switch ((int)event->user_data)
-    {
-        case 1:
-        {
-            mainGUI();
-            lv_obj_del_delayed(obj, 1);
-            second = NULL;
-        }
+    switch ((int)event->user_data) {
+    case 1: {
+        mainGUI();
+        lv_obj_del_delayed(obj, 1);
+        second = NULL;
+    }
+    break;
+    case 2: {
+        lv_obj_del_delayed(obj, 1);
+        mainGUI();
+        second = NULL;
+    }
+    break;
+    case 3: {
+        lv_obj_del_delayed(obj, 1);
+        mainGUI();
+        second = NULL;
+    }
+    break;
+    case 4: {
+        lv_obj_del_delayed(obj, 1);
+    }
+    break;
+    case 5: {
+        lv_obj_del_delayed(obj, 1);
+        lv_example_calendar_1(NULL);
+    }
+    break;
+    case 6: {
+        lv_obj_del_delayed(obj, 1);
+        setupGUI();
+    }
+    break;
+    case 10: {
+        lv_obj_del_delayed(obj, 1);
+        mainGUI();
+    }
+    break;
+    default:
         break;
-        case 2: 
-        {
-            lv_obj_del_delayed(obj, 1);
-            mainGUI();
-            second = NULL;
-        }
-        break;
-        case 3:
-        {
-            lv_obj_del_delayed(obj, 1);
-            mainGUI();
-            second = NULL;
-        }
-        break;
-        case 4:
-        {
-            lv_obj_del_delayed(obj, 1);
-        }
-        break;
-        case 5:
-        {
-            lv_obj_del_delayed(obj, 1);
-            lv_example_calendar_1(NULL);
-        }
-        break;
-        case 6:
-        {
-            lv_obj_del_delayed(obj, 1);
-            setupGUI();
-        }
-        break;
-        case 10:
-        {
-            lv_obj_del_delayed(obj, 1);
-            mainGUI();
-        }
-        break;
-        default:
-            break;
     }
 }
 
-static void event_handler(lv_event_t * e)
+static void event_handler(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
-    lv_obj_t * obj = lv_event_get_current_target(e);
+    lv_obj_t *obj = lv_event_get_current_target(e);
 
-    if(code == LV_EVENT_VALUE_CHANGED) {
+    if (code == LV_EVENT_VALUE_CHANGED) {
         lv_calendar_date_t date;
-        if(lv_calendar_get_pressed_date(obj, &date)) {
+        if (lv_calendar_get_pressed_date(obj, &date)) {
             LV_LOG_USER("Clicked date: %02d.%02d.%d", date.day, date.month, date.year);
         }
     }
@@ -485,14 +476,14 @@ static void event_handler(lv_event_t * e)
 void lv_example_calendar_1(lv_obj_t *parent)
 {
     //lv_obj_t * obj = lv_obj_create(lv_layer_top());
-    lv_obj_t * obj = lv_obj_create(parent);
+    lv_obj_t *obj = lv_obj_create(parent);
     lv_obj_set_size(obj, 240, 240);
     lv_obj_align(obj, LV_ALIGN_CENTER, 0, 0);
     lv_obj_set_style_bg_color(obj, lv_color_hex(0x000000), 0);
-    lv_obj_set_style_border_width(obj, 0, 0);  
-    lv_obj_set_style_pad_all(obj, 0, 0); 
+    lv_obj_set_style_border_width(obj, 0, 0);
+    lv_obj_set_style_pad_all(obj, 0, 0);
 
-    lv_obj_t  * calendar = lv_calendar_create(obj);
+    lv_obj_t   *calendar = lv_calendar_create(obj);
     lv_obj_set_size(calendar, 240, 185);
     lv_obj_align(calendar, LV_ALIGN_CENTER, 0, 25);
     lv_obj_add_event_cb(calendar, event_handler, LV_EVENT_ALL, NULL);
@@ -522,7 +513,7 @@ void lv_example_calendar_1(lv_obj_t *parent)
     lv_calendar_header_arrow_create(calendar);
 #endif
 
-    lv_calendar_set_showed_date(calendar, show_timeinfo.tm_year+1900, show_timeinfo.tm_mon+1);
+    lv_calendar_set_showed_date(calendar, show_timeinfo.tm_year + 1900, show_timeinfo.tm_mon + 1);
 }
 
 lv_obj_t *dot = NULL;
@@ -557,7 +548,7 @@ lv_obj_t *setupGUI()
     lv_style_init(&model_style);
     lv_style_set_text_color(&model_style, LV_COLOR_BLACK);
     lv_style_set_text_font(&model_style, &robot_ightItalic_16);
-    
+
     lv_obj_t *model = lv_label_create(view);
     lv_obj_add_style(model,  &model_style, 0);
     lv_label_set_text(model, "ESP32-S3");
@@ -632,11 +623,11 @@ lv_obj_t *setupGUI()
     hour = lv_label_create(view);
     lv_obj_add_style(hour, &time_style, 0);
     char hour_t[30] = { 0 };
-    sprintf(hour_t, "%02d",show_timeinfo.tm_hour+6>=24?show_timeinfo.tm_hour+6-24:show_timeinfo.tm_hour+6);
+    sprintf(hour_t, "%02d", show_timeinfo.tm_hour + 6 >= 24 ? show_timeinfo.tm_hour + 6 - 24 : show_timeinfo.tm_hour + 6);
     lv_label_set_text(hour, hour_t);
     //lv_obj_align_to(hour, view, LV_ALIGN_CENTER, -50, 10);
-    lv_obj_set_pos(hour, 8, 90);  
-    lv_obj_set_size(hour, 100, 50);	
+    lv_obj_set_pos(hour, 8, 90);
+    lv_obj_set_size(hour, 100, 50);
     lv_obj_set_style_text_align(hour, LV_TEXT_ALIGN_RIGHT, 0);
     //semicolon
     static lv_style_t dot_style;
@@ -653,9 +644,9 @@ lv_obj_t *setupGUI()
     minute = lv_label_create(view);
     lv_obj_add_style(minute, &time_style, 0);
     char minute_t[30] = { 0 };
-    sprintf(minute_t, "%02d",show_timeinfo.tm_min);
+    sprintf(minute_t, "%02d", show_timeinfo.tm_min);
     lv_label_set_text(minute, minute_t);
-    lv_obj_set_size(minute, 90, 50);	
+    lv_obj_set_size(minute, 90, 50);
     lv_obj_align_to(minute, dot, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
     lv_obj_set_style_text_align(minute, LV_TEXT_ALIGN_LEFT, 0);
 
@@ -668,7 +659,7 @@ lv_obj_t *setupGUI()
     second = lv_label_create(view);
     lv_obj_add_style(second, &second_style, 0);
     char second_t[30] = { 0 };
-    sprintf(second_t, "%02d",show_timeinfo.tm_sec);
+    sprintf(second_t, "%02d", show_timeinfo.tm_sec);
     lv_label_set_text(second, second_t);
     lv_obj_set_size(second, 32, 32);
     lv_obj_align_to(second, minute, LV_ALIGN_OUT_RIGHT_BOTTOM, -12, 13);
@@ -682,7 +673,7 @@ lv_obj_t *setupGUI()
     year = lv_label_create(view);
     lv_obj_add_style(year, &year_style, 0);
     char year_t[30] = { 0 };
-    sprintf(year_t, "%04d",show_timeinfo.tm_year+1900);
+    sprintf(year_t, "%04d", show_timeinfo.tm_year + 1900);
     lv_label_set_text(year, year_t);
     lv_obj_align_to(year, view, LV_ALIGN_CENTER, 0, 55);
 
@@ -699,34 +690,27 @@ lv_obj_t *setupGUI()
 
     state = lv_label_create(view);
     lv_obj_add_style(state, &chinese_style, 0);
-    int hour_temp = show_timeinfo.tm_hour+6>=24?show_timeinfo.tm_hour+6-24:show_timeinfo.tm_hour+6;
-    if(hour_temp>=8 && hour_temp<11)
-    {
+    int hour_temp = show_timeinfo.tm_hour + 6 >= 24 ? show_timeinfo.tm_hour + 6 - 24 : show_timeinfo.tm_hour + 6;
+    if (hour_temp >= 8 && hour_temp < 11) {
         lv_label_set_text(state, "上午");
-    }
-    else if(hour_temp>=11 && hour_temp<=13)
-    {
+    } else if (hour_temp >= 11 && hour_temp <= 13) {
         lv_label_set_text(state, "中午");
-    }
-    else if(hour_temp>=14 && hour_temp<=17)
-    {
+    } else if (hour_temp >= 14 && hour_temp <= 17) {
         lv_label_set_text(state, "下午");
-    }
-    else
-    {
+    } else {
         lv_label_set_text(state, "晚上");
     }
     lv_obj_align_to(state, year, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
     week = lv_label_create(view);
     lv_obj_add_style(week, &chinese_style, 0);
-    lv_label_set_text(week, cn_week[show_timeinfo.tm_wday-1>=0?show_timeinfo.tm_wday-1:0]);
+    lv_label_set_text(week, cn_week[show_timeinfo.tm_wday - 1 >= 0 ? show_timeinfo.tm_wday - 1 : 0]);
     lv_obj_align_to(week, view, LV_ALIGN_CENTER, 45, -35);
 
     day = lv_label_create(view);
     lv_obj_add_style(day, &year_style, 0);
     char date_t[30] = { 0 };
-    sprintf(date_t, "%02d",show_timeinfo.tm_mday);
+    sprintf(date_t, "%02d", show_timeinfo.tm_mday);
     lv_label_set_text(day, date_t);
     lv_obj_align_to(day, week, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
 
@@ -786,7 +770,7 @@ lv_obj_t *setupGUI()
     lv_obj_add_style(key, &key_style, 0);
     lv_label_set_text(key, "Go");
     lv_obj_add_flag(key, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_add_event_cb(key, but_implement, LV_EVENT_CLICKED, (void *)1); 
+    lv_obj_add_event_cb(key, but_implement, LV_EVENT_CLICKED, (void *)1);
 
     lv_obj_align(key, LV_ALIGN_BOTTOM_MID, 0, -10);
 
@@ -825,7 +809,7 @@ void wav_task(void *param)
             if (bit & RING_STOP) {
                 xEventGroupClearBits(global_event_group, RING_STOP);
                 mp3->stop();
-                suspend_playMP3Handler();  
+                suspend_playMP3Handler();
                 is_pause = false;
             }
             if (bit & WAV_RING_1) {
@@ -843,8 +827,7 @@ void wav_task(void *param)
             Serial.print("play ");
             Serial.println(music_path.c_str());
             mp3->stop();
-            if(!strcmp("ring_1.mp3", music_path.c_str()))
-            {
+            if (!strcmp("ring_1.mp3", music_path.c_str())) {
                 resume_playMP3Handler();
                 //my_print("xQueueReceive if\n");
                 //vTaskSuspend(playWAVHandler);
@@ -856,14 +839,12 @@ void wav_task(void *param)
                 //file->open(AUDIO_DATA, sizeof(AUDIO_DATA));
                 mp3->begin(id3, out);
                 vTaskResume(playMP3Handler);
-            }
-            else 
-            {
+            } else {
                 resume_playMP3Handler();
                 //my_print("xQueueReceive else\n");
                 //vTaskSuspend(playWAVHandler);
                 vTaskSuspend(playMP3Handler);
-               // vTaskSuspend(playFLACHandler);
+                // vTaskSuspend(playFLACHandler);
                 //vTaskSuspend(playACCHandler);
                 file->open(mp3_ring_setup, mp3_ring_setup_len);
                 mp3->begin(id3, out);
@@ -938,9 +919,8 @@ void SensorHandler()
         if (watch.isPedometer()) {
             stepCounter = watch.getPedometerCounter();
             Serial.printf("Step count interrupt,step Counter:%u\n", stepCounter);
-            
-            if(step_counter_label != NULL)
-            {
+
+            if (step_counter_label != NULL) {
                 lv_label_set_text_fmt(step_counter_label, "%u", stepCounter);
             }
         }
@@ -1133,16 +1113,15 @@ void vadTask(void *params)
     while (1) {
         size_t read_len = 0;
         if (watch.readMicrophone((char *) vad_buff, vad_buffer_size, &read_len)) {
- /*           // Feed samples to the VAD process and get the result
-#if   ESP_IDF_VERSION_VAL(4,4,1) == ESP_IDF_VERSION
-            vad_state_t vad_state = vad_process(vad_inst, vad_buff);
-#elif ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4,4,1)
-            vad_state_t vad_state = vad_process(vad_inst, vad_buff, MIC_I2S_SAMPLE_RATE, VAD_FRAME_LENGTH_MS);
-#else
-#error "No support this version."
-#endif*/
-            if(chart != NULL)
-            {
+            /*           // Feed samples to the VAD process and get the result
+            #if   ESP_IDF_VERSION_VAL(4,4,1) == ESP_IDF_VERSION
+                       vad_state_t vad_state = vad_process(vad_inst, vad_buff);
+            #elif ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4,4,1)
+                       vad_state_t vad_state = vad_process(vad_inst, vad_buff, MIC_I2S_SAMPLE_RATE, VAD_FRAME_LENGTH_MS);
+            #else
+            #error "No support this version."
+            #endif*/
+            if (chart != NULL) {
                 lv_chart_series_t *ser1 = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
                 lv_chart_set_ext_y_array(chart, ser1, (lv_coord_t *)vad_buff);
             }
@@ -1294,8 +1273,7 @@ static bool CreateWAV(const char *song_name, uint32_t duration, uint16_t num_cha
 
 void printLocalTime()
 {
-    if (!getLocalTime(&timeinfo))
-    {
+    if (!getLocalTime(&timeinfo)) {
         Serial.println("No time available (yet)");
         return;
     }
@@ -1343,16 +1321,12 @@ void wifi_test(void)
     LV_DELAY(100);
     int n = WiFi.scanNetworks();
     Serial.println("scan done");
-    if (n == 0)
-    {
+    if (n == 0) {
         text = "no networks found";
-    }
-    else
-    {
+    } else {
         text = n;
         text += " networks found\n";
-        for (int i = 0; i < n; ++i)
-        {
+        for (int i = 0; i < n; ++i) {
             text += (i + 1);
             text += ": ";
             text += WiFi.SSID(i);
@@ -1376,14 +1350,13 @@ void wifi_test(void)
 
     bool is_smartconfig_connect = false;
     lv_label_set_long_mode(log_label, LV_LABEL_LONG_WRAP);
-    while (WiFi.status() != WL_CONNECTED)
-    {
+    while (WiFi.status() != WL_CONNECTED) {
         Serial.print(".");
         text += ".";
         lv_label_set_text(log_label, text.c_str());
         LV_DELAY(100);
-        if (millis() - last_tick > WIFI_CONNECT_WAIT_MAX)
-        { /* Automatically start smartconfig when connection times out */
+        if (millis() - last_tick > WIFI_CONNECT_WAIT_MAX) {
+            /* Automatically start smartconfig when connection times out */
             text += "\nConnection timed out, start smartconfig";
             lv_label_set_text(log_label, text.c_str());
             LV_DELAY(100);
@@ -1395,11 +1368,9 @@ void wifi_test(void)
                     "distribution network";
             lv_label_set_text(log_label, text.c_str());
             WiFi.beginSmartConfig();
-            while (1)
-            {
+            while (1) {
                 LV_DELAY(100);
-                if (WiFi.smartConfigDone())
-                {
+                if (WiFi.smartConfigDone()) {
                     Serial.println("\r\nSmartConfig Success\r\n");
                     Serial.printf("SSID:%s\r\n", WiFi.SSID().c_str());
                     Serial.printf("PSW:%s\r\n", WiFi.psk().c_str());
@@ -1416,8 +1387,7 @@ void wifi_test(void)
             }
         }
     }
-    if (!is_smartconfig_connect)
-    {
+    if (!is_smartconfig_connect) {
         text += "\nCONNECTED \nTakes ";
         Serial.print("\n CONNECTED \nTakes ");
         text += millis() - last_tick;
@@ -1435,55 +1405,44 @@ void renew_ui_time(void)
 {
     char temp[30] = { 0 };
 
-    if(show_timeinfo_old.tm_sec != show_timeinfo.tm_sec)
-    {
+    if (show_timeinfo_old.tm_sec != show_timeinfo.tm_sec) {
         show_timeinfo_old.tm_sec = show_timeinfo.tm_sec;
-        sprintf(temp, "%02d",show_timeinfo.tm_sec);
+        sprintf(temp, "%02d", show_timeinfo.tm_sec);
         lv_label_set_text(second, temp);
     }
 
-    if(show_timeinfo_old.tm_min != show_timeinfo.tm_min)
-    {
+    if (show_timeinfo_old.tm_min != show_timeinfo.tm_min) {
         show_timeinfo_old.tm_min = show_timeinfo.tm_min;
-        sprintf(temp, "%02d",show_timeinfo.tm_min);
+        sprintf(temp, "%02d", show_timeinfo.tm_min);
         lv_label_set_text(minute, temp);
         lv_obj_align_to(second, minute, LV_ALIGN_OUT_RIGHT_BOTTOM, -12, 13);
     }
 
-    if(show_timeinfo_old.tm_hour != show_timeinfo.tm_hour)
-    {
-        int hour_temp = show_timeinfo.tm_hour+6>=24?show_timeinfo.tm_hour+6-24:show_timeinfo.tm_hour+6;
+    if (show_timeinfo_old.tm_hour != show_timeinfo.tm_hour) {
+        int hour_temp = show_timeinfo.tm_hour + 6 >= 24 ? show_timeinfo.tm_hour + 6 - 24 : show_timeinfo.tm_hour + 6;
         show_timeinfo_old.tm_hour = show_timeinfo.tm_hour;
-        sprintf(temp, "%02d",hour_temp);
+        sprintf(temp, "%02d", hour_temp);
         lv_label_set_text(hour, temp);
-        if(hour_temp>=8 && hour_temp<11)
-        {
+        if (hour_temp >= 8 && hour_temp < 11) {
             lv_label_set_text(state, "上午");
-        }
-        else if(hour_temp>=11 && hour_temp<=13)
-        {
+        } else if (hour_temp >= 11 && hour_temp <= 13) {
             lv_label_set_text(state, "中午");
-        }
-        else if(hour_temp>=14 && hour_temp<=17)
-        {
+        } else if (hour_temp >= 14 && hour_temp <= 17) {
             lv_label_set_text(state, "下午");
-        }
-        else
-        {
+        } else {
             lv_label_set_text(state, "晚上");
         }
     }
 
-    if(show_timeinfo_old.tm_mday != show_timeinfo.tm_mday)
-    {
-        sprintf(temp, "%04d",show_timeinfo.tm_year+1900);
+    if (show_timeinfo_old.tm_mday != show_timeinfo.tm_mday) {
+        sprintf(temp, "%04d", show_timeinfo.tm_year + 1900);
         lv_label_set_text(year, temp);
 
         lv_label_set_text(month, cn_month[show_timeinfo.tm_mon]);
 
-        lv_label_set_text(week, cn_week[show_timeinfo.tm_wday-1>=0?show_timeinfo.tm_wday-1:0]);
+        lv_label_set_text(week, cn_week[show_timeinfo.tm_wday - 1 >= 0 ? show_timeinfo.tm_wday - 1 : 0]);
 
-        sprintf(temp, "%02d",show_timeinfo.tm_mday);
+        sprintf(temp, "%02d", show_timeinfo.tm_mday);
         lv_label_set_text(day, temp);
     }
 }
@@ -1639,11 +1598,9 @@ void loop()
 
     get_BattVoltage();
 
-    if(standby_en)
-    {
+    if (standby_en) {
         printLocalTime_cont++;
-        if(printLocalTime_cont >= 20 && second != NULL)
-        {
+        if (printLocalTime_cont >= 20 && second != NULL) {
             printLocalTime_cont = 0;
             printLocalTime();
             renew_ui_time();
@@ -1657,13 +1614,10 @@ void loop()
         }
     }
 
-    if (((lv_disp_get_inactive_time(NULL) >= 10000) && standby_en)) 
-    {
+    if (((lv_disp_get_inactive_time(NULL) >= 10000) && standby_en)) {
         lowPowerEnergyHandler();
         standby_en = 0;
-    }
-    else if ((lv_disp_get_inactive_time(NULL) < 10000) && !standby_en)
-    {
+    } else if ((lv_disp_get_inactive_time(NULL) < 10000) && !standby_en) {
         standby_en = 1;
     }
 }
@@ -1679,20 +1633,19 @@ static const char *chg_status[] = {
 };
 void get_BattVoltage(void)
 {
-    if(batt_voltage_label != NULL)
-    {
+    if (batt_voltage_label != NULL) {
         if (lastMillis < millis()) {
             uint8_t charge_status = watch.getChargerStatus();
             lv_label_set_text_fmt(batt_voltage_label, "Charging:%s\nDischarge:%s\nUSB PlugIn:%s\nCHG state:%s\nBattery Voltage:%u mV\nUSB Voltage:%u mV\nSYS Voltage:%u mV\nBattery Percent:%d%%",
-                                watch.isCharging() ? "#00ff00 YES" : "#ff0000 NO",
-                                watch.isDischarge() ? "#00ff00 YES" : "#ff0000 NO",
-                                watch.isVbusIn() ? "#00ff00 YES" : "#ff0000 NO",
-                                chg_status[charge_status],
-                                watch.getBattVoltage(),
-                                watch.getVbusVoltage(),
-                                watch.getSystemVoltage(),
-                                watch.getBatteryPercent()
-                                );
+                                  watch.isCharging() ? "#00ff00 YES" : "#ff0000 NO",
+                                  watch.isDischarge() ? "#00ff00 YES" : "#ff0000 NO",
+                                  watch.isVbusIn() ? "#00ff00 YES" : "#ff0000 NO",
+                                  chg_status[charge_status],
+                                  watch.getBattVoltage(),
+                                  watch.getVbusVoltage(),
+                                  watch.getSystemVoltage(),
+                                  watch.getBatteryPercent()
+                                 );
             lastMillis = millis() + 1000;
         }
     }
@@ -1718,12 +1671,11 @@ void playMP3Task(void *prarms)
 {
     vTaskSuspend(NULL);
     while (1) {
-        if(!is_pause)
-        {
+        if (!is_pause) {
             if (mp3->isRunning()) {
                 if (!mp3->loop()) {
                     mp3->stop();
-                    suspend_playMP3Handler();  
+                    suspend_playMP3Handler();
                 }
             } else {
                 vTaskSuspend(NULL);
@@ -1892,7 +1844,7 @@ void radio_rxtx_cb(lv_event_t *e)
         }
         transmitFlag = false;
         set_text_radio_ta("[RX]:Listening.");
-        
+
         break;
     case 2:
         if (!transmitTask->paused) {
