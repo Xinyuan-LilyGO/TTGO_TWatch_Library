@@ -25,7 +25,7 @@
 ## 2️⃣ Arduino IDE Quick Start
 
 1. Install [Arduino IDE](https://www.arduino.cc/en/software)
-2. Install [Arduino ESP32 latest](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html#windows-manual-installation) ,**Please check the manual installation method. Please do not install from the board installation manager, some files will be missing.**
+2. Install [Arduino ESP32 2.0.5 or above , below 3.0](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html#windows-manual-installation) ,**Please check the manual installation method. Please do not install from the board installation manager, some files will be missing.**
 3. Install [TTGO_TWatch_Library](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library)
    1. Download a zipfile from github using the "Download ZIP" button and install it using the IDE ("Sketch" -> "Include Library" -> "Add .ZIP Library...")
    2. Clone this git repository into your sketchbook/libraries folder. For more info, see https://www.arduino.cc/en/Guide/Libraries
