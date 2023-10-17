@@ -34,7 +34,7 @@ void setup()
     randomSeed(analogRead(A0));
     watch.begin();
     watch.setRotation(0);
-    watch.fillScreen(ILI9341_BLACK);
+    watch.fillScreen(TFT_BLACK);
     setupScrollArea(TOP_FIXED_AREA, BOT_FIXED_AREA);
 }
 
@@ -46,8 +46,8 @@ void loop(void)
             if (pos[i] > 20) pos[i] -= 3; // Rapid fade initially brightness values
             if (pos[i] > 0) pos[i] -= 1; // Slow fade later
             if ((random(20) == 1) && (j < 400)) pos[i] = 63; // ~1 in 20 probability of a new character
-            watch.setTextColor(pos[i] << 5, ILI9341_BLACK); // Set the green character brightness
-            if (pos[i] == 63) watch.setTextColor(ILI9341_WHITE, ILI9341_BLACK); // Draw white character
+            watch.setTextColor(pos[i] << 5, TFT_BLACK); // Set the green character brightness
+            if (pos[i] == 63) watch.setTextColor(TFT_WHITE, TFT_BLACK); // Draw white character
             xPos += watch.drawChar(random(32, 128), xPos, yDraw, 1); // Draw the character
         }
         yDraw = scroll_slow(TEXT_HEIGHT, 14); // Scroll, 14ms per pixel line
@@ -55,7 +55,7 @@ void loop(void)
     }
 
     //watch.setRotation(2);
-    //watch.setTextColor(63 << 5, ILI9341_BLACK);
+    //watch.setTextColor(63 << 5, TFT_BLACK);
     //watch.drawCentreString("MATRIX",120,60,4);
     //watch.setRotation(0);
 
@@ -69,7 +69,7 @@ void loop(void)
 
 void setupScrollArea(uint16_t TFA, uint16_t BFA)
 {
-    watch.writecommand(ILI9341_VSCRDEF); // Vertical scroll definition
+    watch.writecommand(ST7789_VSCRDEF); // Vertical scroll definition
     watch.writedata(TFA >> 8);
     watch.writedata(TFA);
     watch.writedata((320 - TFA - BFA) >> 8);
@@ -92,7 +92,7 @@ int scroll_slow(int lines, int wait)
 
 void scrollAddress(uint16_t VSP)
 {
-    watch.writecommand(ILI9341_VSCRSADD); // Vertical scrolling start address
+    watch.writecommand(ST7789_VSCRSADD); // Vertical scrolling start address
     watch.writedata(VSP >> 8);
     watch.writedata(VSP);
 }
