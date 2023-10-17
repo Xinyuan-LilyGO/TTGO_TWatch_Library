@@ -622,7 +622,7 @@ void loop()
 #ifdef LILYGO_WATCH_HAS_BACKLIGHT
             twatch->bl->isOn() ? twatch->bl->off() : twatch->bl->adjust(DEFAULT_BRIGHTNESS);
 #endif
-        } else if (power->isPEKLongtPressIRQ()) {
+        } else if (power->isPEKLongPressIRQ()) {
 
             Serial.println("enter power off!!!!");
             /**

@@ -753,7 +753,7 @@ bool AXP20X_Class::isPEKShortPressIRQ()
     return (bool)(_irq[2] & BIT_MASK(1));
 }
 
-bool AXP20X_Class::isPEKLongtPressIRQ()
+bool AXP20X_Class::isPEKLongPressIRQ()
 {
     return (bool)(_irq[2] & BIT_MASK(0));
 }
