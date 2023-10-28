@@ -98,8 +98,13 @@ bool LilyGoLib::begin(Stream *stream)
     }
 
     log_println("Init LEDC");
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5,0,0)
+    ledcAttach(BOARD_TFT_BL, LEDC_BACKLIGHT_FREQ, LEDC_BACKLIGHT_BIT_WIDTH);
+#else
     ledcSetup(LEDC_BACKLIGHT_CHANNEL, LEDC_BACKLIGHT_FREQ, LEDC_BACKLIGHT_BIT_WIDTH);
     ledcAttachPin(BOARD_TFT_BL, LEDC_BACKLIGHT_CHANNEL);
+#endif
+
 
     log_println("Init TFT");
     TFT_eSPI::init();
@@ -293,7 +298,11 @@ void LilyGoLib::setBrightness(uint8_t level)
         writecommand(0x11);  //display wakeup
     }
     brightness = level;
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5,0,0)
+    ledcWrite(BOARD_TFT_BL, brightness);
+#else
     ledcWrite(LEDC_BACKLIGHT_CHANNEL, brightness);
+#endif
 }
 
 
@@ -530,10 +539,11 @@ void LilyGoLib::setSleepMode(SleepMode_t mode)
     sleepMode = mode;
 }
 
-void LilyGoLib::sleepLora(bool config){
-    #ifdef USING_TWATCH_S3
-        SX126x::sleep(config);
-    #endif
+void LilyGoLib::sleepLora(bool config)
+{
+#ifdef USING_TWATCH_S3
+    SX126x::sleep(config);
+#endif
 }
 
 void LilyGoLib::sleep(uint32_t second)
