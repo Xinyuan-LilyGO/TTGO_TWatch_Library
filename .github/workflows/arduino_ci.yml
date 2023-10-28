@@ -1,0 +1,144 @@
+name: Arduino_CI
+
+on:
+  pull_request:
+  push:
+  #   paths:
+  #     - "examples/**"
+  #     - "src/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        examples:
+          [
+            examples/demo/LilyGoGui/LilyGoGui.ino,
+            examples/demo/factory/factory.ino,
+            examples/display/All_Free_Fonts_Demo/All_Free_Fonts_Demo.ino,
+            examples/display/Cellular_Automata/Cellular_Automata.ino,
+            examples/display/Free_Font_Demo/Free_Font_Demo.ino,
+            examples/display/RLE_Font_test/RLE_Font_test.ino,
+            examples/display/TFT_ArcFill/TFT_ArcFill.ino,
+            examples/display/TFT_Char_times/TFT_Char_times.ino,
+            examples/display/TFT_Clock/TFT_Clock.ino,
+            examples/display/TFT_Clock_Digital/TFT_Clock_Digital.ino,
+            examples/display/TFT_Custom_Fonts/TFT_Custom_Fonts.ino,
+            examples/display/TFT_Ellipse/TFT_Ellipse.ino,
+            examples/display/TFT_FillArcSpiral/TFT_FillArcSpiral.ino,
+            examples/display/TFT_Float_Test/TFT_Float_Test.ino,
+            examples/display/TFT_Mandlebrot/TFT_Mandlebrot.ino,
+            examples/display/TFT_Matrix/TFT_Matrix.ino,
+            examples/display/TFT_Meter_linear/TFT_Meter_linear.ino,
+            examples/display/TFT_Meters/TFT_Meters.ino,
+            examples/display/TFT_Pie_Chart/TFT_Pie_Chart.ino,
+            examples/display/TFT_Pong/TFT_Pong.ino,
+            examples/display/TFT_Print_Test/TFT_Print_Test.ino,
+            examples/display/TFT_Rainbow_one_lib/TFT_Rainbow_one_lib.ino,
+            examples/display/TFT_Spiro/TFT_Spiro.ino,
+            examples/display/TFT_Starfield/TFT_Starfield.ino,
+            examples/display/TFT_String_Align/TFT_String_Align.ino,
+            examples/display/TFT_Terminal/TFT_Terminal.ino,
+            examples/display/TFT_graphicstest_PDQ/TFT_graphicstest_PDQ.ino,
+            examples/display/TFT_graphicstest_one_lib/TFT_graphicstest_one_lib.ino,
+            examples/display/UTFT_demo/UTFT_demo.ino,
+            examples/lvgl/event/event.ino,
+            examples/lvgl/get_started/get_started.ino,
+            examples/lvgl/layouts/flex/flex.ino,
+            examples/lvgl/layouts/grid/grid.ino,
+            examples/lvgl/scroll/scroll.ino,
+            examples/lvgl/style/style.ino,
+            examples/lvgl/third_party/ImageDecoder/ImageDecoder.ino,
+            examples/lvgl/third_party/gif/gif.ino,
+            examples/lvgl/widgets/animimg/animimg.ino,
+            examples/lvgl/widgets/arc/arc.ino,
+            examples/lvgl/widgets/bar/bar.ino,
+            examples/lvgl/widgets/btn/btn.ino,
+            examples/lvgl/widgets/btnmatrix/btnmatrix.ino,
+            examples/lvgl/widgets/calendar/calendar.ino,
+            examples/lvgl/widgets/canvas/canvas.ino,
+            examples/lvgl/widgets/chart/chart.ino,
+            examples/lvgl/widgets/checkbox/checkbox.ino,
+            examples/lvgl/widgets/colorwheel/colorwheel.ino,
+            examples/lvgl/widgets/dropdown/dropdown.ino,
+            examples/lvgl/widgets/img/img.ino,
+            examples/lvgl/widgets/imgbtn/imgbtn.ino,
+            examples/lvgl/widgets/keyboard/keyboard.ino,
+            examples/lvgl/widgets/label/label.ino,
+            examples/lvgl/widgets/led/led.ino,
+            examples/lvgl/widgets/line/line.ino,
+            examples/lvgl/widgets/list/list.ino,
+            examples/lvgl/widgets/menu/menu.ino,
+            examples/lvgl/widgets/meter/meter.ino,
+            examples/lvgl/widgets/msgbox/msgbox.ino,
+            examples/lvgl/widgets/obj/obj.ino,
+            examples/lvgl/widgets/roller/roller.ino,
+            examples/lvgl/widgets/slider/slider.ino,
+            examples/lvgl/widgets/span/span.ino,
+            examples/lvgl/widgets/spinbox/spinbox.ino,
+            examples/lvgl/widgets/spinner/spinner.ino,
+            examples/lvgl/widgets/switch/switch.ino,
+            examples/lvgl/widgets/table/table.ino,
+            examples/lvgl/widgets/tabview/tabview.ino,
+            examples/lvgl/widgets/textarea/textarea.ino,
+            examples/lvgl/widgets/tileview/tileview.ino,
+            examples/lvgl/widgets/win/win.ino,
+            examples/peripheral/DisplayAndTouch/DisplayAndTouch.ino,
+            examples/peripheral/IRsendDemo/IRsendDemo.ino,
+            examples/peripheral/PDM_Noise_Detection/PDM_Noise_Detection.ino,
+            examples/peripheral/PDM_Recording/PDM_Recording.ino,
+            examples/peripheral/PMU_ADC/PMU_ADC.ino,
+            examples/peripheral/PMU_Interrupt/PMU_Interrupt.ino,
+            examples/peripheral/PlayMusicFromPROGMEM/PlayMusicFromPROGMEM.ino,
+            examples/peripheral/PlayMusicFromSPIFFS/PlayMusicFromSPIFFS.ino,
+            examples/peripheral/RTC_AlarmByUnits/RTC_AlarmByUnits.ino,
+            examples/peripheral/RTC_TimeLib/RTC_TimeLib.ino,
+            examples/peripheral/RTC_TimeSynchronization/RTC_TimeSynchronization.ino,
+            examples/peripheral/Vibrate_Basic/Vibrate_Basic.ino,
+            examples/radio/LoRaWAN/LoRaWAN_End_Device/LoRaWAN_End_Device.ino,
+            examples/radio/LoRaWAN/LoRaWAN_End_Device_ABP/LoRaWAN_End_Device_ABP.ino,
+            examples/radio/SX126x_Channel_Activity_Detection/SX126x_Channel_Activity_Detection.ino,
+            examples/radio/SX126x_Channel_Activity_Detection_Interrupt/SX126x_Channel_Activity_Detection_Interrupt.ino      ,
+            examples/radio/SX126x_FSK_Modem/SX126x_FSK_Modem.ino,
+            examples/radio/SX126x_PingPong/SX126x_PingPong.ino,
+            examples/radio/SX126x_Receive/SX126x_Receive.ino,
+            examples/radio/SX126x_Receive_Interrupt/SX126x_Receive_Interrupt.ino,
+            examples/radio/SX126x_Settings/SX126x_Settings.ino,
+            examples/radio/SX126x_Spectrum_Scan/SX126x_Spectrum_Scan.ino,
+            examples/radio/SX126x_Spectrum_Scan_Frequency/SX126x_Spectrum_Scan_Frequency.ino,
+            examples/radio/SX126x_Transmit/SX126x_Transmit.ino,
+            examples/radio/SX126x_Transmit_Interrupt/SX126x_Transmit_Interrupt.ino,
+            examples/sensor/BAM423_Accelerometer/BAM423_Accelerometer.ino,
+            examples/sensor/BAM423_Temperature/BAM423_Temperature.ino,
+            examples/sensor/BMA423_Feature/BMA423_Feature.ino,
+            examples/sleep/WakeupFromPEKKey/WakeupFromPEKKey.ino,
+            examples/sleep/WakeupFromSensor/WakeupFromSensor.ino,
+            examples/sleep/WakeupFromTimer/WakeupFromTimer.ino,
+            examples/sleep/WakeupFromTouchScreen/WakeupFromTouchScreen.ino,
+          ]
+
+    env:
+      EXAMPLES: ${{matrix.examples}}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Arduino Ci
+        run: |
+          wget https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz -O arduino-cli.tar.gz ;
+          sudo tar xf arduino-cli.tar.gz -C /usr/local/bin arduino-cli ;
+          arduino-cli config init ;
+          arduino-cli config add board_manager.additional_urls https://espressif.github.io/arduino-esp32/package_esp32_dev_index.json ;
+          arduino-cli core update-index ;
+          arduino-cli core install esp32:esp32 ;
+
+      - name: Build examples
+        run: |
+          mkdir -p $HOME/Arduino/libraries ;
+          cd $HOME/Arduino/libraries ;
+          git clone https://github.com/Xinyuan-LilyGO/T-Watch-Deps $HOME/Arduino/libraries ;
+          git clone -b t-watch-s3 https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library.git ;
+          cd $GITHUB_WORKSPACE ;
+          arduino-cli compile -besp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=16M,PartitionScheme=app3M_fat9M_16MB,PSRAM=opi  --libraries "$HOME/Arduino/libraries" $PWD/$EXAMPLES ;
