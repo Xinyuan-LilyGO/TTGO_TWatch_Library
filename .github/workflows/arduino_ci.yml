@@ -15,7 +15,7 @@ jobs:
       matrix:
         examples:
           [
-            examples/demo/LilyGoGui/LilyGoGui.ino,
+            # examples/demo/LilyGoGui/LilyGoGui.ino, skip arduino ci
             examples/demo/factory/factory.ino,
             examples/display/All_Free_Fonts_Demo/All_Free_Fonts_Demo.ino,
             examples/display/Cellular_Automata/Cellular_Automata.ino,
@@ -100,7 +100,7 @@ jobs:
             examples/radio/LoRaWAN/LoRaWAN_End_Device/LoRaWAN_End_Device.ino,
             examples/radio/LoRaWAN/LoRaWAN_End_Device_ABP/LoRaWAN_End_Device_ABP.ino,
             examples/radio/SX126x_Channel_Activity_Detection/SX126x_Channel_Activity_Detection.ino,
-            examples/radio/SX126x_Channel_Activity_Detection_Interrupt/SX126x_Channel_Activity_Detection_Interrupt.ino      ,
+            examples/radio/SX126x_Channel_Activity_Detection_Interrupt/SX126x_Channel_Activity_Detection_Interrupt.ino,
             examples/radio/SX126x_FSK_Modem/SX126x_FSK_Modem.ino,
             examples/radio/SX126x_PingPong/SX126x_PingPong.ino,
             examples/radio/SX126x_Receive/SX126x_Receive.ino,
