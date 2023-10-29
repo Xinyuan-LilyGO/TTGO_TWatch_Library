@@ -27,7 +27,6 @@ IRsend irsend(BOARD_IR_PIN);
 #endif
 #include <driver/i2s.h>
 #include <esp_vad.h>
-
 #ifdef ENABLE_PLAYER
 #include <AudioFileSourcePROGMEM.h>
 #include <AudioFileSourceID3.h>
@@ -35,27 +34,18 @@ IRsend irsend(BOARD_IR_PIN);
 #include <AudioGeneratorWAV.h>
 #include <AudioOutputI2S.h>
 #include <AudioFileSourceSPIFFS.h>
-
 #include <AudioFileSourceFunction.h>
 #include <AudioGeneratorFLAC.h>
 #include <AudioGeneratorAAC.h>
-
-#include "src/mp3_array.h"
-#include "src/wav_array.h"
-#include "src/flac_array.h"
-#include "src/aac_array.h"
-
-#include "sntp.h"
+#include "esp_sntp.h"
 #include "Wire.h"
 #include <WiFiClientSecure.h>
-
 #include "global_flags.h"
-
 #include "ui.h"
-#include "src/mp3_ring_1.h"
-#include "src/mp3_ring_setup.h"
-#include "driver/gpio.h"
+#include <driver/gpio.h>
 
+extern const unsigned char mp3_array[16509];
+extern unsigned char mp3_ring_setup[86144];
 AudioFileSourceSPIFFS   *file_fs;
 AudioGeneratorWAV       *wav = NULL;
 AudioFileSourcePROGMEM  *file = NULL;
@@ -835,7 +825,7 @@ void wav_task(void *param)
                 //vTaskSuspend(playFLACHandler);
                 //vTaskSuspend(playACCHandler);
                 //file->open(mp3_ring_1, mp3_ring_1_len);
-                file->open(mp3_array, mp3_array_len);
+                file->open(mp3_array, sizeof(mp3_array)/sizeof(mp3_array[0]));
                 //file->open(AUDIO_DATA, sizeof(AUDIO_DATA));
                 mp3->begin(id3, out);
                 vTaskResume(playMP3Handler);
@@ -846,7 +836,7 @@ void wav_task(void *param)
                 vTaskSuspend(playMP3Handler);
                 // vTaskSuspend(playFLACHandler);
                 //vTaskSuspend(playACCHandler);
-                file->open(mp3_ring_setup, mp3_ring_setup_len);
+                file->open(mp3_ring_setup, sizeof(mp3_ring_setup)/sizeof(mp3_ring_setup[0]));
                 mp3->begin(id3, out);
                 vTaskResume(playMP3Handler);
             }
