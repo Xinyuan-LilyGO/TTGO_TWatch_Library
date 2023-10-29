@@ -152,9 +152,7 @@ public:
     void sleepLora(bool config);
     void setSleepMode(SleepMode_t mode);
 
-    void sleep(uint32_t second) ;
-    int16_t sleep() override;
-
+    void sleep(uint32_t second = 0) ;
 private:
 
 

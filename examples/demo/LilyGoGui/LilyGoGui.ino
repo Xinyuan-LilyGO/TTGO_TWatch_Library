@@ -54,7 +54,7 @@ IRsend irsend(BOARD_IR_PIN);
 #include "ui.h"
 #include "src/mp3_ring_1.h"
 #include "src/mp3_ring_setup.h"
-
+#include "driver/gpio.h"
 
 AudioFileSourceSPIFFS   *file_fs;
 AudioGeneratorWAV       *wav = NULL;
@@ -1486,7 +1486,7 @@ static void PDM_Record(const char *song_name, uint32_t duration)
 
     // Record until "file_size" bytes have been read from mic.
     uint32_t counter = 0;
-    uint32_t bytes_written;
+    size_t bytes_written = 0;
     Serial.println("Recording started");
     int percentage = 0;
 

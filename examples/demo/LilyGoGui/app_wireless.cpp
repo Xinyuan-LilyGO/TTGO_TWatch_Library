@@ -113,7 +113,7 @@ static struct {
 LV_FONT_DECLARE(alibaba_font);
 
 static lv_obj_t *create_obj_with_label(lv_obj_t *cont, textarea_config_t *u);
-static lv_obj_t *create_btn_on_label(lv_obj_t *cont, char *text);
+static lv_obj_t *create_btn_on_label(lv_obj_t *cont,const char *text);
 
 static void get_wifi_ssid_event_cb(lv_event_t *e);
 static void connect_wifi_event_cb(lv_event_t *e);
@@ -209,7 +209,7 @@ static lv_obj_t *create_obj_with_label(lv_obj_t *cont, textarea_config_t *u) {
   return obj;
 }
 
-static lv_obj_t *create_btn_on_label(lv_obj_t *cont, char *text) {
+static lv_obj_t *create_btn_on_label(lv_obj_t *cont,const char *text) {
 
   lv_obj_t *btn = lv_btn_create(cont);
   lv_obj_set_size(btn, 40, 35);

@@ -574,15 +574,6 @@ void LilyGoLib::sleep(uint32_t second)
     esp_deep_sleep_start();
 }
 
-int16_t LilyGoLib::sleep()
-{
-    sleep(0);
-    return 0;
-}
-
-
-
-
 
 
 

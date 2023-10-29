@@ -10,7 +10,7 @@ typedef struct {
   lv_align_t align;
   lv_coord_t x_ofs;
   lv_coord_t y_ofs;
-  char *text;
+  const char *text;
 } textarea_config_t;
 
 void app_wireless_load(lv_obj_t *cont);

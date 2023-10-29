@@ -46,7 +46,7 @@ extern lv_obj_t * batt_voltage_label;
 extern lv_timer_t *transmitTask;
 extern void suspend_vadTaskHandler(void);
 
-static void create_app(lv_obj_t *parent, char *name, const lv_img_dsc_t *img, app_t *app_fun) {
+static void create_app(lv_obj_t *parent,const char *name, const lv_img_dsc_t *img, app_t *app_fun) {
   /* Create an interactive button named after the app. */
   lv_obj_t *btn = lv_btn_create(parent);
   lv_obj_set_size(btn, 150, lv_pct(100));
@@ -69,7 +69,7 @@ static void create_app(lv_obj_t *parent, char *name, const lv_img_dsc_t *img, ap
           lv_msg_send(MSG_MENU_NAME_CHANGED, text);
         }
       },
-      LV_EVENT_FOCUSED, name);
+      LV_EVENT_FOCUSED, (void*)name);
   /* Click to select event callback */
   lv_obj_add_event_cb(
       btn,
