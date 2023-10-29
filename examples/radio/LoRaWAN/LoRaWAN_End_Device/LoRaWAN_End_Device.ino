@@ -158,17 +158,17 @@ void loop()
 
         // print RSSI (Received Signal Strength Indicator)
         Serial.print(F("[LoRaWAN] RSSI:\t\t"));
-        Serial.print(radio.getRSSI());
+        Serial.print(watch.getRSSI());
         Serial.println(F(" dBm"));
 
         // print SNR (Signal-to-Noise Ratio)
         Serial.print(F("[LoRaWAN] SNR:\t\t"));
-        Serial.print(radio.getSNR());
+        Serial.print(watch.getSNR());
         Serial.println(F(" dB"));
 
         // print frequency error
         Serial.print(F("[LoRaWAN] Frequency error:\t"));
-        Serial.print(radio.getFrequencyError());
+        Serial.print(watch.getFrequencyError());
         Serial.println(F(" Hz"));
 
     } else if (state == RADIOLIB_ERR_RX_TIMEOUT) {
