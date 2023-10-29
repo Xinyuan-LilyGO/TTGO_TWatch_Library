@@ -27,6 +27,7 @@
 IRsend irsend(BOARD_IR_PIN);
 #endif
 #include <driver/i2s.h>
+#include <driver/gpio.h>
 #include <esp_vad.h>
 
 #ifdef ENABLE_PLAYER
@@ -455,7 +456,7 @@ void SensorHandler()
         // The interrupt status must be read after an interrupt is detected
         uint16_t status = watch.readBMA();
         Serial.printf("Accelerometer interrupt mask : 0x%x\n", status);
-
+      
         if (watch.isPedometer()) {
             stepCounter = watch.getPedometerCounter();
             Serial.printf("Step count interrupt,step Counter:%u\n", stepCounter);
@@ -465,7 +466,7 @@ void SensorHandler()
         }
         if (watch.isTilt()) {
             Serial.println("Tilt interrupt");
-        }
+        } 
         if (watch.isDoubleTap()) {
             Serial.println("DoubleTap interrupt");
         }
@@ -2478,7 +2479,7 @@ static void PDM_Record(const char *song_name, uint32_t duration)
 
     // Record until "file_size" bytes have been read from mic.
     uint32_t counter = 0;
-    uint32_t bytes_written;
+    size_t bytes_written;
     Serial.println("Recording started");
     int percentage = 0;
 
