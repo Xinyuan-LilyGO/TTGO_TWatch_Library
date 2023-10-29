@@ -90,7 +90,7 @@ void setup()
 
     // start the device by directly providing the encryption keys and device address
     Serial.print(F("[LoRaWAN] Attempting over-the-air activation ... "));
-    int state = node->beginAPB(devAddr, (uint8_t *)nwkSKey, (uint8_t *)appSKey);
+    int state = node->beginABP(devAddr, (uint8_t *)nwkSKey, (uint8_t *)appSKey);
     if (state == RADIOLIB_ERR_NONE) {
         Serial.println(F("success!"));
     } else {
