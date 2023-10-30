@@ -2,7 +2,7 @@
 
 
 [![PlatformIO CI](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/actions/workflows/platformio.yml/badge.svg)](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/actions/workflows/platformio.yml)
-
+[![Arduino_CI](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/actions/workflows/arduino_ci.yml/badge.svg?branch=t-watch-s3)](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/actions/workflows/arduino_ci.yml)
 
 **[English](README.MD) | 中文**
 
@@ -26,7 +26,9 @@
 ## 2️⃣ Arduino IDE Quick Start
 
 1. 安装 [ArduinoIDE](https://www.arduino.cc/en/software)
-2. 安装 [Arduino ESP32 大于 V2.0.5 ，小于 3.0](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html#windows-manual-installation) ,**请查看手动安装方法， 请不要从板安装管理器安装，会缺失部分文件**
+2. 安装 `Arduino ESP32 2.0.9`
+   ![InstallArduino](./images/InstallArduino.jpg)
+   * **请使用 2.0.9 ，新版本变更过大，目前还没有做适配**
 3. 安装 [TTGO_TWatch_Library](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library)
 4. 安装 [T-Watch-Deps](https://github.com/Xinyuan-LilyGO/T-Watch-Deps)
    - 将[T-Watch-Deps](https://github.com/Xinyuan-LilyGO/T-Watch-Deps)里的所有目录拷贝到 `<C:\Users\UserName\Documents\Arduino\libraries>`,如果没有`libraries`目录,请新建.
@@ -45,7 +47,7 @@
    - USB Mode -> Hardware CDC and JIAG
    - Upload Mode -> UART0/Hardware CDC
    - Upload Speed -> 921600
-6. 插入USB到PC,点击上传<如果无法顺利上传,请查看下方FAQ>
+5. 插入USB到PC,点击上传<如果无法顺利上传,请查看下方FAQ>
 
 
 <h2 align = "left">4️⃣ Example Source </h2>
