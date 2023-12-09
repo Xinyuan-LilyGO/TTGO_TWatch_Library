@@ -3,10 +3,11 @@ name: Arduino_CI
 on:
   pull_request:
   push:
-  #   paths:
-  #     - "examples/**"
-  #     - "src/**"
-
+    paths:
+      - "examples/**"
+      - "src/**"
+    branches:    
+      - t-watch-s3
 jobs:
   build:
     runs-on: ubuntu-latest

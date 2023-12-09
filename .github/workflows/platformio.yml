@@ -6,7 +6,8 @@ on:
     paths:
       - "examples/**"
       - "src/**"
-    branches:
+      - "platformio.ini"
+    branches:    
       - t-watch-s3
 
 jobs:
