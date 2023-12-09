@@ -293,7 +293,7 @@ void LilyGoLib::setBrightness(uint8_t level)
         writecommand(0x10);  //display sleep
         setPowerMode(PMODE_MONITOR);
     }
-    if (!brightness) {
+    if (!brightness && level != 0) {
         enableALDO2();
         writecommand(0x11);  //display wakeup
     }
