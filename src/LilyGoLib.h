@@ -46,7 +46,7 @@
 #endif
 #endif
 
-#if !LV_VERSION_CHECK(8,3,7)
+#if !LV_VERSION_CHECK(8,3,9)
 #warning "The current version of lvgl does not match the development version, and it is not guaranteed that the sample program can be compiled and run normally"
 #endif
 

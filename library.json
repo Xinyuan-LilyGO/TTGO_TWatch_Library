@@ -41,24 +41,24 @@
     },
     {
       "name": "RadioLib",
-      "version": "^6.0.0"
+      "version": "^6.3.0"
     },
     {
       "owner": "Bodmer",
       "name": "TFT_eSPI",
-      "version": "^2.5.23"
+      "version": "^2.5.30"
     },
     {
       "name": "lvgl",
-      "version": "^8.3.7"
+      "version": "^8.3.9"
     },
     {
       "name": "XPowersLib",
-      "version": "https://github.com/lewisxhe/XPowersLib.git#7da0aab811002dee2e113977f98f118e85e294ef"
+      "version": "^0.2.1"
     },
     {
       "name": "SensorLib",
-      "version": "https://github.com/lewisxhe/SensorsLib.git#745383b60d696e501f0f04ec39e06c7bb04b2c4f"
+      "version": "^0.1.4"
     }
   ],
   "examples": ["examples/*/*.ino"],
