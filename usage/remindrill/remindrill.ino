@@ -42,25 +42,36 @@ code    color
 
 uint32_t targetTime = 0;                    // for next 1 second timeout
 
-static uint8_t conv2d(const char *p); // Forward declaration needed for IDE 1.6.x
+const int16_t defaultAwakeTime = 15;
 
-uint8_t hh = conv2d(__TIME__), mm = conv2d(__TIME__ + 3), ss = conv2d(__TIME__ + 6); // Get H, M, S from compile time
+uint8_t ss = 0;
+int16_t sleepCountdown_sec = defaultAwakeTime;
 
-byte omm = 99, oss = 99;
-byte xcolon = 0, xsecs = 0;
-unsigned int colour = 0;
+bool  pmu_flag = false;
+
+// ISR for Power Button (crown button)
+void setPMUFlag(void)
+{
+    pmu_flag = true;
+}
+
+
 
 void setup(void)
 {
     //Serial.begin(115200);
     watch.begin();
-    watch.setRotation(1);
+    watch.setRotation(2);
     watch.fillScreen(TFT_BLACK);
 
+    watch.setTextFont(4);
     watch.setTextSize(1);
     watch.setTextColor(TFT_YELLOW, TFT_BLACK);
 
     targetTime = millis() + 1000;
+
+    // Set the interrupt handler of the PMU
+    watch.attachPMU(setPMUFlag);
 }
 
 void loop()
@@ -68,68 +79,44 @@ void loop()
     if (targetTime < millis()) {
         // Set next update for 1 second later
         targetTime = millis() + 1000;
-
-        // Adjust the time values by adding 1 second
-        ss++;              // Advance second
-        if (ss == 60) {    // Check for roll-over
-            ss = 0;          // Reset seconds to zero
-            omm = mm;        // Save last minute time for display update
-            mm++;            // Advance minute
-            if (mm > 59) {   // Check for roll-over
-                mm = 0;
-                hh++;          // Advance hour
-                if (hh > 23) { // Check for 24hr roll-over (could roll-over on 13)
-                    hh = 0;      // 0 for 24 hour clock, set to 1 for 12 hour clock
-                }
-            }
-        }
+        ss++;
+        sleepCountdown_sec--;
 
 
         // Update digital time
-        int xpos = 0;
-        int ypos = 85; // Top left corner ot clock text, about half way down
-        int ysecs = ypos + 24;
+        int xpos = 120;
+        int ypos = 120;
 
-        if (omm != mm) { // Redraw hours and minutes time every minute
-            omm = mm;
-            // Draw hours and minutes
-            if (hh < 10) xpos += watch.drawChar('0', xpos, ypos, 8); // Add hours leading zero for 24 hr clock
-            xpos += watch.drawNumber(hh, xpos, ypos, 8);             // Draw hours
-            xcolon = xpos; // Save colon coord for later to flash on/off later
-            xpos += watch.drawChar(':', xpos, ypos - 8, 8);
-            if (mm < 10) xpos += watch.drawChar('0', xpos, ypos, 8); // Add minutes leading zero
-            xpos += watch.drawNumber(mm, xpos, ypos, 8);             // Draw minutes
-            xsecs = xpos; // Sae seconds 'x' position for later display updates
-        }
-        if (oss != ss) { // Redraw seconds time every second
-            oss = ss;
-            xpos = xsecs;
+        char time_text[] = "00:00";
+        strncpy_P( time_text, watch.strftime(DATETIME_FORMAT_HM), 5 );
 
-            if (ss % 2) { // Flash the colons on/off
-                watch.setTextColor(0x39C4, TFT_BLACK);        // Set colour to grey to dim colon
-                watch.drawChar(':', xcolon, ypos - 8, 8);     // Hour:minute colon
-                xpos += watch.drawChar(':', xsecs, ysecs, 6); // Seconds colon
-                watch.setTextColor(TFT_YELLOW, TFT_BLACK);    // Set colour back to yellow
-            } else {
-                watch.drawChar(':', xcolon, ypos - 8, 8);     // Hour:minute colon
-                xpos += watch.drawChar(':', xsecs, ysecs, 6); // Seconds colon
-            }
+        // Blink colon in the string of RTC time
+        time_text[2] = ss % 2 ? ':' : ' ';
 
-            //Draw seconds
-            if (ss < 10) xpos += watch.drawChar('0', xpos, ysecs, 6); // Add leading zero
-            watch.drawNumber(ss, xpos, ysecs, 6);                     // Draw seconds
+        watch.drawString( time_text, xpos, ypos, 7);
+
+        if (watch.getTouched()) // reset awake timer if the screen touched
+            sleepCountdown_sec = defaultAwakeTime;
+
+        if(sleepCountdown_sec<0) {
+            sleepCountdown_sec = defaultAwakeTime;
+            watch.setSleepMode(PMU_BTN_WAKEUP);
+            watch.sleep();
         }
     }
-}
 
+    // If crown button was pressed, then enforce sleep
+    if (pmu_flag) {
+        
+        // After the PMU interrupt is triggered, the interrupt status must be cleared,
+        // otherwise the next interrupt will not be triggered
+        watch.clearPMU();
 
-// Function to extract numbers from compile time string
-static uint8_t conv2d(const char *p)
-{
-    uint8_t v = 0;
-    if ('0' <= *p && *p <= '9')
-        v = *p - '0';
-    return 10 * v + *++p - '0';
+        //Set to wake by pressing the button on the crown
+        watch.setSleepMode(PMU_BTN_WAKEUP);
+
+        watch.sleep();
+    }
 }
 
 
