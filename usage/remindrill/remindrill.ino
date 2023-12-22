@@ -40,9 +40,12 @@ code    color
 
 // Invoke custom library
 
+const int8_t timeFont = 7;
+const int8_t batteryFont = 4;
+
 uint32_t targetTime = 0;                    // for next 1 second timeout
 
-const int16_t defaultAwakeTime = 15;
+const int16_t defaultAwakeTime = 3000;
 
 uint8_t ss = 0;
 int16_t sleepCountdown_sec = defaultAwakeTime;
@@ -76,6 +79,9 @@ void setup(void)
 
 void loop()
 {
+    if (watch.getTouched()) // reset awake timer if the screen touched
+        sleepCountdown_sec = defaultAwakeTime;
+
     if (targetTime < millis()) {
         // Set next update for 1 second later
         targetTime = millis() + 1000;
@@ -93,16 +99,24 @@ void loop()
         // Blink colon in the string of RTC time
         time_text[2] = ss % 2 ? ':' : ' ';
 
-        watch.drawString( time_text, xpos, ypos, 7);
+        watch.setTextDatum(CC_DATUM);
 
-        if (watch.getTouched()) // reset awake timer if the screen touched
-            sleepCountdown_sec = defaultAwakeTime;
+        watch.drawString( time_text, xpos, ypos, timeFont );
 
         if(sleepCountdown_sec<0) {
             sleepCountdown_sec = defaultAwakeTime;
             watch.setSleepMode(PMU_BTN_WAKEUP);
             watch.sleep();
         }
+
+        // Update battery
+        char battery_life_text[] = "100%%abcdefgh";
+        snprintf(battery_life_text, sizeof(battery_life_text), "%3d%%", watch.getBatteryPercent());
+        //Serial.println(battery_life_text);
+        watch.setTextDatum(TR_DATUM);
+        const auto battery_life_area_width = watch.drawString(battery_life_text, 240,10, batteryFont );
+        const auto battery_life_area_height = watch.fontHeight( batteryFont );
+        watch.drawRect(240-battery_life_area_width, 10, battery_life_area_width, battery_life_area_height, TFT_GREY );
     }
 
     // If crown button was pressed, then enforce sleep
