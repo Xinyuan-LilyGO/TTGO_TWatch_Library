@@ -34,7 +34,8 @@ code    color
  */
 
 #include <LilyGoLib.h> // Hardware-specific library
-
+#include <LV_Helper.h>
+#include "ClockView.h"
 
 #define TFT_GREY 0x5AEB
 
@@ -43,26 +44,27 @@ code    color
 const int8_t timeFont = 7;
 const int8_t batteryFont = 4;
 
-uint32_t targetTime = 0;                    // for next 1 second timeout
+uint32_t targetTime = 0; // for next 1 second timeout
 
 const int16_t defaultAwakeTime = 3000;
 
 uint8_t ss = 0;
 int16_t sleepCountdown_sec = defaultAwakeTime;
 
-bool  pmu_flag = false;
+bool pmu_flag = false;
+
+ClockView clockView;
 
 // ISR for Power Button (crown button)
 void setPMUFlag(void)
 {
-    pmu_flag = true;
+    if(watch.getTouched())
+        pmu_flag = true;
 }
-
-
 
 void setup(void)
 {
-    //Serial.begin(115200);
+    // Serial.begin(115200);
     watch.begin();
     watch.setRotation(2);
     watch.fillScreen(TFT_BLACK);
@@ -75,63 +77,77 @@ void setup(void)
 
     // Set the interrupt handler of the PMU
     watch.attachPMU(setPMUFlag);
+
+    // Initialize UI
+    beginLvglHelper(false);
+
+    clockView.setup();
+
+    lv_scr_load(clockView.getScreen());
+
+    lv_disp_set_bg_color(lv_disp_get_default(), lv_color_black());
 }
 
 void loop()
 {
+    clockView.loop();
+
+    lv_task_handler();
+
     if (watch.getTouched()) // reset awake timer if the screen touched
         sleepCountdown_sec = defaultAwakeTime;
 
-    if (targetTime < millis()) {
+    if (targetTime < millis())
+    {
         // Set next update for 1 second later
         targetTime = millis() + 1000;
         ss++;
         sleepCountdown_sec--;
-
 
         // Update digital time
         int xpos = 120;
         int ypos = 120;
 
         char time_text[] = "00:00";
-        strncpy_P( time_text, watch.strftime(DATETIME_FORMAT_HM), 5 );
+        strncpy_P(time_text, watch.strftime(DATETIME_FORMAT_HM), 5);
 
         // Blink colon in the string of RTC time
         time_text[2] = ss % 2 ? ':' : ' ';
 
         watch.setTextDatum(CC_DATUM);
 
-        watch.drawString( time_text, xpos, ypos, timeFont );
+        watch.drawString(time_text, xpos, ypos, timeFont);
 
-        if(sleepCountdown_sec<0) {
+        if (sleepCountdown_sec < 0)
+        {
             sleepCountdown_sec = defaultAwakeTime;
             watch.setSleepMode(PMU_BTN_WAKEUP);
             watch.sleep();
         }
 
         // Update battery
-        char battery_life_text[] = "100%%abcdefgh";
-        snprintf(battery_life_text, sizeof(battery_life_text), "%3d%%", watch.getBatteryPercent());
-        //Serial.println(battery_life_text);
-        watch.setTextDatum(TR_DATUM);
-        const auto battery_life_area_width = watch.drawString(battery_life_text, 240,10, batteryFont );
-        const auto battery_life_area_height = watch.fontHeight( batteryFont );
-        watch.drawRect(240-battery_life_area_width, 10, battery_life_area_width, battery_life_area_height, TFT_GREY );
+        // char battery_life_text[] = "100%";
+        // snprintf(battery_life_text, sizeof(battery_life_text), "%3d%%", watch.getBatteryPercent());
+        // // Serial.println(battery_life_text);
+        // watch.setTextDatum(TR_DATUM);
+        // const auto battery_life_area_width = watch.drawString(battery_life_text, LV_HOR_RES, 10, batteryFont);
+        // const auto battery_life_area_height = watch.fontHeight(batteryFont);
+        // watch.drawRect(LV_HOR_RES - battery_life_area_width, 10, battery_life_area_width, battery_life_area_height, TFT_GREY);
     }
 
-    // If crown button was pressed, then enforce sleep
-    if (pmu_flag) {
-        
+    // If crown button was pressed and screen touched, then enforce sleep
+    if (pmu_flag && watch.getTouched())
+    {
+
         // After the PMU interrupt is triggered, the interrupt status must be cleared,
         // otherwise the next interrupt will not be triggered
         watch.clearPMU();
 
-        //Set to wake by pressing the button on the crown
+        // Set to wake by pressing the button on the crown
         watch.setSleepMode(PMU_BTN_WAKEUP);
 
         watch.sleep();
     }
+
+    delay(5);
 }
-
-
-
