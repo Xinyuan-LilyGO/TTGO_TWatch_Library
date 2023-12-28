@@ -105,25 +105,25 @@ void loop()
         sleepCountdown_sec--;
 
         // Update digital time
-        int xpos = 120;
-        int ypos = 120;
+        // int xpos = 120;
+        // int ypos = 120;
 
-        char time_text[] = "00:00";
-        strncpy_P(time_text, watch.strftime(DATETIME_FORMAT_HM), 5);
+        // char time_text[] = "00:00";
+        // strncpy_P(time_text, watch.strftime(DATETIME_FORMAT_HM), 5);
 
-        // Blink colon in the string of RTC time
-        time_text[2] = ss % 2 ? ':' : ' ';
+        // // Blink colon in the string of RTC time
+        // time_text[2] = ss % 2 ? ':' : ' ';
 
-        watch.setTextDatum(CC_DATUM);
+        // watch.setTextDatum(CC_DATUM);
 
-        watch.drawString(time_text, xpos, ypos, timeFont);
+        // watch.drawString(time_text, xpos, ypos, timeFont);
 
-        if (sleepCountdown_sec < 0)
-        {
-            sleepCountdown_sec = defaultAwakeTime;
-            watch.setSleepMode(PMU_BTN_WAKEUP);
-            watch.sleep();
-        }
+        // if (sleepCountdown_sec < 0)
+        // {
+        //     sleepCountdown_sec = defaultAwakeTime;
+        //     watch.setSleepMode(PMU_BTN_WAKEUP);
+        //     watch.sleep();
+        // }
 
         // Update battery
         // char battery_life_text[] = "100%";
