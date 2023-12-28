@@ -18,6 +18,7 @@ public:
 protected:
     static void event_onSleep(lv_event_t *e);
 
+    static void event_onAlarmsTune(lv_event_t *e);
 
   
 private:
@@ -30,6 +31,7 @@ private:
     lv_obj_t *m_ClockLabel;
     lv_obj_t *m_CenterBar;
     lv_obj_t *m_BottomBar;
+    lv_obj_t *m_AlarmsTuneButton;
 
     lv_style_t m_ClockStyle;
 

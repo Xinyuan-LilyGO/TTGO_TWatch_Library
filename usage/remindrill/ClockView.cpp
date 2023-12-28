@@ -44,14 +44,12 @@ void ClockView::setup()
     m_SleepButton = lv_btn_create(m_TopBar);
     lv_obj_align( m_SleepButton, LV_ALIGN_LEFT_MID, 0, 0 );
     lv_obj_set_style_text_font( m_SleepButton, &lv_font_montserrat_16, 0 );
-    //lv_obj_set_flex_align(m_SleepButton, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
-
     lv_obj_set_size(m_SleepButton, 40, 40);
     lv_obj_add_event_cb(m_SleepButton, event_onSleep, LV_EVENT_CLICKED, NULL);
 
-    lv_obj_t *label = lv_label_create(m_SleepButton);
-    lv_label_set_text(label, LV_SYMBOL_POWER);
-    lv_obj_center(label);
+    lv_obj_t *sleepLabel = lv_label_create(m_SleepButton);
+    lv_label_set_text(sleepLabel, LV_SYMBOL_POWER);
+    lv_obj_center(sleepLabel);
 
 //    lv_obj_t *gap = lv_label_create(m_TopBar);
 //    lv_obj_set_flex_grow( gap, 1);
@@ -93,6 +91,15 @@ void ClockView::setup()
     lv_obj_set_style_bg_opa(m_BottomBar, LV_OPA_TRANSP, 0);
     lv_obj_set_style_border_opa(m_BottomBar, LV_OPA_TRANSP, 0);
 
+    m_AlarmsTuneButton = lv_btn_create(m_BottomBar);
+    lv_obj_align( m_AlarmsTuneButton, LV_ALIGN_LEFT_MID, 0, 0 );
+    lv_obj_set_style_text_font( m_AlarmsTuneButton, &lv_font_montserrat_16, 0 );
+    lv_obj_set_size(m_AlarmsTuneButton, 40, 40);
+    lv_obj_add_event_cb(m_AlarmsTuneButton, event_onAlarmsTune, LV_EVENT_CLICKED, NULL);
+
+    lv_obj_t *alarmsTuneLabel = lv_label_create(m_AlarmsTuneButton);
+    lv_label_set_text(alarmsTuneLabel, LV_SYMBOL_BELL);
+    lv_obj_center(alarmsTuneLabel);
 
 
 }
@@ -103,8 +110,19 @@ void ClockView::loop()
     {
         m_UpdateTime = millis() + 1000;
 
+        const auto batteryLife = watch.getBatteryPercent();
+        const char * batterySymbol = LV_SYMBOL_BATTERY_FULL;
+        if(batteryLife <= 5)
+            batterySymbol = LV_SYMBOL_BATTERY_EMPTY;
+        else if (batteryLife <= 35)
+            batterySymbol = LV_SYMBOL_BATTERY_1;
+        else if (batteryLife <= 65)
+            batterySymbol = LV_SYMBOL_BATTERY_2;
+        else if (batteryLife <= 95)
+            batterySymbol = LV_SYMBOL_BATTERY_3;
+
         // Update battery indicator
-        lv_label_set_text_fmt(m_Battery, "%s%3d%%", LV_SYMBOL_BATTERY_FULL, watch.getBatteryPercent());
+        lv_label_set_text_fmt(m_Battery, "%s%3d%%", batterySymbol, batteryLife);
 
         char time_text[] = "00:00";
         strncpy_P(time_text, watch.strftime(DATETIME_FORMAT_HM), sizeof(time_text));
@@ -128,4 +146,12 @@ void ClockView::event_onSleep(lv_event_t *e)
     watch.setSleepMode(PMU_BTN_WAKEUP);
 
     watch.sleep();
+}
+
+void ClockView::event_onAlarmsTune(lv_event_t *e)
+{
+    auto &inst = getInstance();
+    const auto pal = lv_palette_t(inst.m_DummyCount % _LV_PALETTE_LAST);
+    inst.m_DummyCount++;
+    lv_obj_set_style_text_color(inst.m_ClockLabel, lv_palette_main(pal), 0);
 }
