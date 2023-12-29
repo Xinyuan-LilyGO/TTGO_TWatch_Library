@@ -95,7 +95,7 @@ void ClockView::setup()
     lv_obj_align( m_AlarmsTuneButton, LV_ALIGN_LEFT_MID, 0, 0 );
     lv_obj_set_style_text_font( m_AlarmsTuneButton, &lv_font_montserrat_16, 0 );
     lv_obj_set_size(m_AlarmsTuneButton, 40, 40);
-    lv_obj_add_event_cb(m_AlarmsTuneButton, event_onAlarmsTune, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(m_AlarmsTuneButton, event_onAlarmsTune, LV_EVENT_CLICKED, this);
 
     lv_obj_t *alarmsTuneLabel = lv_label_create(m_AlarmsTuneButton);
     lv_label_set_text(alarmsTuneLabel, LV_SYMBOL_BELL);
@@ -150,7 +150,7 @@ void ClockView::event_onSleep(lv_event_t *e)
 
 void ClockView::event_onAlarmsTune(lv_event_t *e)
 {
-    auto &inst = getInstance();
+    auto &inst = *(ClockView*)e->user_data;
     const auto pal = lv_palette_t(inst.m_DummyCount % _LV_PALETTE_LAST);
     inst.m_DummyCount++;
     lv_obj_set_style_text_color(inst.m_ClockLabel, lv_palette_main(pal), 0);
