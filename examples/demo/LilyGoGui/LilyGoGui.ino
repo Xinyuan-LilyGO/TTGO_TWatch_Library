@@ -205,9 +205,9 @@ typedef  struct _lv_datetime {
 
 
 
-const char *cn_week[7] = { "周一", "周二", "周三", "周四", "周五", "周六", "周日" };
-const char *cn_month[12] = { "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"};
-const char *cn_state[5] = {"上午", "中午", "下午", "傍晚", "晚上"};
+const char *cn_week[7] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+const char *cn_month[12] = { "Jan", "Feb", "Mar", "Ari", "May", "Jun", "Jul", "Aut", "Sep", "Oct", "Nov", "Dec"};
+const char *cn_state[5] = {"a.m.", "mid", "p.m.", "night", "night"};
 
 typedef bool (*player_cb_t)(void);
 static player_cb_t player_task_cb = NULL;
@@ -350,18 +350,18 @@ void setup()
     usbPlugIn =  watch.isVbusIn();
     sntp_servermode_dhcp(1);    // (optional)
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer1, ntpServer2);
-    wifi_test();
+    // wifi_test();
 
-    while (show_timeinfo.tm_year <= 0) {
-        printLocalTime();
-    }
+    // while (show_timeinfo.tm_year <= 0) {
+    //     printLocalTime();
+    // }
 
     setupGUI();
-    if (wifi_test_obj != NULL)
-        lv_obj_del_delayed(wifi_test_obj, 1);
+    // if (wifi_test_obj != NULL)
+    //     lv_obj_del_delayed(wifi_test_obj, 1);
 
-    xTaskCreate(playMP3Task, "mp3", 8192, NULL, 10, &playMP3Handler);
-    xTaskCreatePinnedToCore(wav_task, "wav_task", 1024 * 4, NULL, 2, NULL, 0);
+    // xTaskCreate(playMP3Task, "mp3", 8192, NULL, 10, &playMP3Handler);
+    // xTaskCreatePinnedToCore(wav_task, "wav_task", 1024 * 4, NULL, 2, NULL, 0);
 }
 
 void suspend_playMP3Handler(void)
@@ -526,7 +526,9 @@ lv_obj_t *setupGUI()
     static lv_style_t onestyle;
     lv_style_init(&onestyle);
     lv_style_set_text_color(&onestyle, LV_COLOR_BLACK);
-    lv_style_set_text_font(&onestyle, &fn1_32);
+    // lv_style_set_text_font(&onestyle, &fn1_32);  //Due to upgrading the lvgl version, the font is invalid and replaced with ordinary fonts.
+    lv_style_set_text_font(&onestyle, &lv_font_montserrat_24);
+    
     //Upper left corner logo
     lv_obj_t *casio = lv_label_create(view);
     lv_obj_add_style(casio, &onestyle, 0);
@@ -537,7 +539,8 @@ lv_obj_t *setupGUI()
     static lv_style_t model_style;
     lv_style_init(&model_style);
     lv_style_set_text_color(&model_style, LV_COLOR_BLACK);
-    lv_style_set_text_font(&model_style, &robot_ightItalic_16);
+    // lv_style_set_text_font(&model_style, &robot_ightItalic_16); //Due to upgrading the lvgl version, the font is invalid and replaced with ordinary fonts.
+    lv_style_set_text_font(&onestyle, &lv_font_montserrat_28);
 
     lv_obj_t *model = lv_label_create(view);
     lv_obj_add_style(model,  &model_style, 0);
@@ -579,7 +582,8 @@ lv_obj_t *setupGUI()
     static lv_style_t text_style;
     lv_style_init(&text_style);
     lv_style_set_text_color(&text_style, LV_COLOR_BLACK);
-    lv_style_set_text_font(&text_style, &robot_ightItalic_16);
+    // lv_style_set_text_font(&text_style, &robot_ightItalic_16);//Due to upgrading the lvgl version, the font is invalid and replaced with ordinary fonts.
+    lv_style_set_text_font(&text_style, &lv_font_montserrat_16);
 
     //! light
     lv_obj_t *light_text = lv_label_create(view);
@@ -606,7 +610,8 @@ lv_obj_t *setupGUI()
     static lv_style_t time_style;
     lv_style_init(&time_style);
     lv_style_set_text_color(&time_style, LV_COLOR_BLACK);
-    lv_style_set_text_font(&time_style,  &digital_play_st_48);
+    // lv_style_set_text_font(&time_style,  &digital_play_st_48);//Due to upgrading the lvgl version, the font is invalid and replaced with ordinary fonts.
+    lv_style_set_text_font(&time_style, &lv_font_montserrat_48);
     //lv_style_set_text_align(&time_style, LV_ALIGN_RIGHT_MID);
     lv_style_set_text_letter_space(&time_style, 5);
 
@@ -623,7 +628,8 @@ lv_obj_t *setupGUI()
     static lv_style_t dot_style;
     lv_style_init(&dot_style);
     lv_style_set_text_color(&dot_style, LV_COLOR_BLACK);
-    lv_style_set_text_font(&dot_style, &liquidCrystal_nor_64);
+    // lv_style_set_text_font(&dot_style, &liquidCrystal_nor_64);//Due to upgrading the lvgl version, the font is invalid and replaced with ordinary fonts.
+    lv_style_set_text_font(&dot_style, &lv_font_montserrat_48);
 
     dot = lv_label_create(view);
     lv_obj_add_style(dot, &dot_style, 0);
@@ -644,7 +650,8 @@ lv_obj_t *setupGUI()
     static lv_style_t second_style;
     lv_style_init(&second_style);
     lv_style_set_text_color(&second_style, LV_COLOR_BLACK);
-    lv_style_set_text_font(&second_style, &liquidCrystal_nor_32);
+    // lv_style_set_text_font(&second_style, &liquidCrystal_nor_32);//Due to upgrading the lvgl version, the font is invalid and replaced with ordinary fonts.
+    lv_style_set_text_font(&dot_style, &lv_font_montserrat_32);
 
     second = lv_label_create(view);
     lv_obj_add_style(second, &second_style, 0);
@@ -658,7 +665,8 @@ lv_obj_t *setupGUI()
     static lv_style_t year_style;
     lv_style_init(&year_style);
     lv_style_set_text_color(&year_style, LV_COLOR_BLACK);
-    lv_style_set_text_font(&year_style, &liquidCrystal_nor_24);
+    // lv_style_set_text_font(&year_style, &liquidCrystal_nor_24);//Due to upgrading the lvgl version, the font is invalid and replaced with ordinary fonts.
+    lv_style_set_text_font(&year_style, &lv_font_montserrat_24);
 
     year = lv_label_create(view);
     lv_obj_add_style(year, &year_style, 0);
@@ -671,7 +679,8 @@ lv_obj_t *setupGUI()
     static lv_style_t chinese_style;
     lv_style_init(&chinese_style);
     lv_style_set_text_color(&chinese_style, LV_COLOR_BLACK);
-    lv_style_set_text_font(&chinese_style, &hansans_cn_24);
+    // lv_style_set_text_font(&chinese_style, &hansans_cn_24);//Due to upgrading the lvgl version, the font is invalid and replaced with ordinary fonts.
+    lv_style_set_text_font(&year_style, &lv_font_montserrat_24);
 
     month = lv_label_create(view);
     lv_obj_add_style(month, &chinese_style, 0);
@@ -682,13 +691,13 @@ lv_obj_t *setupGUI()
     lv_obj_add_style(state, &chinese_style, 0);
     int hour_temp = show_timeinfo.tm_hour + 6 >= 24 ? show_timeinfo.tm_hour + 6 - 24 : show_timeinfo.tm_hour + 6;
     if (hour_temp >= 8 && hour_temp < 11) {
-        lv_label_set_text(state, "上午");
+        lv_label_set_text(state, "a.m.");
     } else if (hour_temp >= 11 && hour_temp <= 13) {
-        lv_label_set_text(state, "中午");
+        lv_label_set_text(state, "mid");
     } else if (hour_temp >= 14 && hour_temp <= 17) {
-        lv_label_set_text(state, "下午");
+        lv_label_set_text(state, "p.m.");
     } else {
-        lv_label_set_text(state, "晚上");
+        lv_label_set_text(state, "night");
     }
     lv_obj_align_to(state, year, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
@@ -714,7 +723,8 @@ lv_obj_t *setupGUI()
     static lv_style_t temp_style;
     lv_style_init(&temp_style);
     lv_style_set_text_color(&temp_style, LV_COLOR_BLACK);
-    lv_style_set_text_font(&temp_style, &quostige_16);
+    // lv_style_set_text_font(&temp_style, &quostige_16);//Due to upgrading the lvgl version, the font is invalid and replaced with ordinary fonts.
+    lv_style_set_text_font(&temp_style, &lv_font_montserrat_16);
 
 
     lv_obj_t *temp_text = lv_label_create(view);
@@ -726,8 +736,8 @@ lv_obj_t *setupGUI()
     static lv_style_t bat_style;
     lv_style_init(&bat_style);
     lv_style_set_text_color(&bat_style, LV_COLOR_BLACK);
-    lv_style_set_text_font(&bat_style, &digital_play_st_24);
-
+    // lv_style_set_text_font(&bat_style, &digital_play_st_24);//Due to upgrading the lvgl version, the font is invalid and replaced with ordinary fonts.
+    lv_style_set_text_font(&bat_style, &lv_font_montserrat_16);
 
     lv_obj_t *bat = lv_label_create(view);
     lv_obj_add_style(bat, &bat_style, 0);
@@ -754,7 +764,8 @@ lv_obj_t *setupGUI()
     static lv_style_t key_style;
     lv_style_init(&key_style);
     lv_style_set_text_color(&key_style, LV_COLOR_BLACK);
-    lv_style_set_text_font(&key_style, &gracetians_32);
+    // lv_style_set_text_font(&key_style, &gracetians_32);
+    lv_style_set_text_font(&key_style, &lv_font_montserrat_32);
 
     lv_obj_t *key = lv_label_create(view);
     lv_obj_add_style(key, &key_style, 0);
@@ -767,7 +778,8 @@ lv_obj_t *setupGUI()
     static lv_style_t bot_style;
     lv_style_init(&bot_style);
     lv_style_set_text_color(&bot_style, LV_COLOR_BLACK);
-    lv_style_set_text_font(&bot_style, &exninja_22);
+    // lv_style_set_text_font(&bot_style, &exninja_22);
+    lv_style_set_text_font(&bot_style, &lv_font_montserrat_22);
 
     lv_obj_t *str1 = lv_label_create(view);
     lv_obj_add_style(str1, &bot_style, 0);
@@ -1414,13 +1426,13 @@ void renew_ui_time(void)
         sprintf(temp, "%02d", hour_temp);
         lv_label_set_text(hour, temp);
         if (hour_temp >= 8 && hour_temp < 11) {
-            lv_label_set_text(state, "上午");
+            lv_label_set_text(state, "a.m.");
         } else if (hour_temp >= 11 && hour_temp <= 13) {
-            lv_label_set_text(state, "中午");
+            lv_label_set_text(state, "mid");
         } else if (hour_temp >= 14 && hour_temp <= 17) {
-            lv_label_set_text(state, "下午");
+            lv_label_set_text(state, "p.m.");
         } else {
-            lv_label_set_text(state, "晚上");
+            lv_label_set_text(state, "night");
         }
     }
 
@@ -1583,33 +1595,33 @@ void loop()
 {
     lv_task_handler();
     delay(5);
-    SensorHandler();
-    PMUHandler();
+    // SensorHandler();
+    // PMUHandler();
 
-    get_BattVoltage();
+    // get_BattVoltage();
 
-    if (standby_en) {
-        printLocalTime_cont++;
-        if (printLocalTime_cont >= 20 && second != NULL) {
-            printLocalTime_cont = 0;
-            printLocalTime();
-            renew_ui_time();
-        }
+    // if (standby_en) {
+    //     printLocalTime_cont++;
+    //     if (printLocalTime_cont >= 20 && second != NULL) {
+    //         printLocalTime_cont = 0;
+    //         printLocalTime();
+    //         renew_ui_time();
+    //     }
 
-        if (recordFlag) {
-            recordFlag = false;
-            PDM_Record(DEFAULT_RECORD_FILENAME, 8);
-            canScreenOff = true;
-            lv_disp_trig_activity(NULL);
-        }
-    }
+    //     if (recordFlag) {
+    //         recordFlag = false;
+    //         PDM_Record(DEFAULT_RECORD_FILENAME, 8);
+    //         canScreenOff = true;
+    //         lv_disp_trig_activity(NULL);
+    //     }
+    // }
 
-    if (((lv_disp_get_inactive_time(NULL) >= 10000) && standby_en)) {
-        lowPowerEnergyHandler();
-        standby_en = 0;
-    } else if ((lv_disp_get_inactive_time(NULL) < 10000) && !standby_en) {
-        standby_en = 1;
-    }
+    // if (((lv_disp_get_inactive_time(NULL) >= 10000) && standby_en)) {
+    //     lowPowerEnergyHandler();
+    //     standby_en = 0;
+    // } else if ((lv_disp_get_inactive_time(NULL) < 10000) && !standby_en) {
+    //     standby_en = 1;
+    // }
 }
 
 uint32_t lastMillis;
