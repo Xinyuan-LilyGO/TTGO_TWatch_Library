@@ -33,32 +33,32 @@
   "dependencies": [
     {
       "name": "ESP8266Audio",
-      "version": "^1.9.7"
+      "version": "1.9.7"
     },
     {
       "name": "IRremoteESP8266",
-      "version": "^2.8.4"
+      "version": "2.8.4"
     },
     {
       "name": "RadioLib",
-      "version": "^6.3.0"
+      "version": "6.3.0"
     },
     {
       "owner": "Bodmer",
       "name": "TFT_eSPI",
-      "version": "^2.5.30"
+      "version": "2.5.30"
     },
     {
       "name": "lvgl",
-      "version": "^8.3.9"
+      "version": "8.3.9"
     },
     {
       "name": "XPowersLib",
-      "version": "^0.2.1"
+      "version": "0.2.1"
     },
     {
       "name": "SensorLib",
-      "version": "^0.1.4"
+      "version": "0.1.4"
     }
   ],
   "examples": ["examples/*/*.ino"],
