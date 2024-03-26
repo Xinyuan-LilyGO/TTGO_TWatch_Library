@@ -32,8 +32,6 @@ SX1262 radio = newModule();
 
 void setup()
 {
-    int state;
-
     Serial.begin(115200);
 
     watch.begin();

@@ -52,7 +52,7 @@ void setup()
 
     // start scanning the channel
     Serial.print(F("[SX1262] Starting scan for LoRa preamble ... "));
-    int state = radio.startChannelScan();
+    state = radio.startChannelScan();
     if (state == RADIOLIB_ERR_NONE) {
         Serial.println(F("success!"));
     } else {

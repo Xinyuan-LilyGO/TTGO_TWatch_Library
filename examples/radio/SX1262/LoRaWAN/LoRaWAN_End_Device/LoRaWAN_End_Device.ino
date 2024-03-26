@@ -113,7 +113,7 @@ void setup()
     // now we can start the activation
     // this can take up to 20 seconds, and requires a LoRaWAN gateway in range
     Serial.print(F("[LoRaWAN] Attempting over-the-air activation ... "));
-    int state = node->beginOTAA(joinEUI, devEUI, nwkKey, appKey);
+    state = node->beginOTAA(joinEUI, devEUI, nwkKey, appKey);
     if (state == RADIOLIB_ERR_NONE) {
         Serial.println(F("success!"));
     } else {
