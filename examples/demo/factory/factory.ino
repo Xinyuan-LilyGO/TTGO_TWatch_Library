@@ -16,11 +16,23 @@
  *                  Upload Mode:"UART0/Hardware CDC"
  *                  USB Mode:"Hardware CDC and JTAG"
  */
+
+//! Two transceivers, SX1262 and SX1280, are defined based on the actual model
+// #define USE_RADIO_SX1280
+#define USE_RADIO_SX1262
+
 #define ENABLE_PLAYER
 #define ENABLE_IR_SENDER
 
 #include <LilyGoLib.h>
 #include <LV_Helper.h>
+
+#ifdef USE_RADIO_SX1262
+SX1262 radio = newModule();
+#elif  defined(USE_RADIO_SX1280)
+SX1280 radio = newModule();
+#endif
+
 #include <WiFi.h>
 #ifdef ENABLE_IR_SENDER
 #include <IRsend.h>
@@ -28,7 +40,8 @@ IRsend irsend(BOARD_IR_PIN);
 #endif
 #include <driver/i2s.h>
 #include <driver/gpio.h>
-#include <esp_vad.h>
+
+
 
 #ifdef ENABLE_PLAYER
 #include <AudioFileSourcePROGMEM.h>
@@ -65,8 +78,6 @@ LV_IMG_DECLARE(clock_face);
 LV_IMG_DECLARE(clock_hour_hand);
 LV_IMG_DECLARE(clock_minute_hand);
 LV_IMG_DECLARE(clock_second_hand);
-
-
 
 LV_IMG_DECLARE(watch_if);
 LV_IMG_DECLARE(watch_bg);
@@ -141,14 +152,22 @@ static uint32_t stepCounter = 0;
 static uint32_t configTransmitInterval = 0;
 // Save brightness value
 static RTC_DATA_ATTR int brightnessLevel = 0;
+
+
+// https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/issues/234
+#if ESP_ARDUINO_VERSION_VAL(2,0,9) ==  ESP_ARDUINO_VERSION
+#include <esp_vad.h>
 // Vad detecte values
 static int16_t *vad_buff = NULL;
 static vad_handle_t vad_inst = NULL;
 static bool vad_detect = false;
 const size_t vad_buffer_size = VAD_BUFFER_LENGTH * sizeof(short);
+#endif
 static lv_obj_t *vad_btn_label;
 static lv_obj_t *vad_btn;
 static uint32_t vad_detected_counter = 0;
+
+
 
 typedef  struct _lv_datetime {
     lv_obj_t *obj;
@@ -205,6 +224,118 @@ void destoryChargeUI();
 void radioTask(lv_timer_t *parent);
 static void PDM_Record(const char *song_name, uint32_t duration);
 static bool CreateWAV(const char *song_name, uint32_t duration, uint16_t num_channels, const uint32_t sampling_rate, uint16_t bits_per_sample);
+
+#ifdef USE_RADIO_SX1262
+const char *radio_freq_list =
+    "433MHz\n"
+    "470MHz\n"
+    "868MHz\n"
+    "915MHz\n"
+    "923MHz";
+const float radio_freq_args_list[] = {433.0, 470.0, 868.0, 915.0, 923.0};
+
+const char *radio_bandwidth_list =
+    "125KHz\n"
+    "250KHz\n"
+    "500KHz";
+const float radio_bandwidth_args_list[] = {125.0, 250.0, 500.0};
+
+const char *radio_power_level_list =
+    "2dBm\n"
+    "5dBm\n"
+    "10dBm\n"
+    "12dBm\n"
+    "17dBm\n"
+    "20dBm\n"
+    "22dBm";
+const float radio_power_args_list[] = {2, 5, 10, 12, 17, 20, 22};
+
+#define RADIO_DEFAULT_FREQ          868.0
+#define RADIO_DEFAULT_BW            250.0
+#define RADIO_DEFAULT_SF            10
+#define RADIO_DEFAULT_CR            6
+#define RADIO_DEFAULT_CUR_LIMIT     140
+#define RADIO_DEFAULT_POWER_LEVEL   22
+
+#elif  defined(USE_RADIO_SX1280)
+
+#define RADIO_DEFAULT_FREQ          2492.0
+#define RADIO_DEFAULT_BW            203.125
+#define RADIO_DEFAULT_SF            10
+#define RADIO_DEFAULT_CR            6
+#define RADIO_DEFAULT_POWER_LEVEL   13
+
+const char *radio_freq_list =
+    "2400MHz\n"
+    "2412MHz\n"
+    "2422MHz\n"
+    "2432MHz\n"
+    "2442MHz\n"
+    "2452MHz\n"
+    "2462MHz\n"
+    "2472MHz\n"
+    "2482MHz\n"
+    "2492MHz\n"
+    "2498MHz\n"
+    "2500MHz";
+const float radio_freq_args_list[] = {2400.0,
+                                      2412.0, 2422.0, 2432.0,
+                                      2442.0, 2452.0, 2462.0,
+                                      2472.0, 2482.0, 2492.0,
+                                      2500.0
+                                     };
+
+const char *radio_bandwidth_list =
+    "203.125KHz\n"
+    "406.25KHz\n"
+    "812.5KHz\n"
+    "1625.0KHz";
+const float radio_bandwidth_args_list[] = {203.125, 406.25, 812.5, 1625.0};
+const char *radio_power_level_list =
+
+    /* "-18dBm\n"
+     "-17dBm\n"
+     "-16dBm\n"
+     "-15dBm\n"
+     "-14dBm\n"
+     "-13dBm\n"
+     "-12dBm\n"
+     "-11dBm\n"
+     "-10dBm\n"
+     "-9dBm\n"
+     "-8dBm\n"
+     "-7dBm\n"
+     "-6dBm\n"
+     "-5dBm\n"
+     "-4dBm\n"
+     "-3dBm\n"
+     "-2dBm\n"
+     "-1dBm\n"
+     */
+    "0dBm\n"
+    "1dBm\n"
+    "2dBm\n"
+    "3dBm\n"
+    "4dBm\n"
+    "5dBm\n"
+    "6dBm\n"
+    "7dBm\n"
+    "8dBm\n"
+    "9dBm\n"
+    "10dBm\n"
+    "11dBm\n"
+    "12dBm\n"
+    "13dBm";
+
+const float radio_power_args_list[] = {
+    // -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8,
+    //     -7, -6, -5, -4, -3, -2, -1,
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+};
+#endif
+
+
+
 
 void WiFiScanDone(WiFiEvent_t event, WiFiEventInfo_t info)
 {
@@ -456,7 +587,7 @@ void SensorHandler()
         // The interrupt status must be read after an interrupt is detected
         uint16_t status = watch.readBMA();
         Serial.printf("Accelerometer interrupt mask : 0x%x\n", status);
-      
+
         if (watch.isPedometer()) {
             stepCounter = watch.getPedometerCounter();
             Serial.printf("Step count interrupt,step Counter:%u\n", stepCounter);
@@ -466,7 +597,7 @@ void SensorHandler()
         }
         if (watch.isTilt()) {
             Serial.println("Tilt interrupt");
-        } 
+        }
         if (watch.isDoubleTap()) {
             Serial.println("DoubleTap interrupt");
         }
@@ -705,14 +836,14 @@ void radioTask(lv_timer_t *parent)
             lv_snprintf(buf, 256, "[%u]:Tx %s", lv_tick_get() / 1000, transmissionState == RADIOLIB_ERR_NONE ? "Successed" : "Failed");
             lv_textarea_set_text(radio_ta, buf);
 
-            transmissionState = watch.startTransmit("Hello World!");
+            transmissionState = radio.startTransmit("Hello World!");
 
         } else {
             // RX
             // the previous operation was reception
             // print data and send another packet
             String str;
-            int state = watch.readData(str);
+            int state = radio.readData(str);
 
             if (state == RADIOLIB_ERR_NONE) {
                 // packet was successfully received
@@ -724,20 +855,20 @@ void radioTask(lv_timer_t *parent)
 
                 // print RSSI (Received Signal Strength Indicator)
                 Serial.print(F("[SX1262] RSSI:\t\t"));
-                Serial.print(watch.getRSSI());
+                Serial.print(radio.getRSSI());
                 Serial.println(F(" dBm"));
 
                 // print SNR (Signal-to-Noise Ratio)
                 Serial.print(F("[SX1262] SNR:\t\t"));
-                Serial.print(watch.getSNR());
+                Serial.print(radio.getSNR());
                 Serial.println(F(" dB"));
 
 
-                lv_snprintf(buf, 256, "[%u]:Rx %s \nRSSI:%.2f", lv_tick_get() / 1000, str.c_str(), watch.getRSSI());
+                lv_snprintf(buf, 256, "[%u]:Rx %s \nRSSI:%.2f", lv_tick_get() / 1000, str.c_str(), radio.getRSSI());
                 lv_textarea_set_text(radio_ta, buf);
             }
 
-            watch.startReceive();
+            radio.startReceive();
         }
     }
 }
@@ -1293,7 +1424,7 @@ static void radio_rxtx_cb(lv_event_t *e)
         // TX
         // send the first packet on this node
         Serial.print(F("[Radio] Sending first packet ... "));
-        transmissionState = watch.startTransmit("Hello World!");
+        transmissionState = radio.startTransmit("Hello World!");
         transmitFlag = true;
 
         break;
@@ -1301,7 +1432,7 @@ static void radio_rxtx_cb(lv_event_t *e)
         lv_timer_resume(transmitTask);
         // RX
         Serial.print(F("[Radio] Starting to listen ... "));
-        if (watch.startReceive() == RADIOLIB_ERR_NONE) {
+        if (radio.startReceive() == RADIOLIB_ERR_NONE) {
             Serial.println(F("success!"));
         } else {
             Serial.println(F("failed "));
@@ -1314,7 +1445,7 @@ static void radio_rxtx_cb(lv_event_t *e)
         if (!transmitTask->paused) {
             lv_textarea_set_text(radio_ta, "Radio has disable.");
             lv_timer_pause(transmitTask);
-            watch.standby();
+            radio.standby();
             // watch.sleep();
         }
         break;
@@ -1332,8 +1463,7 @@ static void radio_bandwidth_cb(lv_event_t *e)
     Serial.printf("Option: %s id:%u\n", buf, id);
 
     // set carrier bandwidth
-    const float bw[] = {125.0, 250.0, 500.0};
-    if (id > sizeof(bw) / sizeof(bw[0])) {
+    if (id > sizeof(radio_bandwidth_args_list) / sizeof(radio_bandwidth_args_list[0])) {
         Serial.println("invalid bandwidth params!");
         return;
     }
@@ -1341,18 +1471,18 @@ static void radio_bandwidth_cb(lv_event_t *e)
     bool isRunning = !transmitTask->paused;
     if (isRunning) {
         lv_timer_pause(transmitTask);
-        watch.standby();
+        radio.standby();
     }
 
     // set bandwidth
-    if (watch.setBandwidth(bw[id]) == RADIOLIB_ERR_INVALID_BANDWIDTH) {
+    if (radio.setBandwidth(radio_bandwidth_args_list[id]) == RADIOLIB_ERR_INVALID_BANDWIDTH) {
         Serial.println(F("Selected bandwidth is invalid for this module!"));
     }
 
     if (transmitFlag) {
-        watch.startTransmit("");
+        radio.startTransmit("");
     } else {
-        watch.startReceive();
+        radio.startReceive();
     }
 
     if (isRunning) {
@@ -1369,8 +1499,7 @@ static void radio_freq_cb(lv_event_t *e)
     Serial.printf("Option: %s id:%u\n", buf, id);
 
     // set carrier frequency
-    const float freq[] = {433.0, 470.0, 868.0, 915.0, 923.0};
-    if (id > sizeof(freq) / sizeof(freq[0])) {
+    if (id > sizeof(radio_freq_args_list) / sizeof(radio_freq_args_list[0])) {
         Serial.println("invalid params!");
         return;
     }
@@ -1380,15 +1509,15 @@ static void radio_freq_cb(lv_event_t *e)
         lv_timer_pause(transmitTask);
     }
 
-    if (watch.setFrequency(freq[id]) == RADIOLIB_ERR_INVALID_FREQUENCY) {
+    if (radio.setFrequency(radio_freq_args_list[id]) == RADIOLIB_ERR_INVALID_FREQUENCY) {
         Serial.println(F("Selected frequency is invalid for this module!"));
     }
 
 
     if (transmitFlag) {
-        watch.startTransmit("");
+        radio.startTransmit("");
     } else {
-        watch.startReceive();
+        radio.startReceive();
     }
 
     if (isRunning) {
@@ -1409,33 +1538,24 @@ static void radio_power_cb(lv_event_t *e)
     bool isRunning = !transmitTask->paused;
     if (isRunning) {
         lv_timer_pause(transmitTask);
-        watch.standby();
+        radio.standby();
     }
-
-    uint8_t dBm[] = {
-        2, 5, 10, 12, 17, 20, 22
-    };
-    if (id > sizeof(dBm) / sizeof(dBm[0])) {
+    /*
+    * SX1280 Power level -18 ~ 13dBm
+    * SX1262 Power level   2 ~ 22dBm
+    * * * * */
+    if (id > sizeof(radio_power_args_list) / sizeof(radio_power_args_list[0])) {
         Serial.println("invalid dBm params!");
         return;
     }
-    // "2dBm\n"
-    // "5dBm\n"
-    // "10dBm\n"
-    // "12dBm\n"
-    // "17dBm\n"
-    // "20dBm\n"
-    // "22dBmn"
-
-    // set output power (accepted range is - 17 - 22 dBm)
-    if (watch.setOutputPower(dBm[id]) == RADIOLIB_ERR_INVALID_OUTPUT_POWER) {
+    if (radio.setOutputPower(radio_power_args_list[id]) == RADIOLIB_ERR_INVALID_OUTPUT_POWER) {
         Serial.println(F("Selected output power is invalid for this module!"));
     }
 
     if (transmitFlag) {
-        watch.startTransmit("");
+        radio.startTransmit("");
     } else {
-        watch.startReceive();
+        radio.startReceive();
     }
 
     if (isRunning) {
@@ -1537,12 +1657,8 @@ void radioPingPong(lv_obj_t *parent)
                         , NULL);
 
     dd = lv_dropdown_create(cont1);
-    lv_dropdown_set_options(dd, "433M\n"
-                            "470M\n"
-                            "868M\n"
-                            "915M\n"
-                            "923M"
-                           );
+    lv_dropdown_set_options(dd, radio_freq_list);
+
     lv_dropdown_set_selected(dd, 2);
     lv_obj_add_flag(dd, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_set_size(dd, 170, 50);
@@ -1552,10 +1668,7 @@ void radioPingPong(lv_obj_t *parent)
 
 
     dd = lv_dropdown_create(cont1);
-    lv_dropdown_set_options(dd, "125KHz\n"
-                            "250KHz\n"
-                            "500KHz"
-                           );
+    lv_dropdown_set_options(dd, radio_bandwidth_list);
     lv_obj_add_flag(dd, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_set_size(dd, 170, 50);
     lv_dropdown_set_selected(dd, 1);
@@ -1565,14 +1678,7 @@ void radioPingPong(lv_obj_t *parent)
 
 
     dd = lv_dropdown_create(cont1);
-    lv_dropdown_set_options(dd, "2dBm\n"
-                            "5dBm\n"
-                            "10dBm\n"
-                            "12dBm\n"
-                            "17dBm\n"
-                            "20dBm\n"
-                            "22dBmn"
-                           );
+    lv_dropdown_set_options(dd, radio_power_level_list);
     lv_obj_add_flag(dd, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_set_size(dd, 170, 50);
     lv_dropdown_set_selected(dd, 6);
@@ -2190,55 +2296,66 @@ void setRadioFlag(void)
 void settingRadio()
 {
 #ifdef USING_TWATCH_S3
-    // set carrier frequency to 868.0 MHz
-    if (watch.setFrequency(868.0) == RADIOLIB_ERR_INVALID_FREQUENCY) {
-        Serial.println(F("Selected frequency is invalid for this module!"));
+    Serial.print(F("[SX1280] Initializing ... "));
+    int state = radio.begin();
+    if (state == RADIOLIB_ERR_NONE) {
+        Serial.println(F("success!"));
+    } else {
+        Serial.print(F("failed, code "));
+        Serial.println(state);
+        return;
     }
 
-    // set bandwidth to 250 kHz
-    if (watch.setBandwidth(250.0) == RADIOLIB_ERR_INVALID_BANDWIDTH) {
+    // set carrier frequency
+    if (radio.setFrequency(RADIO_DEFAULT_FREQ) == RADIOLIB_ERR_INVALID_FREQUENCY) {
+        Serial.println(F("Selected frequency is invalid for this module!"));
+    }
+    // set bandwidth
+    if (radio.setBandwidth(RADIO_DEFAULT_BW) == RADIOLIB_ERR_INVALID_BANDWIDTH) {
         Serial.println(F("Selected bandwidth is invalid for this module!"));
     }
 
-    // set spreading factor to 10
-    if (watch.setSpreadingFactor(10) == RADIOLIB_ERR_INVALID_SPREADING_FACTOR) {
+    // set spreading factor
+    if (radio.setSpreadingFactor(RADIO_DEFAULT_SF) == RADIOLIB_ERR_INVALID_SPREADING_FACTOR) {
         Serial.println(F("Selected spreading factor is invalid for this module!"));
     }
 
-    // set coding rate to 6
-    if (watch.setCodingRate(6) == RADIOLIB_ERR_INVALID_CODING_RATE) {
+    // set coding rate
+    if (radio.setCodingRate(RADIO_DEFAULT_CR) == RADIOLIB_ERR_INVALID_CODING_RATE) {
         Serial.println(F("Selected coding rate is invalid for this module!"));
     }
 
     // set LoRa sync word to 0xAB
-    if (watch.setSyncWord(0xAB) != RADIOLIB_ERR_NONE) {
+    if (radio.setSyncWord(0xAB) != RADIOLIB_ERR_NONE) {
         Serial.println(F("Unable to set sync word!"));
     }
 
-    // set output power to 10 dBm (accepted range is -17 - 22 dBm)
-    if (watch.setOutputPower(22) == RADIOLIB_ERR_INVALID_OUTPUT_POWER) {
+    // set output power
+    if (radio.setOutputPower(RADIO_DEFAULT_POWER_LEVEL) == RADIOLIB_ERR_INVALID_OUTPUT_POWER) {
         Serial.println(F("Selected output power is invalid for this module!"));
     }
 
+#ifdef RADIO_DEFAULT_CUR_LIMIT
     // set over current protection limit to 140 mA (accepted range is 45 - 140 mA)
     // NOTE: set value to 0 to disable overcurrent protection
-    if (watch.setCurrentLimit(140) == RADIOLIB_ERR_INVALID_CURRENT_LIMIT) {
+    if (radio.setCurrentLimit(RADIO_DEFAULT_CUR_LIMIT) == RADIOLIB_ERR_INVALID_CURRENT_LIMIT) {
         Serial.println(F("Selected current limit is invalid for this module!"));
     }
+#endif
 
     // set LoRa preamble length to 15 symbols (accepted range is 0 - 65535)
-    if (watch.setPreambleLength(15) == RADIOLIB_ERR_INVALID_PREAMBLE_LENGTH) {
+    if (radio.setPreambleLength(15) == RADIOLIB_ERR_INVALID_PREAMBLE_LENGTH) {
         Serial.println(F("Selected preamble length is invalid for this module!"));
     }
 
     // disable CRC
-    if (watch.setCRC(false) == RADIOLIB_ERR_INVALID_CRC_CONFIGURATION) {
+    if (radio.setCRC(false) == RADIOLIB_ERR_INVALID_CRC_CONFIGURATION) {
         Serial.println(F("Selected CRC is invalid for this module!"));
     }
 
     // set the function that will be called
     // when new packet is received
-    watch.setDio1Action(setRadioFlag);
+    radio.setDio1Action(setRadioFlag);
 #endif
 
 }
@@ -2288,6 +2405,8 @@ static bool playWAV()
 
 void vadTask(void *params)
 {
+#if ESP_ARDUINO_VERSION_VAL(2,0,9) ==  ESP_ARDUINO_VERSION
+
 #ifdef ENABLE_PLAYER
     vTaskSuspend(NULL);
     while (1) {
@@ -2311,7 +2430,15 @@ void vadTask(void *params)
         }
         delay(5);
     }
-#endif
+#endif //ENABLE_PLAYER
+
+#else
+
+    while (1) {
+        delay(portMAX_DELAY);
+    }
+
+#endif ESP_ARDUINO_VERSION
 }
 
 void settingPlayer()
@@ -2332,6 +2459,7 @@ void settingPlayer()
     xTaskCreate(playerTask, "player", 8 * 1024, NULL, 12, &playerTaskHandler);
 #endif
 
+#if ESP_ARDUINO_VERSION_VAL(2,0,9) ==  ESP_ARDUINO_VERSION
     // Initialize esp-sr vad detected
 #if ESP_IDF_VERSION_VAL(4,4,1) == ESP_IDF_VERSION
     vad_inst = vad_create(VAD_MODE_0, MIC_I2S_SAMPLE_RATE, VAD_FRAME_LENGTH_MS);
@@ -2347,8 +2475,8 @@ void settingPlayer()
             delay(1000);
         }
     }
+#endif  //ESP_ARDUINO_VERSION
     xTaskCreate(vadTask, "vad", 8 * 1024, NULL, 12, &vadTaskHandler);
-
 
 }
 
