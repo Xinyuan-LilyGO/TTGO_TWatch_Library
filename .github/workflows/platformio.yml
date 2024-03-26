@@ -100,16 +100,16 @@ jobs:
           - examples/peripheral/RTC_TimeSynchronization
           - examples/peripheral/Vibrate_Basic
           - examples/radio/SX126x_Channel_Activity_Detection
-          - examples/radio/SX126x_Channel_Activity_Detection_Interrupt
-          - examples/radio/SX126x_FSK_Modem
-          - examples/radio/SX126x_PingPong
-          - examples/radio/SX126x_Receive
-          - examples/radio/SX126x_Receive_Interrupt
-          - examples/radio/SX126x_Settings
-          - examples/radio/SX126x_Spectrum_Scan
-          - examples/radio/SX126x_Spectrum_Scan_Frequency
-          - examples/radio/SX126x_Transmit
-          - examples/radio/SX126x_Transmit_Interrupt
+          - examples/radio/SX1262/SX126x_Channel_Activity_Detection_Interrupt
+          - examples/radio/SX1262/SX126x_FSK_Modem
+          - examples/radio/SX1262/SX126x_PingPong
+          - examples/radio/SX1262/SX126x_Receive
+          - examples/radio/SX1262/SX126x_Receive_Interrupt
+          - examples/radio/SX1262/SX126x_Settings
+          - examples/radio/SX1262/SX126x_Spectrum_Scan
+          - examples/radio/SX1262/SX126x_Spectrum_Scan_Frequency
+          - examples/radio/SX1262/SX126x_Transmit
+          - examples/radio/SX1262/SX126x_Transmit_Interrupt
           - examples/radio/SX1280/SX128x_BLE_Modem
           - examples/radio/SX1280/SX128x_Channel_Activity_Detection_Blocking
           - examples/radio/SX1280/SX128x_FLRC_Modem
