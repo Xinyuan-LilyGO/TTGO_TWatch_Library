@@ -39,8 +39,6 @@ SX1262 radio = newModule();
 // based on your geographical location!
 LoRaWANNode *node = NULL;
 
-SX1262 radio = newModule();
-
 void setup()
 {
     Serial.begin(11520);
