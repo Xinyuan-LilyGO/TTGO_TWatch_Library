@@ -58,7 +58,7 @@ void setup()
 
     // start listening for LoRa packets
     Serial.print(F("[SX1262] Starting to listen ... "));
-    int state = radio.startReceive();
+    state = radio.startReceive();
     if (state == RADIOLIB_ERR_NONE) {
         Serial.println(F("success!"));
     } else {
