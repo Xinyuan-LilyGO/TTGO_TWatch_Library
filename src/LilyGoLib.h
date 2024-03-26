@@ -46,7 +46,7 @@
 #endif
 #endif
 
-#if !LV_VERSION_CHECK(8,3,9)
+#if !LV_VERSION_CHECK(8,3,11)
 #warning "The current version of lvgl does not match the development version, and it is not guaranteed that the sample program can be compiled and run normally"
 #endif
 
@@ -102,6 +102,9 @@ typedef enum {
     TOUCH_WAKEUP
 } SleepMode_t;
 
+extern SPIClass radioBus;
+#define newModule()   new Module(BOARD_RADIO_SS,BOARD_RADIO_DI01,BOARD_RADIO_RST,BOARD_RADIO_BUSY,radioBus)
+
 class LilyGoLib :
     public TFT_eSPI,
     public TouchDrvFT6X36,
@@ -109,16 +112,15 @@ class LilyGoLib :
     public SensorPCF8563,
     public SensorDRV2605,
 #ifdef USING_TWATCH_S3
-    public SX1262,
     public XPowersAXP2101
 #else
     public XPowersAXP202
 #endif
 {
-
 public:
     LilyGoLib();
     ~LilyGoLib();
+
     bool begin(Stream *stream = NULL);
     void attachPMU(void (*cb)(void));
     void attachBMA(void(*cb)(void));
@@ -138,7 +140,6 @@ public:
     float readCoreTemp();
 
     void clearPMU();
-    void clearBMA();
 
     bool getTouched();
 

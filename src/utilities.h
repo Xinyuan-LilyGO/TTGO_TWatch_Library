@@ -149,7 +149,7 @@
 #define BOARD_DAC_IIS_WS            (15)
 #define BOARD_DAC_IIS_DOUT          (46)
 
-// SX1262
+// SX1262 Radio Pins
 #define BOARD_RADIO_SCK              (3)
 #define BOARD_RADIO_MISO             (4)
 #define BOARD_RADIO_MOSI             (1)
@@ -157,6 +157,9 @@
 #define BOARD_RADIO_DI01             (9)
 #define BOARD_RADIO_RST              (8)
 #define BOARD_RADIO_BUSY             (7)
+
+//SX1280 Radio Pins
+#define BOARD_RADIO_TCXO_EN          (6)
 
 // PDM Microphone
 #define BOARD_MIC_DATA              (47)

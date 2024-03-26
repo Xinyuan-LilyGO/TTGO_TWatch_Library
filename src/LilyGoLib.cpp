@@ -43,16 +43,7 @@ void deviceScan(TwoWire *_port, Stream *stream)
 
 
 LilyGoLib::LilyGoLib()
-
-#ifdef USING_TWATCH_S3
-    : SX1262(new Module(BOARD_RADIO_SS,
-                        BOARD_RADIO_DI01,
-                        BOARD_RADIO_RST,
-                        BOARD_RADIO_BUSY,
-                        radioBus))
-#endif
 {
-    //Default use SX1262
 }
 
 LilyGoLib::~LilyGoLib()
@@ -71,6 +62,11 @@ void LilyGoLib::log_println(const char *message)
 bool LilyGoLib::begin(Stream *stream)
 {
     bool res;
+
+    // SX1280 IO6 = TCXO Enable
+    // SX1262 IO6 = DIO3
+    pinMode(BOARD_RADIO_TCXO_EN, OUTPUT);
+    digitalWrite(BOARD_RADIO_TCXO_EN, HIGH);
 
 #ifdef LILYGO_LIB_DEBUG
     this->stream = &Serial;
@@ -126,7 +122,7 @@ bool LilyGoLib::begin(Stream *stream)
     setBrightness(50);
 
     log_println("Init Touch");
-    res = TouchDrvFT6X36::init(Wire1, BOARD_TOUCH_SDA, BOARD_TOUCH_SCL);
+    res = TouchDrvFT6X36::begin(Wire1, FT6X36_SLAVE_ADDRESS, BOARD_TOUCH_SDA, BOARD_TOUCH_SCL);
     if (!res) {
         log_println("Failed to find FT6X36 - check your wiring!");
     } else {
@@ -173,13 +169,6 @@ bool LilyGoLib::begin(Stream *stream)
     radioBus.begin(BOARD_RADIO_SCK,
                    BOARD_RADIO_MISO,
                    BOARD_RADIO_MOSI);
-
-    //Using default params，433Mhz,bw:125k,sf:9,cr:7,syncword:18,txpower:10
-    if (SX1262::begin() == RADIOLIB_ERR_NONE) {
-        log_println("Initializing Radio succeeded");
-    } else {
-        log_println("Failed to find Radio - check your wiring!");
-    }
 #endif
 
     beginCore();
@@ -542,7 +531,7 @@ void LilyGoLib::setSleepMode(SleepMode_t mode)
 void LilyGoLib::sleepLora(bool config)
 {
 #ifdef USING_TWATCH_S3
-    SX126x::sleep(config);
+    // SX126x::sleep(config);
 #endif
 }
 
