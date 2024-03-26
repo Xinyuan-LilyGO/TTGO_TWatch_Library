@@ -8,6 +8,7 @@ on:
       - "examples/**"
       - "src/**"
       - "platformio.ini"
+      - ".github/workflows/platformio.yml"
     branches:
       - t-watch-s3
 
