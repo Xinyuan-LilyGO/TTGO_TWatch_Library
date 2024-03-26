@@ -1,13 +1,14 @@
 name: PlatformIO CI
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     paths:
       - "examples/**"
       - "src/**"
       - "platformio.ini"
-    branches:    
+    branches:
       - t-watch-s3
 
 jobs:
@@ -16,108 +17,116 @@ jobs:
     strategy:
       matrix:
         examples:
-          [
-            examples/demo/LilyGoGui,
-            examples/demo/factory,
-            examples/display/All_Free_Fonts_Demo,
-            examples/display/Cellular_Automata,
-            examples/display/Free_Font_Demo,
-            examples/display/RLE_Font_test,
-            examples/display/TFT_ArcFill,
-            examples/display/TFT_Char_times,
-            examples/display/TFT_Clock,
-            examples/display/TFT_Clock_Digital,
-            examples/display/TFT_Custom_Fonts,
-            examples/display/TFT_Ellipse,
-            examples/display/TFT_FillArcSpiral,
-            examples/display/TFT_Float_Test,
-            examples/display/TFT_Mandlebrot,
-            examples/display/TFT_Matrix,
-            examples/display/TFT_Meter_linear,
-            examples/display/TFT_Meters,
-            examples/display/TFT_Pie_Chart,
-            examples/display/TFT_Pong,
-            examples/display/TFT_Print_Test,
-            examples/display/TFT_Rainbow_one_lib,
-            examples/display/TFT_Spiro,
-            examples/display/TFT_Starfield,
-            examples/display/TFT_String_Align,
-            examples/display/TFT_Terminal,
-            examples/display/TFT_graphicstest_PDQ,
-            examples/display/TFT_graphicstest_one_lib,
-            examples/display/UTFT_demo,
-            examples/lvgl/event,
-            examples/lvgl/get_started,
-            examples/lvgl/layouts/flex,
-            examples/lvgl/layouts/grid,
-            examples/lvgl/scroll,
-            examples/lvgl/style,
-            examples/lvgl/third_party/ImageDecoder,
-            examples/lvgl/third_party/gif,
-            examples/lvgl/widgets/animimg,
-            examples/lvgl/widgets/arc,
-            examples/lvgl/widgets/bar,
-            examples/lvgl/widgets/btn,
-            examples/lvgl/widgets/btnmatrix,
-            examples/lvgl/widgets/calendar,
-            examples/lvgl/widgets/canvas,
-            examples/lvgl/widgets/chart,
-            examples/lvgl/widgets/checkbox,
-            examples/lvgl/widgets/colorwheel,
-            examples/lvgl/widgets/dropdown,
-            examples/lvgl/widgets/img,
-            examples/lvgl/widgets/imgbtn,
-            examples/lvgl/widgets/keyboard,
-            examples/lvgl/widgets/label,
-            examples/lvgl/widgets/led,
-            examples/lvgl/widgets/line,
-            examples/lvgl/widgets/list,
-            examples/lvgl/widgets/menu,
-            examples/lvgl/widgets/meter,
-            examples/lvgl/widgets/msgbox,
-            examples/lvgl/widgets/obj,
-            examples/lvgl/widgets/roller,
-            examples/lvgl/widgets/slider,
-            examples/lvgl/widgets/span,
-            examples/lvgl/widgets/spinbox,
-            examples/lvgl/widgets/spinner,
-            examples/lvgl/widgets/switch,
-            examples/lvgl/widgets/table,
-            examples/lvgl/widgets/tabview,
-            examples/lvgl/widgets/textarea,
-            examples/lvgl/widgets/tileview,
-            examples/lvgl/widgets/win,
-            examples/peripheral/DisplayAndTouch,
-            examples/peripheral/IRsendDemo,
-            examples/peripheral/PDM_Noise_Detection,
-            examples/peripheral/PDM_Recording,
-            examples/peripheral/PMU_ADC,
-            examples/peripheral/PMU_Interrupt,
-            examples/peripheral/PlayMusicFromPROGMEM,
-            examples/peripheral/PlayMusicFromSPIFFS,
-            examples/peripheral/RTC_AlarmByUnits,
-            examples/peripheral/RTC_TimeLib,
-            examples/peripheral/RTC_TimeSynchronization,
-            examples/peripheral/Vibrate_Basic,
-            examples/radio/SX126x_Channel_Activity_Detection,
-            examples/radio/SX126x_Channel_Activity_Detection_Interrupt,
-            examples/radio/SX126x_FSK_Modem,
-            examples/radio/SX126x_PingPong,
-            examples/radio/SX126x_Receive,
-            examples/radio/SX126x_Receive_Interrupt,
-            examples/radio/SX126x_Settings,
-            examples/radio/SX126x_Spectrum_Scan,
-            examples/radio/SX126x_Spectrum_Scan_Frequency,
-            examples/radio/SX126x_Transmit,
-            examples/radio/SX126x_Transmit_Interrupt,
-            examples/sensor/BAM423_Accelerometer,
-            examples/sensor/BAM423_Temperature,
-            examples/sensor/BMA423_Feature,
-            examples/sleep/WakeupFromPEKKey,
-            examples/sleep/WakeupFromSensor,
-            examples/sleep/WakeupFromTimer,
-            examples/sleep/WakeupFromTouchScreen,
-          ]
+          - examples/demo/LilyGoGui
+          - examples/demo/factory
+          - examples/display/All_Free_Fonts_Demo
+          - examples/display/Cellular_Automata
+          - examples/display/Free_Font_Demo
+          - examples/display/RLE_Font_test
+          - examples/display/TFT_ArcFill
+          - examples/display/TFT_Char_times
+          - examples/display/TFT_Clock
+          - examples/display/TFT_Clock_Digital
+          - examples/display/TFT_Custom_Fonts
+          - examples/display/TFT_Ellipse
+          - examples/display/TFT_FillArcSpiral
+          - examples/display/TFT_Float_Test
+          - examples/display/TFT_Mandlebrot
+          - examples/display/TFT_Matrix
+          - examples/display/TFT_Meter_linear
+          - examples/display/TFT_Meters
+          - examples/display/TFT_Pie_Chart
+          - examples/display/TFT_Pong
+          - examples/display/TFT_Print_Test
+          - examples/display/TFT_Rainbow_one_lib
+          - examples/display/TFT_Spiro
+          - examples/display/TFT_Starfield
+          - examples/display/TFT_String_Align
+          - examples/display/TFT_Terminal
+          - examples/display/TFT_graphicstest_PDQ
+          - examples/display/TFT_graphicstest_one_lib
+          - examples/display/UTFT_demo
+          - examples/lvgl/event
+          - examples/lvgl/get_started
+          - examples/lvgl/layouts/flex
+          - examples/lvgl/layouts/grid
+          - examples/lvgl/scroll
+          - examples/lvgl/style
+          - examples/lvgl/third_party/ImageDecoder
+          - examples/lvgl/third_party/gif
+          - examples/lvgl/widgets/animimg
+          - examples/lvgl/widgets/arc
+          - examples/lvgl/widgets/bar
+          - examples/lvgl/widgets/btn
+          - examples/lvgl/widgets/btnmatrix
+          - examples/lvgl/widgets/calendar
+          - examples/lvgl/widgets/canvas
+          - examples/lvgl/widgets/chart
+          - examples/lvgl/widgets/checkbox
+          - examples/lvgl/widgets/colorwheel
+          - examples/lvgl/widgets/dropdown
+          - examples/lvgl/widgets/img
+          - examples/lvgl/widgets/imgbtn
+          - examples/lvgl/widgets/keyboard
+          - examples/lvgl/widgets/label
+          - examples/lvgl/widgets/led
+          - examples/lvgl/widgets/line
+          - examples/lvgl/widgets/list
+          - examples/lvgl/widgets/menu
+          - examples/lvgl/widgets/meter
+          - examples/lvgl/widgets/msgbox
+          - examples/lvgl/widgets/obj
+          - examples/lvgl/widgets/roller
+          - examples/lvgl/widgets/slider
+          - examples/lvgl/widgets/span
+          - examples/lvgl/widgets/spinbox
+          - examples/lvgl/widgets/spinner
+          - examples/lvgl/widgets/switch
+          - examples/lvgl/widgets/table
+          - examples/lvgl/widgets/tabview
+          - examples/lvgl/widgets/textarea
+          - examples/lvgl/widgets/tileview
+          - examples/lvgl/widgets/win
+          - examples/peripheral/DisplayAndTouch
+          - examples/peripheral/IRsendDemo
+          - examples/peripheral/PDM_Noise_Detection
+          - examples/peripheral/PDM_Recording
+          - examples/peripheral/PMU_ADC
+          - examples/peripheral/PMU_Interrupt
+          - examples/peripheral/PlayMusicFromPROGMEM
+          - examples/peripheral/PlayMusicFromSPIFFS
+          - examples/peripheral/RTC_AlarmByUnits
+          - examples/peripheral/RTC_TimeLib
+          - examples/peripheral/RTC_TimeSynchronization
+          - examples/peripheral/Vibrate_Basic
+          - examples/radio/SX126x_Channel_Activity_Detection
+          - examples/radio/SX126x_Channel_Activity_Detection_Interrupt
+          - examples/radio/SX126x_FSK_Modem
+          - examples/radio/SX126x_PingPong
+          - examples/radio/SX126x_Receive
+          - examples/radio/SX126x_Receive_Interrupt
+          - examples/radio/SX126x_Settings
+          - examples/radio/SX126x_Spectrum_Scan
+          - examples/radio/SX126x_Spectrum_Scan_Frequency
+          - examples/radio/SX126x_Transmit
+          - examples/radio/SX126x_Transmit_Interrupt
+          - examples/radio/SX1280/SX128x_BLE_Modem
+          - examples/radio/SX1280/SX128x_Channel_Activity_Detection_Blocking
+          - examples/radio/SX1280/SX128x_FLRC_Modem
+          - examples/radio/SX1280/SX128x_GFSK_Modem
+          - examples/radio/SX1280/SX128x_Ranging
+          - examples/radio/SX1280/SX128x_Receive_Blocking
+          - examples/radio/SX1280/SX128x_Receive_Interrupt
+          - examples/radio/SX1280/SX128x_Settings
+          - examples/radio/SX1280/SX128x_Transmit_Blocking
+          - examples/radio/SX1280/SX128x_Transmit_Interrupt
+          - examples/sensor/BAM423_Accelerometer
+          - examples/sensor/BAM423_Temperature
+          - examples/sensor/BMA423_Feature
+          - examples/sleep/WakeupFromPEKKey
+          - examples/sleep/WakeupFromSensor
+          - examples/sleep/WakeupFromTimer
+          - examples/sleep/WakeupFromTouchScreen
 
     steps:
       - uses: actions/checkout@v3
