@@ -100,7 +100,7 @@ jobs:
           - examples/peripheral/RTC_TimeLib
           - examples/peripheral/RTC_TimeSynchronization
           - examples/peripheral/Vibrate_Basic
-          - examples/radio/SX126x_Channel_Activity_Detection
+          - examples/radio/SX1262/SX126x_Channel_Activity_Detection
           - examples/radio/SX1262/SX126x_Channel_Activity_Detection_Interrupt
           - examples/radio/SX1262/SX126x_FSK_Modem
           - examples/radio/SX1262/SX126x_PingPong
