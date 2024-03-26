@@ -29,10 +29,6 @@
 
 SX1262 radio = newModule();
 
-#if RADIOLIB_VERSION_MAJOR != 6 && RADIOLIB_VERSION_MINOR != 2
-#error  "Please upgrade RadioLib to V6.2.0 before compiling. It is experimental and has not been tested."
-#endif
-
 // create the node instance on the EU-868 band
 // using the radio module and the encryption key
 // make sure you are using the correct band
