@@ -63,11 +63,6 @@ bool LilyGoLib::begin(Stream *stream)
 {
     bool res;
 
-    // SX1280 IO6 = TCXO Enable
-    // SX1262 IO6 = DIO3
-    pinMode(BOARD_RADIO_TCXO_EN, OUTPUT);
-    digitalWrite(BOARD_RADIO_TCXO_EN, HIGH);
-
 #ifdef LILYGO_LIB_DEBUG
     this->stream = &Serial;
 #else

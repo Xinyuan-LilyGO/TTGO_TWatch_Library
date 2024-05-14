@@ -157,9 +157,7 @@
 #define BOARD_RADIO_DI01             (9)
 #define BOARD_RADIO_RST              (8)
 #define BOARD_RADIO_BUSY             (7)
-
-//SX1280 Radio Pins
-#define BOARD_RADIO_TCXO_EN          (6)
+#define BOARD_RADIO_DI03             (6)
 
 // PDM Microphone
 #define BOARD_MIC_DATA              (47)
