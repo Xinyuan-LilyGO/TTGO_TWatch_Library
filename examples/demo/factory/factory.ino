@@ -2296,7 +2296,7 @@ void setRadioFlag(void)
 void settingRadio()
 {
 #ifdef USING_TWATCH_S3
-    Serial.print(F("[SX1280] Initializing ... "));
+    Serial.print(F("[Radio] Initializing ... "));
     int state = radio.begin();
     if (state == RADIOLIB_ERR_NONE) {
         Serial.println(F("success!"));
@@ -2438,7 +2438,7 @@ void vadTask(void *params)
         delay(portMAX_DELAY);
     }
 
-#endif ESP_ARDUINO_VERSION
+#endif //ESP_ARDUINO_VERSION
 }
 
 void settingPlayer()
