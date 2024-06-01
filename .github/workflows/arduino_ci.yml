@@ -100,7 +100,8 @@ jobs:
           - examples/peripheral/RTC_TimeSynchronization/RTC_TimeSynchronization.ino
           - examples/peripheral/Vibrate_Basic/Vibrate_Basic.ino
           - examples/radio/SX1262/LoRaWAN/LoRaWAN_End_Device/LoRaWAN_End_Device.ino
-          - examples/radio/SX1262/LoRaWAN/LoRaWAN_End_Device_ABP/LoRaWAN_End_Device_ABP.ino
+          - examples/radio/SX1262/LoRaWAN/LoRaWAN_ABP/LoRaWAN_ABP.ino
+          - examples/radio/SX1262/LoRaWAN/LoRaWAN_Starter/LoRaWAN_Starter.ino
           - examples/radio/SX1262/SX126x_Channel_Activity_Detection/SX126x_Channel_Activity_Detection.ino
           - examples/radio/SX1262/SX126x_Channel_Activity_Detection_Interrupt/SX126x_Channel_Activity_Detection_Interrupt.ino
           - examples/radio/SX1262/SX126x_FSK_Modem/SX126x_FSK_Modem.ino
