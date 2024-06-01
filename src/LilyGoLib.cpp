@@ -325,7 +325,7 @@ bool LilyGoLib::beginPower()
 
     // Set the maximum current of the PMU VBUS input,
     // higher than this value will turn off the PMU
-    setVbusCurrentLimit(XPOWERS_AXP2101_VBUS_CUR_LIM_100MA);
+    setVbusCurrentLimit(XPOWERS_AXP2101_VBUS_CUR_LIM_900MA);
 
     // Set VSY off voltage as 2600mV , Adjustment range 2600mV ~ 3300mV
     setSysPowerDownVoltage(2600);
@@ -418,8 +418,6 @@ bool LilyGoLib::beginPower()
 
     disableIRQ(XPOWERS_AXP2101_ALL_IRQ);
 
-    // Clear all interrupt flags
-    XPowersAXP2101::clearIrqStatus();
 
     // Enable the required interrupt function
     watch.enableIRQ(
@@ -429,10 +427,13 @@ bool LilyGoLib::beginPower()
         XPOWERS_AXP2101_BAT_CHG_DONE_IRQ  | XPOWERS_AXP2101_BAT_CHG_START_IRQ       //CHARGE
     );
 
+    // Clear all interrupt flags
+    XPowersAXP2101::clearIrqStatus();
+
     // Set the precharge charging current
     setPrechargeCurr(XPOWERS_AXP2101_PRECHARGE_50MA);
     // Set constant current charge current limit
-    setChargerConstantCurr(XPOWERS_AXP2101_CHG_CUR_100MA);
+    setChargerConstantCurr(XPOWERS_AXP2101_CHG_CUR_300MA);
     // Set stop charging termination current
     setChargerTerminationCurr(XPOWERS_AXP2101_CHG_ITERM_25MA);
 
@@ -441,7 +442,7 @@ bool LilyGoLib::beginPower()
 
     // Set RTC Battery voltage to 3.3V
     setButtonBatteryChargeVoltage(3300);
-
+    
     enableButtonBatteryCharge();
 #else
 
