@@ -41,7 +41,7 @@
     },
     {
       "name": "RadioLib",
-      "version": "6.4.2"
+      "version": "6.6.0"
     },
     {
       "owner": "Bodmer",
@@ -50,11 +50,11 @@
     },
     {
       "name": "lvgl",
-      "version": "8.3.9"
+      "version": "8.4.0"
     },
     {
       "name": "XPowersLib",
-      "version": "0.2.2"
+      "version": "0.2.3"
     },
     {
       "name": "SensorLib",
