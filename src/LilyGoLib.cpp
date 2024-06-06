@@ -628,37 +628,16 @@ struct uBloxGnssModelInfo { // Structure to hold the module info (uses 341 bytes
 
 bool LilyGoLib::gpsProbe()
 {
-
     uint8_t buffer[256];
     bool legacy_ubx_message = true;
     struct uBloxGnssModelInfo info ;
-
-    // 1. Revert module
-    // Clear, save and load configurations
-    // B5 62 06 09 0D 00 FF FB 00 00 00 00 00 00  FF FF 00 00 17 2B 7E
-    uint8_t _legacy_message_reset[] = { 0xB5, 0x62, 0x06, 0x09, 0x0D, 0x00, 0xFF, 0xFB, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  0xFF, 0xFF, 0x00, 0x00, 0x17, 0x2B, 0x7E };
-    GPSSerial.write(_legacy_message_reset, sizeof(_legacy_message_reset));
-    if (getAck(buffer, 256, 0x05, 0x01)) {
-        log_i("GPS reset successes!");
-    }
-    delay(50);
-
-    // UBX-CFG-RATE, Size 8, 'Navigation/measurement rate settings'
-    uint8_t cfg_rate[] = {0xB5, 0x62, 0x06, 0x08, 0x00, 0x00, 0x0E, 0x30};
-    GPSSerial.write(cfg_rate, sizeof(cfg_rate));
-    if (!getAck(buffer, 256, 0x06, 0x08)) {
-        return false;
-    }
-
-    //  2. Get UBlox GPS module version
+    //  Get UBlox GPS module version
     uint8_t cfg_get_hw[] =  {0xB5, 0x62, 0x0A, 0x04, 0x00, 0x00, 0x0E, 0x34};
     GPSSerial.write(cfg_get_hw, sizeof(cfg_get_hw));
 
     uint16_t len = getAck(buffer, 256, 0x0A, 0x04);
     if (len) {
-
         memset(&info, 0, sizeof(info));
-
         uint16_t position = 0;
         for (int i = 0; i < 30; i++) {
             info.softVersion[i] = buffer[position];
@@ -694,9 +673,9 @@ bool LilyGoLib::gpsProbe()
                 log_i("GPS Model: %s", (char *)buffer);
             }
         }
+        return true;
     }
-
-    return true;
+    return false;
 }
 
 
@@ -767,31 +746,30 @@ int LilyGoLib::getAck(uint8_t *buffer, uint16_t size, uint8_t requestedClass, ui
 
 bool LilyGoLib::initGPS()
 {
-    bool result = 0;
-
-    log_i("Begin UBlox GPS .");
-
     GPSSerial.begin(38400, SERIAL_8N1, SHIELD_GPS_RX, SHIELD_GPS_TX);
+    return gpsProbe();
+}
 
-    uint32_t baud[] = { 38400, 57600, 115200, 9600};
-    int retry = 4;
-    int i = 0;
-    do {
-        GPSSerial.updateBaudRate(baud[i]);
-        log_i("Try use %u baud\n", baud[i]);
-        delay(10);
-        result = gpsProbe();
-        i++;
-        if (i >= sizeof(baud) / sizeof(baud[0])) {
-            retry--;
-            i = 0;
-        }
-        if (!retry)
-            break;
-    } while (!result);
+bool LilyGoLib::factoryGPS()
+{
+    uint8_t buffer[256];
+    // Revert module Clear, save and load configurations
+    // B5 62 06 09 0D 00 FF FB 00 00 00 00 00 00  FF FF 00 00 17 2B 7E
+    uint8_t _legacy_message_reset[] = { 0xB5, 0x62, 0x06, 0x09, 0x0D, 0x00, 0xFF, 0xFB, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  0xFF, 0xFF, 0x00, 0x00, 0x17, 0x2B, 0x7E };
+    GPSSerial.write(_legacy_message_reset, sizeof(_legacy_message_reset));
+    if (!getAck(buffer, 256, 0x05, 0x01)) {
+        return false;
+    }
+    delay(50);
 
-    log_i("Success probe GPS , use %d baud rate", GPSSerial.baudRate());
-    return result;
+    // UBX-CFG-RATE, Size 8, 'Navigation/measurement rate settings'
+    uint8_t cfg_rate[] = {0xB5, 0x62, 0x06, 0x08, 0x00, 0x00, 0x0E, 0x30};
+    GPSSerial.write(cfg_rate, sizeof(cfg_rate));
+    if (!getAck(buffer, 256, 0x06, 0x08)) {
+        return false;
+    }
+    log_i("GPS reset successes!");
+    return true;
 }
 
 

@@ -176,6 +176,7 @@ public:
     void sleep(uint32_t second = 0) ;
 
     bool initGPS();
+    bool factoryGPS();
     bool gpsProbe();
     void powerIoctl(enum PowerCtrlChannel ch, bool enable);
 
