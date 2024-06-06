@@ -87,6 +87,14 @@
 #error  "Error! Please make sure <Setup212_LilyGo_T_Watch_S3.h> is selected in <TFT_eSPI/User_Setup_Select.h>"
 #endif
 
+#define WATCH_RADIO_ONLINE          _BV(0)
+#define WATCH_TOUCH_ONLINE          _BV(1)
+#define WATCH_DRV_ONLINE            _BV(2)
+#define WATCH_PMU_ONLINE            _BV(3)
+#define WATCH_RTC_ONLINE            _BV(4)
+#define WATCH_BMA_ONLINE            _BV(5)
+#define WATCH_GPS_ONLINE            _BV(6)
+
 
 #define LEDC_BACKLIGHT_CHANNEL      3
 #define LEDC_BACKLIGHT_BIT_WIDTH    8
@@ -171,7 +179,10 @@ public:
     bool gpsProbe();
     void powerIoctl(enum PowerCtrlChannel ch, bool enable);
 
+    uint32_t getDeviceProbe();
 
+    void disableBootDisplay();
+    
 private:
 
     int getAck(uint8_t *buffer, uint16_t size, uint8_t requestedClass, uint8_t requestedID);
@@ -189,6 +200,9 @@ private:
     temperature_sensor_handle_t temp_sensor = NULL;
 #endif
 
+    uint32_t devices_probe;
+
+    bool bootDisplay = true;
 };
 
 extern LilyGoLib watch;

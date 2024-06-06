@@ -58,11 +58,22 @@ void LilyGoLib::log_println(const char *message)
     }
 }
 
+void LilyGoLib::disableBootDisplay()
+{
+    bootDisplay = false;
+}
 
+
+uint32_t LilyGoLib::getDeviceProbe()
+{
+    return devices_probe;
+}
 
 bool LilyGoLib::begin(Stream *stream)
 {
     bool res;
+
+    devices_probe = 0x00;
 
 #ifdef LILYGO_LIB_DEBUG
     this->stream = &Serial;
@@ -86,6 +97,7 @@ bool LilyGoLib::begin(Stream *stream)
         log_println("Failed to find PMU - check your wiring!");
         return false;
     } else {
+        devices_probe |= WATCH_PMU_ONLINE;
         log_println("Initializing PMU succeeded");
     }
 
@@ -103,19 +115,23 @@ bool LilyGoLib::begin(Stream *stream)
     setRotation(2);
     setTextDatum(MC_DATUM);
     setTextFont(2);
+    fillScreen(TFT_BLACK);
 
     log_println("Init SPIFFS");
     if (!SPIFFS.begin()) {
-        fillScreen(TFT_BLACK);
-        setBrightness(50);
-        drawString("Format SPIFFS...", 120, 120);
+
+        if (bootDisplay) {
+            setBrightness(50);
+            drawString("Format SPIFFS...", 120, 120);
+        }
         SPIFFS.format();
     }
 
-    fillScreen(TFT_BLACK);
-    drawString("Hello T-Watch", 120, 120);
-
-    setBrightness(50);
+    if (bootDisplay) {
+        fillScreen(TFT_BLACK);
+        drawString("Hello T-Watch", 120, 120);
+        setBrightness(50);
+    }
 
     log_println("Init Touch");
     res = TouchDrvFT6X36::begin(Wire1, FT6X36_SLAVE_ADDRESS, BOARD_TOUCH_SDA, BOARD_TOUCH_SCL);
@@ -124,6 +140,7 @@ bool LilyGoLib::begin(Stream *stream)
     } else {
         log_println("Initializing FT6X36 succeeded");
         interruptTrigger(); //enable Interrupt
+        devices_probe |= WATCH_TOUCH_ONLINE;
     }
 
     log_println("Init BMA423");
@@ -134,6 +151,7 @@ bool LilyGoLib::begin(Stream *stream)
         log_println("Initializing BMA423 succeeded");
         setReampAxes(REMAP_BOTTOM_LAYER_TOP_RIGHT_CORNER);
         setStepCounterWatermark(1);
+        devices_probe |= WATCH_BMA_ONLINE;
     }
 
     log_println("Init PCF8563 RTC");
@@ -144,6 +162,7 @@ bool LilyGoLib::begin(Stream *stream)
         log_println("Initializing PCF8563 succeeded");
         disableCLK();   //Disable clock output ， Conserve Backup Battery Current Consumption
         hwClockRead();  //Synchronize RTC clock to system clock
+        devices_probe |= WATCH_RTC_ONLINE;
     }
 
     log_println("Init DRV2605");
@@ -158,12 +177,14 @@ bool LilyGoLib::begin(Stream *stream)
         SensorDRV2605::setWaveform(0, 15);  // play effect
         SensorDRV2605::setWaveform(1, 0);  // end waveform
         SensorDRV2605::run();
+        devices_probe |= WATCH_DRV_ONLINE;
     }
 
     log_println("Init GPS");
     res = initGPS();
     if (res) {
         log_println("UBlox GPS init succeeded, using UBlox GPS Module\n");
+        devices_probe |= WATCH_GPS_ONLINE;
     } else {
         log_println("Warning: Failed to find UBlox GPS Module\n");
         // if not detect gps , turn off dc3
