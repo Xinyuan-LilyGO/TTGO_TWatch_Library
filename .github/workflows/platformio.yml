@@ -101,6 +101,7 @@ jobs:
           - examples/peripheral/RTC_TimeSynchronization
           - examples/peripheral/Vibrate_Basic
           - examples/peripheral/GPSFullExample
+          - examples/peripheral/GPSFactory
           - examples/radio/SX1262/LoRaWAN/LoRaWAN_ABP
           - examples/radio/SX1262/LoRaWAN/LoRaWAN_Starter
           - examples/radio/SX1262/SX126x_Channel_Activity_Detection
