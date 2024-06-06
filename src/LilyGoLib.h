@@ -68,6 +68,10 @@
 #endif
 
 
+#ifndef GPSSerial
+#define GPSSerial   Serial1
+#endif
+
 #include "utilities.h"
 
 
@@ -104,6 +108,14 @@ typedef enum {
 
 extern SPIClass radioBus;
 #define newModule()   new Module(BOARD_RADIO_SS,BOARD_RADIO_DI01,BOARD_RADIO_RST,BOARD_RADIO_BUSY,radioBus)
+
+enum PowerCtrlChannel {
+    WATCH_POWER_DISPLAY_BL,
+    WATCH_POWER_TOUCH_DISP,
+    WATCH_POWER_RADIO,
+    WATCH_POWER_DRV2605,
+    WATCH_POWER_GPS
+};
 
 class LilyGoLib :
     public TFT_eSPI,
@@ -154,9 +166,15 @@ public:
     void setSleepMode(SleepMode_t mode);
 
     void sleep(uint32_t second = 0) ;
+
+    bool initGPS();
+    bool gpsProbe();
+    void powerIoctl(enum PowerCtrlChannel ch, bool enable);
+
+
 private:
 
-
+    int getAck(uint8_t *buffer, uint16_t size, uint8_t requestedClass, uint8_t requestedID);
     void log_println(const char *message);
     bool beginPower();
     void beginCore();

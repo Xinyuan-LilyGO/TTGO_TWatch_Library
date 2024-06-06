@@ -163,4 +163,7 @@
 #define BOARD_MIC_DATA              (47)
 #define BOARD_MIC_CLOCK             (44)
 
+#define SHIELD_GPS_TX               (42)
+#define SHIELD_GPS_RX               (41)
+
 #endif

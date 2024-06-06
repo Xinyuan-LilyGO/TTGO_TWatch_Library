@@ -59,6 +59,7 @@ void LilyGoLib::log_println(const char *message)
 }
 
 
+
 bool LilyGoLib::begin(Stream *stream)
 {
     bool res;
@@ -159,8 +160,18 @@ bool LilyGoLib::begin(Stream *stream)
         SensorDRV2605::run();
     }
 
+    log_println("Init GPS");
+    res = initGPS();
+    if (res) {
+        log_println("UBlox GPS init succeeded, using UBlox GPS Module\n");
+    } else {
+        log_println("Warning: Failed to find UBlox GPS Module\n");
+        // if not detect gps , turn off dc3
+        disableDC3();
+    }
+
 #ifdef USING_TWATCH_S3
-    log_println("Init Radio");
+    log_println("Init Radio SPI Bus");
     radioBus.begin(BOARD_RADIO_SCK,
                    BOARD_RADIO_MISO,
                    BOARD_RADIO_MOSI);
@@ -349,10 +360,13 @@ bool LilyGoLib::beginPower()
     //!DRV2605 enable
     setBLDO2Voltage(3300);
 
+    //! GPS Power
+    setDC3Voltage(3300);
+    enableDC3();
 
     //! No use
     disableDC2();
-    disableDC3();
+    // disableDC3();
     disableDC4();
     disableDC5();
     disableBLDO1();
@@ -420,7 +434,7 @@ bool LilyGoLib::beginPower()
 
 
     // Enable the required interrupt function
-    watch.enableIRQ(
+    enableIRQ(
         XPOWERS_AXP2101_BAT_INSERT_IRQ    | XPOWERS_AXP2101_BAT_REMOVE_IRQ      |   //BATTERY
         XPOWERS_AXP2101_VBUS_INSERT_IRQ   | XPOWERS_AXP2101_VBUS_REMOVE_IRQ     |   //VBUS
         XPOWERS_AXP2101_PKEY_SHORT_IRQ    | XPOWERS_AXP2101_PKEY_LONG_IRQ       |   //POWER KEY
@@ -442,7 +456,7 @@ bool LilyGoLib::beginPower()
 
     // Set RTC Battery voltage to 3.3V
     setButtonBatteryChargeVoltage(3300);
-    
+
     enableButtonBatteryCharge();
 #else
 
@@ -468,6 +482,7 @@ void LilyGoLib::lowPower()
     // disableALDO3();  //! Screen touch VDD
     // disableALDO4();  //! Radio VDD
     // disableBLDO2();  //! drv2605 enable
+    // disableDC3();    //! GPS Power
 }
 
 void LilyGoLib::highPower()
@@ -477,7 +492,30 @@ void LilyGoLib::highPower()
     // enableALDO3();  //! Screen touch VDD
     // enableALDO4();  //! Radio VDD
     // enableBLDO2();  //! drv2605 enable
+    // enableDC3();    //! GPS Power
+}
 
+void LilyGoLib::powerIoctl(enum PowerCtrlChannel ch, bool enable)
+{
+    switch (ch) {
+    case WATCH_POWER_DISPLAY_BL:
+        enable ? enableALDO2() : disableALDO2();
+        break;
+    case WATCH_POWER_TOUCH_DISP:
+        enable ? enableALDO3() : disableALDO3();
+        break;
+    case WATCH_POWER_RADIO:
+        enable ? enableALDO4() : disableALDO4();
+        break;
+    case WATCH_POWER_DRV2605:
+        enable ? enableBLDO2() : disableBLDO2();
+        break;
+    case WATCH_POWER_GPS:
+        enable ? enableDC3() : disableDC3();
+        break;
+    default:
+        break;
+    }
 }
 
 bool LilyGoLib::initMicrophone()
@@ -559,7 +597,181 @@ void LilyGoLib::sleep(uint32_t second)
     esp_deep_sleep_start();
 }
 
+struct uBloxGnssModelInfo { // Structure to hold the module info (uses 341 bytes of RAM)
+    char softVersion[30];
+    char hardwareVersion[10];
+    uint8_t extensionNo = 0;
+    char extension[10][30];
+} ;
 
+
+bool LilyGoLib::gpsProbe()
+{
+
+    uint8_t buffer[256];
+    bool legacy_ubx_message = true;
+    struct uBloxGnssModelInfo info ;
+
+    // 1. Revert module
+    // Clear, save and load configurations
+    // B5 62 06 09 0D 00 FF FB 00 00 00 00 00 00  FF FF 00 00 17 2B 7E
+    uint8_t _legacy_message_reset[] = { 0xB5, 0x62, 0x06, 0x09, 0x0D, 0x00, 0xFF, 0xFB, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  0xFF, 0xFF, 0x00, 0x00, 0x17, 0x2B, 0x7E };
+    GPSSerial.write(_legacy_message_reset, sizeof(_legacy_message_reset));
+    if (getAck(buffer, 256, 0x05, 0x01)) {
+        log_i("GPS reset successes!");
+    }
+    delay(50);
+
+    // UBX-CFG-RATE, Size 8, 'Navigation/measurement rate settings'
+    uint8_t cfg_rate[] = {0xB5, 0x62, 0x06, 0x08, 0x00, 0x00, 0x0E, 0x30};
+    GPSSerial.write(cfg_rate, sizeof(cfg_rate));
+    if (!getAck(buffer, 256, 0x06, 0x08)) {
+        return false;
+    }
+
+    //  2. Get UBlox GPS module version
+    uint8_t cfg_get_hw[] =  {0xB5, 0x62, 0x0A, 0x04, 0x00, 0x00, 0x0E, 0x34};
+    GPSSerial.write(cfg_get_hw, sizeof(cfg_get_hw));
+
+    uint16_t len = getAck(buffer, 256, 0x0A, 0x04);
+    if (len) {
+
+        memset(&info, 0, sizeof(info));
+
+        uint16_t position = 0;
+        for (int i = 0; i < 30; i++) {
+            info.softVersion[i] = buffer[position];
+            position++;
+        }
+        for (int i = 0; i < 10; i++) {
+            info.hardwareVersion[i] = buffer[position];
+            position++;
+        }
+
+        while (len >= position + 30) {
+            for (int i = 0; i < 30; i++) {
+                info.extension[info.extensionNo][i] = buffer[position];
+                position++;
+            }
+            info.extensionNo++;
+            if (info.extensionNo > 9)
+                break;
+        }
+
+        log_i("Module Info : ");
+        log_i("Soft version: %s", info.softVersion);
+        log_i("Hard version: %s", info.hardwareVersion);
+        log_i("Extensions: %d", info.extensionNo);
+        for (int i = 0; i < info.extensionNo; i++) {
+            log_i("%s", info.extension[i]);
+        }
+        log_i("Model:%s", info.extension[2]);
+
+        for (int i = 0; i < info.extensionNo; ++i) {
+            if (!strncmp(info.extension[i], "OD=", 3)) {
+                strcpy((char *)buffer, &(info.extension[i][3]));
+                log_i("GPS Model: %s", (char *)buffer);
+            }
+        }
+    }
+
+    return true;
+}
+
+
+int LilyGoLib::getAck(uint8_t *buffer, uint16_t size, uint8_t requestedClass, uint8_t requestedID)
+{
+    uint16_t    ubxFrameCounter = 0;
+    bool        ubxFrame = 0;
+    uint32_t    startTime = millis();
+    uint16_t    needRead;
+
+    while (millis() - startTime < 800) {
+        while (GPSSerial.available()) {
+            int c = GPSSerial.read();
+            switch (ubxFrameCounter) {
+            case 0:
+                if (c == 0xB5) {
+                    ubxFrameCounter++;
+                }
+                break;
+            case 1:
+                if (c == 0x62) {
+                    ubxFrameCounter++;
+                } else {
+                    ubxFrameCounter = 0;
+                }
+                break;
+            case 2:
+                if (c == requestedClass) {
+                    ubxFrameCounter++;
+                } else {
+                    ubxFrameCounter = 0;
+                }
+                break;
+            case 3:
+                if (c == requestedID) {
+                    ubxFrameCounter++;
+                } else {
+                    ubxFrameCounter = 0;
+                }
+                break;
+            case 4:
+                needRead = c;
+                ubxFrameCounter++;
+                break;
+            case 5:
+                needRead |=  (c << 8);
+                ubxFrameCounter++;
+                break;
+            case 6:
+                if (needRead >= size) {
+                    ubxFrameCounter = 0;
+                    break;
+                }
+                if (GPSSerial.readBytes(buffer, needRead) != needRead) {
+                    ubxFrameCounter = 0;
+                } else {
+                    return needRead;
+                }
+                break;
+
+            default:
+                break;
+            }
+        }
+    }
+    return 0;
+}
+
+bool LilyGoLib::initGPS()
+{
+    bool result = 0;
+
+    log_i("Begin UBlox GPS .");
+
+    GPSSerial.begin(38400, SERIAL_8N1, SHIELD_GPS_RX, SHIELD_GPS_TX);
+
+    uint32_t baud[] = { 38400, 57600, 115200, 9600};
+    int retry = 4;
+    int i = 0;
+    do {
+        GPSSerial.updateBaudRate(baud[i]);
+        log_i("Try use %u baud\n", baud[i]);
+        delay(10);
+        result = gpsProbe();
+        i++;
+        if (i >= sizeof(baud) / sizeof(baud[0])) {
+            retry--;
+            i = 0;
+        }
+        if (!retry)
+            break;
+    } while (!result);
+
+    log_i("Success probe GPS , use %d baud rate", GPSSerial.baudRate());
+    return result;
+}
 
 
 
