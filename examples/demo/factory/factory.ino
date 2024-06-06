@@ -40,7 +40,7 @@ IRsend irsend(BOARD_IR_PIN);
 #endif
 #include <driver/i2s.h>
 #include <driver/gpio.h>
-
+#include <TinyGPSPlus.h>
 
 
 #ifdef ENABLE_PLAYER
@@ -67,6 +67,7 @@ extern const uint8_t boot_music[4365];
 #define RADIO_TRANSMIT_PAGE_ID                  9
 #define WIFI_SCAN_PAGE_ID                       8
 #define MIC_IR_PAGE_ID                          11
+#define GPS_PAGE_ID                             13
 
 #define DEFAULT_SCREEN_TIMEOUT                  15*1000
 #define DEFAULT_COLOR                           (lv_color_make(252, 218, 72))
@@ -118,9 +119,11 @@ static lv_obj_t *radio_ta;
 static lv_obj_t *wifi_table_list;
 static lv_obj_t *label_datetime;
 static lv_obj_t *charge_cont;
+static lv_obj_t *gnss_label;
 
 static lv_timer_t *transmitTask;
 static lv_timer_t *clockTimer;
+static lv_timer_t *gpsTask = NULL;
 static TaskHandle_t playerTaskHandler;
 static TaskHandle_t vadTaskHandler;
 
@@ -166,8 +169,7 @@ const size_t vad_buffer_size = VAD_BUFFER_LENGTH * sizeof(short);
 static lv_obj_t *vad_btn_label;
 static lv_obj_t *vad_btn;
 static uint32_t vad_detected_counter = 0;
-
-
+static TinyGPSPlus  gps;
 
 typedef  struct _lv_datetime {
     lv_obj_t *obj;
@@ -202,6 +204,7 @@ void analogclock3(lv_obj_t *parent);
 
 void digitalClock(lv_obj_t *parent);
 void digitalClock2(lv_obj_t *parent);
+void GPSInfoView(lv_obj_t *parent);
 
 void devicesInformation(lv_obj_t *parent);
 void wifiscan(lv_obj_t *parent);
@@ -417,7 +420,7 @@ void setup()
 
     Serial.begin(115200);
 
-    watch.begin();
+    watch.begin(&Serial);
 
     watch.initMicrophone();
 
@@ -735,6 +738,12 @@ void tileview_change_cb(lv_event_t *e)
         lv_timer_resume(transmitTask);
         canScreenOff = false;
         break;
+    case GPS_PAGE_ID:
+        if (gpsTask) {
+            lv_timer_resume(gpsTask);
+            canScreenOff = false;
+        }
+        break;
     default:
         if (lastPageID == MIC_IR_PAGE_ID) {
             lv_label_set_text(vad_btn_label, "VAD detect");
@@ -749,6 +758,11 @@ void tileview_change_cb(lv_event_t *e)
         if (!transmitTask->paused) {
             lv_timer_pause(transmitTask);
             Serial.println("lv_timer_pause transmitTask");
+        }
+        if (gpsTask) {
+            if (!gpsTask->paused) {
+                lv_timer_pause(gpsTask);
+            }
         }
         canScreenOff = true;
         break;
@@ -805,6 +819,12 @@ void factory_ui()
     musicPlay(t5);
     irRemoteVeiw(t6);
     datetimeVeiw(t7);
+
+    uint32_t mask = watch.getDeviceProbe();
+    if ((mask & WATCH_GPS_ONLINE) == WATCH_GPS_ONLINE) {
+        lv_obj_t *t8 = lv_tileview_add_tile(tileview, 7, 0, LV_DIR_HOR);
+        GPSInfoView(t8);
+    }
 
     transmitTask =  lv_timer_create(radioTask, 200, NULL);
 
@@ -2224,6 +2244,67 @@ void settingButtonStyle()
     lv_style_set_transition(&button_press_style, &trans);
 
 }
+
+
+
+void GPSTimerTask(lv_timer_t *t)
+{
+    while (GPSSerial.available()) {
+        int r = GPSSerial.read();
+        gps.encode(r);
+        Serial.write(r);
+    }
+
+    uint32_t  satellites = gps.satellites.isValid() ? gps.satellites.value() : 0;
+    double hdop = gps.hdop.isValid() ? gps.hdop.hdop() : 0;
+    double lat = gps.location.isValid() ? gps.location.lat() : 0;
+    double lng = gps.location.isValid() ? gps.location.lng() : 0;
+    uint32_t age = gps.location.isValid() ? gps.location.age() : 0;
+    uint16_t year = gps.date.isValid() ? gps.date.year() : 0;
+    uint8_t  month = gps.date.isValid() ? gps.date.month() : 0;
+    uint8_t  day = gps.date.isValid() ? gps.date.day() : 0;
+    uint8_t  hour = gps.time.isValid() ? gps.time.hour() : 0;
+    uint8_t  minute = gps.time.isValid() ? gps.time.minute() : 0;
+    uint8_t  second = gps.time.isValid() ? gps.time.second() : 0;
+    double  meters = gps.altitude.isValid() ? gps.altitude.meters() : 0;
+    double  kmph = gps.speed.isValid() ? gps.speed.kmph() : 0;
+    lv_label_set_text_fmt(gnss_label, "Status:%s\nFix:%u\nSatellites num:%u\nHDOP:%.1f\nLat:%.5f\nLon:%.5f \nDate:%d-%d-%d \nTime:%d:%d:%d\nAlt:%.2f m \nSpeed:%.2f\nRX:%u",
+                          age == 0 ? "No Fix" : age == 1 ? "2D" : "3D",
+                          age, satellites, hdop, lat, lng,  year, month, day, hour, minute, second, meters, kmph, gps.charsProcessed());
+    lv_obj_align(gnss_label, LV_ALIGN_TOP_LEFT, 5, 20);
+
+}
+
+void GPSInfoView(lv_obj_t *parent)
+{
+    static lv_style_t cont_style;
+    lv_style_init(&cont_style);
+    lv_style_set_bg_opa(&cont_style, LV_OPA_TRANSP);
+    lv_style_set_bg_img_opa(&cont_style, LV_OPA_TRANSP);
+    lv_style_set_line_opa(&cont_style, LV_OPA_50);
+    lv_style_set_border_width(&cont_style, 5);
+    lv_style_set_border_color(&cont_style, DEFAULT_COLOR);
+    lv_style_set_text_color(&cont_style, DEFAULT_COLOR);
+    lv_style_set_pad_right(&cont_style, 0);
+    lv_style_set_pad_left(&cont_style, 0);
+
+    lv_obj_t *cont = lv_obj_create(parent);
+    lv_obj_set_size(cont, lv_disp_get_hor_res(NULL), LV_PCT(100));
+    lv_obj_set_scrollbar_mode(cont, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_scroll_dir(cont, LV_DIR_VER);
+    lv_obj_add_style(cont, &cont_style, LV_PART_MAIN);
+
+    gnss_label = lv_label_create(cont);
+    lv_label_set_text(gnss_label, "GPS...");
+    lv_obj_set_style_text_color(gnss_label, lv_color_white(), LV_PART_MAIN);
+    lv_label_set_long_mode(gnss_label, LV_LABEL_LONG_SCROLL);
+    lv_obj_align_to(gnss_label, NULL, LV_ALIGN_TOP_MID, 0, 0);
+
+    gpsTask =  lv_timer_create(GPSTimerTask, 1000, NULL);
+
+    lv_timer_pause(gpsTask);
+}
+
 /*
  ************************************
  *      HARDWARE SETTING            *
