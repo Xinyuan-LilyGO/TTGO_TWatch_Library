@@ -94,7 +94,7 @@ jobs:
           - examples/peripheral/PMU_ADC/PMU_ADC.ino
           - examples/peripheral/PMU_Interrupt/PMU_Interrupt.ino
           - examples/peripheral/PlayMusicFromPROGMEM/PlayMusicFromPROGMEM.ino
-          - examples/peripheral/PlayMusicFromSPIFFS/PlayMusicFromSPIFFS.ino
+          - examples/peripheral/PlayMusicFromFATFS/PlayMusicFromFATFS.ino
           - examples/peripheral/RTC_AlarmByUnits/RTC_AlarmByUnits.ino
           - examples/peripheral/RTC_TimeLib/RTC_TimeLib.ino
           - examples/peripheral/RTC_TimeSynchronization/RTC_TimeSynchronization.ino

@@ -117,14 +117,14 @@ bool LilyGoLib::begin(Stream *stream)
     setTextFont(2);
     fillScreen(TFT_BLACK);
 
-    log_println("Init SPIFFS");
-    if (!SPIFFS.begin()) {
+    log_println("Init FFat");
+    if (!FFat.begin()) {
 
         if (bootDisplay) {
             setBrightness(50);
-            drawString("Format SPIFFS...", 120, 120);
+            drawString("Format FFat...", 120, 120);
         }
-        SPIFFS.format();
+        FFat.format();
     }
 
     if (bootDisplay) {

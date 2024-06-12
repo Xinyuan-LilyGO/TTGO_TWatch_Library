@@ -4,7 +4,7 @@
  * @license   MIT
  * @copyright Copyright (c) 2023  Shenzhen Xinyuan Electronic Technology Co., Ltd
  * @date      2023-05-01
- * @Note      You need to upload the files from the data file to the SPIFFS
+ * @Note      You need to upload the files from the data file to the FFat
  *            file system before using this example
  * @note      platfromio user use <pio run -t uploadfs> ,
  * *  Note that you need to place the sample data folder in the same level directory as <platformio. ini>
@@ -31,9 +31,9 @@ void setup(void)
     beginLvglHelper();
 
     String file =  String("/") + filename[0];
-    if (!SPIFFS.exists(file)) {
+    if (!FFat.exists(file)) {
         while (1) {
-            Serial.println("You need to upload the files from the data file to the SPIFFS file system before using this example");
+            Serial.println("You need to upload the files from the data file to the FFat file system before using this example");
             delay(1000);
         }
     }

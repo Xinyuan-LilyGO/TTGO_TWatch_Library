@@ -39,7 +39,7 @@ IRsend irsend(BOARD_IR_PIN);
 #include <AudioGeneratorMP3.h>
 #include <AudioGeneratorWAV.h>
 #include <AudioOutputI2S.h>
-#include <AudioFileSourceSPIFFS.h>
+#include <AudioFileSourceFATFS.h>
 #include <AudioFileSourceFunction.h>
 #include <AudioGeneratorFLAC.h>
 #include <AudioGeneratorAAC.h>
@@ -61,7 +61,7 @@ SX1280 radio = newModule();
 
 extern const unsigned char mp3_array[16509];
 extern unsigned char mp3_ring_setup[86144];
-AudioFileSourceSPIFFS   *file_fs;
+AudioFileSourceFATFS   *file_fs;
 AudioGeneratorWAV       *wav = NULL;
 AudioFileSourcePROGMEM  *file = NULL;
 AudioOutputI2S          *out = NULL;
@@ -933,7 +933,7 @@ void wav_task(void *param)
                 // if (!audio->isRunning()) {
                 mp3->stop();
                 suspend_playMP3Handler();
-                //mp3->connecttoFS(SPIFFS, "/ring_1.mp3");
+                //mp3->connecttoFS(FFat, "/ring_1.mp3");
                 // Serial.println("play \"/ring_1.mp3\"");
                 is_pause = false;
                 // }
@@ -1279,7 +1279,7 @@ void settingPlayer()
     mp3 = new AudioGeneratorMP3();
     mp3->begin(id3, out);
 
-    file_fs = new AudioFileSourceSPIFFS();
+    file_fs = new AudioFileSourceFATFS();
     wav = new AudioGeneratorWAV();
     player_task_cb = playMP3;
 
@@ -1317,7 +1317,7 @@ static bool CreateWAV(const char *song_name, uint32_t duration, uint16_t num_cha
     // data size in bytes - > this amount of data should be recorded from microphone later
     uint32_t data_size = sampling_rate * num_channels * bits_per_sample * duration / 8;
 
-    File new_audio_file = SPIFFS.open(song_name, FILE_WRITE);
+    File new_audio_file = FFat.open(song_name, FILE_WRITE);
     if (!new_audio_file) {
         Serial.println("Failed to create file");
         return false;
@@ -1603,7 +1603,7 @@ static void PDM_Record(const char *song_name, uint32_t duration)
     }
 
     // Open created .wav file in append+binary mode to add PCM data
-    File audio_file = SPIFFS.open(song_name, FILE_APPEND);
+    File audio_file = FFat.open(song_name, FILE_APPEND);
     if (!audio_file) {
         Serial.println("Failed to create file");
         return;
@@ -1640,7 +1640,7 @@ static void PDM_Record(const char *song_name, uint32_t duration)
         if (bytes_written != BUFFER_SIZE) {
             Serial.println("Bytes written error");
         }
-        // Save data to SPIFFS
+        // Save data to FFat
         audio_file.write( buf, BUFFER_SIZE);
         // Increment the counter
         counter += BUFFER_SIZE;

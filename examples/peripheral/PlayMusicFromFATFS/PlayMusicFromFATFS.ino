@@ -1,5 +1,5 @@
 /**
- * @file      PlayMusicFromSPIFFS.ino
+ * @file      PlayMusicFromFATFS.ino
  * @author    Lewis He (lewishe@outlook.com)
  * @license   MIT
  * @copyright Copyright (c) 2023  Shenzhen Xinyuan Electronic Technology Co., Ltd
@@ -9,7 +9,7 @@
 #include <LilyGoLib.h>
 #include <LV_Helper.h>
 #include <AudioOutputI2S.h>
-#include <AudioFileSourceSPIFFS.h>
+#include <AudioFileSourceFATFS.h>
 #include <AudioGeneratorWAV.h>
 #include <AudioFileSourceFunction.h>
 #include <AudioGeneratorFLAC.h>
@@ -23,7 +23,7 @@
 const uint8_t i2sPort = 1;
 
 AudioGeneratorWAV       *wav = NULL;
-AudioFileSourceSPIFFS   *file = NULL;
+AudioFileSourceFATFS   *file = NULL;
 AudioOutputI2S          *out = NULL;
 AudioGeneratorMP3       *mp3 = NULL;
 AudioFileSourceID3      *id3 = NULL;
@@ -157,7 +157,7 @@ void setup(void)
     Serial.begin(115200);
 
     // When initializing the watch,
-    // SPIFFS has already been initialized internally
+    // FFat has already been initialized internally
     watch.begin();
 
     beginLvglHelper();
@@ -172,7 +172,7 @@ void setup(void)
     lv_obj_t *label;
 
     label = lv_label_create(cont);
-    lv_label_set_text(label, "PlayMusicFromSPIFFS");
+    lv_label_set_text(label, "PlayMusicFromFFat");
 
     //Play wav Button
     lv_obj_t *btn1 = lv_btn_create(cont);
@@ -210,7 +210,7 @@ void setup(void)
     lv_label_set_text(label, "Play AAC");
     lv_obj_center(label);
 
-    file = new AudioFileSourceSPIFFS();
+    file = new AudioFileSourceFATFS();
 
     // Set up the use of an external decoder
     out = new AudioOutputI2S(i2sPort, AudioOutputI2S::EXTERNAL_I2S);

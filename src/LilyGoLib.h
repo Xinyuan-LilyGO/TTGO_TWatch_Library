@@ -16,7 +16,7 @@
 #error "Please manually update and install Arduino Core ESP32 to the latest version, how to update, please see here https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html#windows-manual-installation"
 #endif
 
-#include <SPIFFS.h>
+#include <FFat.h>
 #include <FS.h>
 #include <Wire.h>
 #include <TFT_eSPI.h>

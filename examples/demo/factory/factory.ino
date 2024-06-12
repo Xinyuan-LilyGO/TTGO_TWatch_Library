@@ -4,18 +4,28 @@
  * @license   MIT
  * @copyright Copyright (c) 2023  Shenzhen Xinyuan Electronic Technology Co., Ltd
  * @date      2023-04-05
- * @note      Arduino Setting
+ * @note      Arduino esp version 2.0.9 Setting , not support esp 3.x
  *            Tools ->
  *                  Board:"ESP32S3 Dev Module"
  *                  USB CDC On Boot:"Enable"
- *                  USB DFU On Boot:"Disable"
- *                  Flash Size : "16MB(128Mb)"
- *                  Flash Mode"QIO 80MHz
- *                  Partition Scheme:"16M Flash(3M APP/9.9MB FATFS)"
- *                  PSRAM:"OPI PSRAM"
- *                  Upload Mode:"UART0/Hardware CDC"
- *                  USB Mode:"Hardware CDC and JTAG"
+ *                  CPU Frequency: "240MHz (WiFi)" 
+ *                  Core Debug Level: "Verbose"
+ *                  USB DFU On Boot: "Disabled"
+ *                  Erase All Flash Before Sketch Upload: "Disabled"
+ *                  Events Run On: "Core 1"
+ *                  Flash Mode: "QI0 80MHz"
+ *                  Flash Size: "16MB (128Mb)"
+ *                  JTAG Adapter: "Disabled"
+ *                  Arduino Runs On: "Core 1"
+ *                  USB Firmware MSC On Boot: "Disabled"
+ *                  Partition Scheme: "16M Flash (3MB APP/9.9MB FATFS)"
+ *                  PSRAM: "OPI PSRAM"
+ *                  Upload Mode: "UART0/Hardware CDC"
+ *                  Upload Speed: "921600"
+ *                  USB Mode: "Hardware CDC and JTAG"
+ *                  Programmer: "Esptool"
  */
+
 
 //! Two transceivers, SX1262 and SX1280, are defined based on the actual model
 // #define USE_RADIO_SX1280
@@ -49,14 +59,14 @@ IRsend irsend(BOARD_IR_PIN);
 #include <AudioGeneratorMP3.h>
 #include <AudioGeneratorWAV.h>
 #include <AudioOutputI2S.h>
-#include <AudioFileSourceSPIFFS.h>
+#include <AudioFileSourceFATFS.h>
 
 AudioGeneratorMP3       *mp3;
 AudioFileSourcePROGMEM  *file;
 AudioOutputI2S          *out;
 AudioFileSourceID3      *id3;
 AudioGeneratorWAV       *wav;
-AudioFileSourceSPIFFS   *file_fs;
+AudioFileSourceFATFS    *file_fs;
 
 extern const uint8_t boot_music[4365];
 #endif
@@ -452,7 +462,13 @@ static void charge_anim_cb(void *obj, int32_t v)
     if (last_check_inteval < millis()) {
         battery_percent =  watch.getBatteryPercent();
         lv_obj_t *label_percent =  (lv_obj_t *)lv_obj_get_user_data(arc);
-        lv_label_set_text_fmt(label_percent, "%d%%", battery_percent);
+        if (battery_percent != - 1) {
+            lv_label_set_text_fmt(label_percent, "%d%%", battery_percent);
+        } else {
+            lv_label_set_long_mode(label_percent,LV_LABEL_LONG_WRAP);
+            lv_obj_set_width(label_percent,lv_pct(90));
+            lv_label_set_text(label_percent, "Please turn the battery switch to ON");
+        }
         if (battery_percent == 100) {
             lv_obj_t *img =  (lv_obj_t *)lv_obj_get_user_data(label_percent);
             lv_anim_del(arc, charge_anim_cb);
@@ -2533,7 +2549,7 @@ void settingPlayer()
     mp3 = new AudioGeneratorMP3();
     mp3->begin(id3, out);
 
-    file_fs = new AudioFileSourceSPIFFS();
+    file_fs = new AudioFileSourceFATFS();
     wav = new AudioGeneratorWAV();
     player_task_cb = playMP3;
 
@@ -2574,7 +2590,7 @@ static bool CreateWAV(const char *song_name, uint32_t duration, uint16_t num_cha
     // data size in bytes - > this amount of data should be recorded from microphone later
     uint32_t data_size = sampling_rate * num_channels * bits_per_sample * duration / 8;
 
-    File new_audio_file = SPIFFS.open(song_name, FILE_WRITE);
+    File new_audio_file = FFat.open(song_name, FILE_WRITE);
     if (!new_audio_file) {
         Serial.println("Failed to create file");
         return false;
@@ -2677,7 +2693,7 @@ static void PDM_Record(const char *song_name, uint32_t duration)
     }
 
     // Open created .wav file in append+binary mode to add PCM data
-    File audio_file = SPIFFS.open(song_name, FILE_APPEND);
+    File audio_file = FFat.open(song_name, FILE_APPEND);
     if (!audio_file) {
         Serial.println("Failed to create file");
         return;
@@ -2716,7 +2732,7 @@ static void PDM_Record(const char *song_name, uint32_t duration)
             Serial.println("Bytes written error");
         }
 
-        // Save data to SPIFFS
+        // Save data to FFat
         audio_file.write( buf, BUFFER_SIZE);
 
         // Increment the counter

@@ -95,7 +95,7 @@ jobs:
           - examples/peripheral/PMU_ADC
           - examples/peripheral/PMU_Interrupt
           - examples/peripheral/PlayMusicFromPROGMEM
-          - examples/peripheral/PlayMusicFromSPIFFS
+          - examples/peripheral/PlayMusicFromFATFS
           - examples/peripheral/RTC_AlarmByUnits
           - examples/peripheral/RTC_TimeLib
           - examples/peripheral/RTC_TimeSynchronization

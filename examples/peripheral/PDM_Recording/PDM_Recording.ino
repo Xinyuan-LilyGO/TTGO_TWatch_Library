@@ -11,13 +11,13 @@
 #include <LV_Helper.h>
 
 #include <AudioOutputI2S.h>
-#include <AudioFileSourceSPIFFS.h>
+#include <AudioFileSourceFATFS.h>
 #include "AudioGeneratorWAV.h"
 #include "AudioFileSourceFunction.h"
 
 
 AudioGeneratorWAV       *wav;
-AudioFileSourceSPIFFS   *file;
+AudioFileSourceFATFS   *file;
 AudioOutputI2S          *out;
 
 void microphone_record(const char *song_name, uint32_t duration);
@@ -43,7 +43,7 @@ void setup(void)
 
     out = new AudioOutputI2S(1, AudioOutputI2S::EXTERNAL_I2S);
     out->SetPinout(BOARD_DAC_IIS_BCK, BOARD_DAC_IIS_WS, BOARD_DAC_IIS_DOUT);
-    file = new AudioFileSourceSPIFFS("/rec.wav");
+    file = new AudioFileSourceFATFS("/rec.wav");
     wav = new AudioGeneratorWAV();
     wav->begin(file, out);
 
@@ -73,7 +73,7 @@ bool create_wav_file(const char *song_name, uint32_t duration, uint16_t num_chan
     // data size in bytes - > this amount of data should be recorded from microphone later
     uint32_t data_size = sampling_rate * num_channels * bits_per_sample * duration / 8;
 
-    File new_audio_file = SPIFFS.open(song_name, FILE_WRITE);
+    File new_audio_file = FFat.open(song_name, FILE_WRITE);
     if (new_audio_file == NULL) {
         Serial.println("Failed to create file");
         return false;
@@ -148,7 +148,7 @@ void microphone_record(const char *song_name, uint32_t duration)
     }
 
     // Open created .wav file in append+binary mode to add PCM data
-    File audio_file = SPIFFS.open(song_name, FILE_APPEND);
+    File audio_file = FFat.open(song_name, FILE_APPEND);
     if (!audio_file) {
         Serial.println("Failed to create file");
         return;
