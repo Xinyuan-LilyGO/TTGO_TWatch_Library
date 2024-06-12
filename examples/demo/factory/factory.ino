@@ -8,7 +8,7 @@
  *            Tools ->
  *                  Board:"ESP32S3 Dev Module"
  *                  USB CDC On Boot:"Enable"
- *                  CPU Frequency: "240MHz (WiFi)" 
+ *                  CPU Frequency: "240MHz (WiFi)"
  *                  Core Debug Level: "Verbose"
  *                  USB DFU On Boot: "Disabled"
  *                  Erase All Flash Before Sketch Upload: "Disabled"
@@ -457,17 +457,23 @@ void setup()
 static void charge_anim_cb(void *obj, int32_t v)
 {
     lv_obj_t *arc = (lv_obj_t *)obj;
-    static uint32_t last_check_inteval;
+    static uint32_t last_check_interval;
     static int battery_percent;
-    if (last_check_inteval < millis()) {
+    if (last_check_interval < millis()) {
         battery_percent =  watch.getBatteryPercent();
         lv_obj_t *label_percent =  (lv_obj_t *)lv_obj_get_user_data(arc);
         if (battery_percent != - 1) {
             lv_label_set_text_fmt(label_percent, "%d%%", battery_percent);
+            lv_obj_set_style_text_font(label_percent, &lv_font_montserrat_22, LV_PART_MAIN);
+            lv_obj_t *img_chg =  (lv_obj_t *)lv_obj_get_user_data(label_percent);
+            lv_obj_align_to(label_percent, img_chg, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
+            lv_obj_clear_flag(arc, LV_OBJ_FLAG_HIDDEN);
         } else {
-            lv_label_set_long_mode(label_percent,LV_LABEL_LONG_WRAP);
-            lv_obj_set_width(label_percent,lv_pct(90));
+            lv_label_set_long_mode(label_percent, LV_LABEL_LONG_WRAP);
+            lv_obj_set_style_text_font(label_percent, &lv_font_montserrat_14, LV_PART_MAIN);
+            lv_obj_set_width(label_percent, lv_pct(90));
             lv_label_set_text(label_percent, "Please turn the battery switch to ON");
+            lv_obj_add_flag(arc, LV_OBJ_FLAG_HIDDEN);
         }
         if (battery_percent == 100) {
             lv_obj_t *img =  (lv_obj_t *)lv_obj_get_user_data(label_percent);
@@ -475,7 +481,7 @@ static void charge_anim_cb(void *obj, int32_t v)
             lv_arc_set_value(arc, 100);
             lv_img_set_src(img, &charge_done_battery);
         }
-        last_check_inteval = millis() + 2000;
+        last_check_interval = millis() + 2000;
     }
     if (v >= battery_percent) {
         return;
