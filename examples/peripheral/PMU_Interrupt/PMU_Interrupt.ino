@@ -54,6 +54,13 @@ void setup()
     watch.enableIRQ(XPOWERS_AXP2101_PKEY_SHORT_IRQ | XPOWERS_AXP2101_PKEY_NEGATIVE_IRQ);
 
     watch.enableIRQ(XPOWERS_AXP2101_BAT_OVER_VOL_IRQ);
+
+    // Disable long press to power off feature
+    watch.disableLongPressShutdown();
+
+    // Enable the long press interrupt function
+    watch.enableIRQ(XPOWERS_AXP2101_PKEY_LONG_IRQ);
+
 }
 
 void loop()
