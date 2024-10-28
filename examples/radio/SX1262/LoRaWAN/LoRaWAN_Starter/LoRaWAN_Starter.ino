@@ -75,6 +75,9 @@ void setup()
     delay(5000);  // Give time to switch to the serial monitor
     Serial.println(F("\nSetup ... "));
 
+
+    watch.begin();
+    
     Serial.println(F("Initialise the radio"));
     int16_t state = radio.begin();
     debug(state != RADIOLIB_ERR_NONE, F("Initialise radio failed"), state, true);
