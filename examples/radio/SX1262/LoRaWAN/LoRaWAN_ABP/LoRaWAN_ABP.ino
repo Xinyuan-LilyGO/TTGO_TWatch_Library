@@ -36,27 +36,27 @@ const uint32_t uplinkIntervalSeconds = 5UL * 60UL;    // minutes x seconds
 // device address - either a development address or one assigned
 // to the LoRaWAN Service Provider - TTN will generate one for you
 #ifndef RADIOLIB_LORAWAN_DEV_ADDR   // Replace with your DevAddr
-#define RADIOLIB_LORAWAN_DEV_ADDR       0x12345678
+#define RADIOLIB_LORAWAN_DEV_ADDR       0x260D55DD
 #endif
 
 #ifndef RADIOLIB_LORAWAN_FNWKSINT_KEY   // Replace with your FNwkSInt Key 
-#define RADIOLIB_LORAWAN_FNWKSINT_KEY   0x74, 0x6F, 0x70, 0x53, 0x65, 0x63, 0x72, 0x65,0x74, 0x4B, 0x65, 0x79, 0x31, 0x32, 0x33, 0x34
+#define RADIOLIB_LORAWAN_FNWKSINT_KEY   0x24, 0x83, 0x65, 0x51, 0x23, 0x32, 0x82, 0x47, 0xEF, 0x16, 0x4D, 0x7B, 0x0C, 0xB2, 0xC5, 0x96
 #endif
 #ifndef RADIOLIB_LORAWAN_SNWKSINT_KEY   // Replace with your SNwkSInt Key 
-#define RADIOLIB_LORAWAN_SNWKSINT_KEY   0x74, 0x6F, 0x70, 0x53, 0x65, 0x63, 0x72, 0x65,0x74, 0x4B, 0x65, 0x79, 0x31, 0x32, 0x33, 0x34
+#define RADIOLIB_LORAWAN_SNWKSINT_KEY   0xAD, 0xD1, 0x50, 0x62, 0x28, 0x8F, 0xEE, 0xA4, 0xD5, 0x6B, 0x6B, 0xF3, 0x56, 0x3D, 0x5A, 0x90
 #endif
 #ifndef RADIOLIB_LORAWAN_NWKSENC_KEY    // Replace with your NwkSEnc Key 
-#define RADIOLIB_LORAWAN_NWKSENC_KEY    0x74, 0x6F, 0x70, 0x53, 0x65, 0x63, 0x72, 0x65,0x74, 0x4B, 0x65, 0x79, 0x31, 0x32, 0x33, 0x34
+#define RADIOLIB_LORAWAN_NWKSENC_KEY    0xFE, 0x9D, 0x84, 0xD9, 0x4A, 0x66, 0x69, 0x08, 0x01, 0x7B, 0x17, 0xE5, 0x38, 0x53, 0x7F, 0xD9
 #endif
 #ifndef RADIOLIB_LORAWAN_APPS_KEY       // Replace with your AppS Key 
-#define RADIOLIB_LORAWAN_APPS_KEY       0x74, 0x6F, 0x70, 0x53, 0x65, 0x63, 0x72, 0x65,0x74, 0x4B, 0x65, 0x79, 0x31, 0x32, 0x33, 0x34
+#define RADIOLIB_LORAWAN_APPS_KEY       0xF4, 0x29, 0xA2, 0x5E, 0xE5, 0x49, 0x97, 0x50, 0x96, 0xB3, 0x31, 0x22, 0x34, 0xFD, 0x08, 0x5B
 #endif
 
 // for the curious, the #ifndef blocks allow for automated testing &/or you can
 // put your EUI & keys in to your platformio.ini - see wiki for more tips
 
 // regional choices: EU868, US915, AU915, AS923, IN865, KR920, CN780, CN500
-const LoRaWANBand_t Region = EU868;
+const LoRaWANBand_t Region = CN500;
 const uint8_t subBand = 0;  // For US915, change this to 2, otherwise leave on 0
 
 
@@ -83,21 +83,12 @@ void setup()
 
     watch.begin();
 
-    // initialize SX1262 with default settings
-    Serial.print(F("[SX1262] Initializing ... "));
+    Serial.println(F("Initialise the radio"));
     int state = radio.begin();
-    if (state == RADIOLIB_ERR_NONE) {
-        Serial.println(F("success!"));
-    } else {
-        Serial.print(F("failed, code "));
-        Serial.println(state);
-        while (true);
-    }
+    debug(state != RADIOLIB_ERR_NONE, F("Initialise radio failed"), state, true);
 
-    // start the device by directly providing the encryption keys and device address
-    Serial.print(F("[LoRaWAN] Attempting over-the-air activation ... "));
+    Serial.println(F("Initialise LoRaWAN Network credentials"));
     node.beginABP(devAddr, fNwkSIntKey, sNwkSIntKey, nwkSEncKey, appSKey);
-
 
     node.activateABP();
     debug(state != RADIOLIB_ERR_NONE, F("Activate ABP failed"), state, true);
@@ -125,30 +116,28 @@ void loop()
 
     // Perform an uplink
     int state = node.sendReceive(uplinkPayload, sizeof(uplinkPayload));
-    debug((state != RADIOLIB_LORAWAN_NO_DOWNLINK) && (state != RADIOLIB_ERR_NONE), F("Error in sendReceive"), state, false);
+    debug(state < RADIOLIB_ERR_NONE, F("Error in sendReceive"), state, false);
+
+    // Check if a downlink was received
+    // (state 0 = no downlink, state 1/2 = downlink in window Rx1/Rx2)
+    if (state > 0) {
+        Serial.println(F("Received a downlink"));
+    } else {
+        Serial.println(F("No downlink received"));
+    }
+
+    Serial.print(F("Next uplink in "));
+    Serial.print(uplinkIntervalSeconds);
+    Serial.println(F(" seconds\n"));
 
     // Wait until next uplink - observing legal & TTN FUP constraints
-    delay(uplinkIntervalSeconds * 1000UL);
+    delay(uplinkIntervalSeconds * 1000UL);  // delay needs milli-seconds
 }
 
 
 
-// helper function to display any issues
-void debug(bool isFail, const __FlashStringHelper *message, int state, bool Freeze)
-{
-    if (isFail) {
-        Serial.print(message);
-        Serial.print(" - ");
-        Serial.print(stateDecode(state));
-        Serial.print(" (");
-        Serial.print(state);
-        Serial.println(")");
-        while (Freeze);
-    }
-}
-
-
-// result code to text ...
+// result code to text - these are error codes that can be raised when using LoRaWAN
+// however, RadioLib has many more - see https://jgromes.github.io/RadioLib/group__status__codes.html for a complete list
 String stateDecode(const int16_t result)
 {
     switch (result) {
@@ -174,7 +163,6 @@ String stateDecode(const int16_t result)
         return "ERR_INVALID_OUTPUT_POWER";
     case RADIOLIB_ERR_NETWORK_NOT_JOINED:
         return "RADIOLIB_ERR_NETWORK_NOT_JOINED";
-
     case RADIOLIB_ERR_DOWNLINK_MALFORMED:
         return "RADIOLIB_ERR_DOWNLINK_MALFORMED";
     case RADIOLIB_ERR_INVALID_REVISION:
@@ -201,16 +189,45 @@ String stateDecode(const int16_t result)
         return "RADIOLIB_ERR_DWELL_TIME_EXCEEDED";
     case RADIOLIB_ERR_CHECKSUM_MISMATCH:
         return "RADIOLIB_ERR_CHECKSUM_MISMATCH";
-    case RADIOLIB_LORAWAN_NO_DOWNLINK:
-        return "RADIOLIB_LORAWAN_NO_DOWNLINK";
+    case RADIOLIB_ERR_NO_JOIN_ACCEPT:
+        return "RADIOLIB_ERR_NO_JOIN_ACCEPT";
     case RADIOLIB_LORAWAN_SESSION_RESTORED:
         return "RADIOLIB_LORAWAN_SESSION_RESTORED";
     case RADIOLIB_LORAWAN_NEW_SESSION:
         return "RADIOLIB_LORAWAN_NEW_SESSION";
-    case RADIOLIB_LORAWAN_NONCES_DISCARDED:
-        return "RADIOLIB_LORAWAN_NONCES_DISCARDED";
-    case RADIOLIB_LORAWAN_SESSION_DISCARDED:
-        return "RADIOLIB_LORAWAN_SESSION_DISCARDED";
+    case RADIOLIB_ERR_NONCES_DISCARDED:
+        return "RADIOLIB_ERR_NONCES_DISCARDED";
+    case RADIOLIB_ERR_SESSION_DISCARDED:
+        return "RADIOLIB_ERR_SESSION_DISCARDED";
     }
-    return "See TypeDef.h";
+    return "See https://jgromes.github.io/RadioLib/group__status__codes.html";
+}
+
+// helper function to display any issues
+void debug(bool failed, const __FlashStringHelper *message, int state, bool halt)
+{
+    if (failed) {
+        Serial.print(message);
+        Serial.print(" - ");
+        Serial.print(stateDecode(state));
+        Serial.print(" (");
+        Serial.print(state);
+        Serial.println(")");
+        while (halt) {
+            delay(1);
+        }
+    }
+}
+
+// helper function to display a byte array
+void arrayDump(uint8_t *buffer, uint16_t len)
+{
+    for (uint16_t c = 0; c < len; c++) {
+        char b = buffer[c];
+        if (b < 0x10) {
+            Serial.print('0');
+        }
+        Serial.print(b, HEX);
+    }
+    Serial.println();
 }
