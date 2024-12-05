@@ -29,7 +29,8 @@
 
 //! Two transceivers, SX1262 and SX1280, are defined based on the actual model
 // #define USE_RADIO_SX1280
-#define USE_RADIO_SX1262
+// #define USE_RADIO_SX1262
+#define USE_RADIO_CC1101
 
 #define ENABLE_PLAYER
 #define ENABLE_IR_SENDER
@@ -37,10 +38,12 @@
 #include <LilyGoLib.h>
 #include <LV_Helper.h>
 
-#ifdef USE_RADIO_SX1262
+#if    defined(USE_RADIO_SX1262)
 SX1262 radio = newModule();
 #elif  defined(USE_RADIO_SX1280)
 SX1280 radio = newModule();
+#elif  defined(USE_RADIO_CC1101)
+CC1101 radio = newModule();
 #endif
 
 #include <WiFi.h>
@@ -345,6 +348,71 @@ const float radio_power_args_list[] = {
     //     -7, -6, -5, -4, -3, -2, -1,
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
 };
+
+#elif  defined(USE_RADIO_CC1101)
+
+#define RADIO_DEFAULT_FREQ          433.0   //Freq
+#define RADIO_DEFAULT_BW            58  //Rx bandwidth
+#define RADIO_DEFAULT_POWER_LEVEL   10  //dBm
+#define RADIO_DEFAULT_BIT_RATE      30  //kbps
+
+
+const char *radio_freq_list =
+    "387MHz\n"
+    "400MHz\n"
+    "410MHz\n"
+    "420MHz\n"
+    "433MHz\n"
+    "440MHz\n"
+    "450MHz\n"
+    "460MHz\n"
+    "464MHz";
+
+const float radio_freq_args_list[] = {387, 400, 410,
+                                      420, 433, 440,
+                                      450, 460, 464
+                                     };
+
+// 58, 68, 81, 102, 116, 135, 162, 203, 232, 270, 325, 406, 464, 541, 650 and 812 kHz.
+const char *radio_bandwidth_list =
+    "58KHZ\n"
+    "68KHZ\n"
+    "81KHZ\n"
+    "102KHZ\n"
+    "116KHZ\n"
+    "135KHZ\n"
+    "162KHZ\n"
+    "203KHZ\n"
+    "232KHZ\n"
+    "270KHZ\n"
+    "325KHZ\n"
+    "406KHZ\n"
+    "464KHZ\n"
+    "541KHZ\n"
+    "650KHZ\n"
+    "464KHZ\n"
+    "812KHZ";
+
+const float radio_bandwidth_args_list[] = {
+    0.025, 5, 10, 20, 30, 60, 80, 100, 120, 150, 200, 300, 400, 500, 600
+};
+
+// -30, -20, -15, -10, 0, 5, 7 or 10
+const char *radio_power_level_list =
+    "-30dBm\n"
+    "-20dBm\n"
+    "-15dBm\n"
+    "-10dBm\n"
+    "0dBm\n"
+    "5dBm\n"
+    "7dBm\n"
+    "10dBm";
+
+const float radio_power_args_list[] = {
+    -30, -20, -15, -10, 0, 5, 7, 10
+    };
+
+
 #endif
 
 
@@ -889,19 +957,19 @@ void radioTask(lv_timer_t *parent)
 
             if (state == RADIOLIB_ERR_NONE) {
                 // packet was successfully received
-                Serial.println(F("[SX1262] Received packet!"));
+                Serial.println(F("[Radio] Received packet!"));
 
                 // print data of the packet
-                Serial.print(F("[SX1262] Data:\t\t"));
+                Serial.print(F("[Radio] Data:\t\t"));
                 Serial.println(str);
 
                 // print RSSI (Received Signal Strength Indicator)
-                Serial.print(F("[SX1262] RSSI:\t\t"));
+                Serial.print(F("[Radio] RSSI:\t\t"));
                 Serial.print(radio.getRSSI());
                 Serial.println(F(" dBm"));
 
                 // print SNR (Signal-to-Noise Ratio)
-                Serial.print(F("[SX1262] SNR:\t\t"));
+                Serial.print(F("[Radio] SNR:\t\t"));
                 Serial.print(radio.getSNR());
                 Serial.println(F(" dB"));
 
@@ -1463,6 +1531,11 @@ static void radio_rxtx_cb(lv_event_t *e)
     switch (id) {
     case 0:
         lv_timer_resume(transmitTask);
+        radioTransmitFlag = false;
+
+#ifdef USE_RADIO_CC1101
+        radio.setPacketSentAction(setRadioFlag);
+#endif
         // TX
         // send the first packet on this node
         Serial.print(F("[Radio] Sending first packet ... "));
@@ -1472,6 +1545,11 @@ static void radio_rxtx_cb(lv_event_t *e)
         break;
     case 1:
         lv_timer_resume(transmitTask);
+        radioTransmitFlag = false;
+
+#ifdef USE_RADIO_CC1101
+        radio.setPacketReceivedAction(setRadioFlag);
+#endif
         // RX
         Serial.print(F("[Radio] Starting to listen ... "));
         if (radio.startReceive() == RADIOLIB_ERR_NONE) {
@@ -1517,9 +1595,16 @@ static void radio_bandwidth_cb(lv_event_t *e)
     }
 
     // set bandwidth
+#ifdef USE_RADIO_CC1101
+    if (radio.setRxBandwidth(radio_bandwidth_args_list[id]) == RADIOLIB_ERR_INVALID_RX_BANDWIDTH) {
+        Serial.println(F("Selected receiver bandwidth is invalid for this module!"));
+    }
+
+#else
     if (radio.setBandwidth(radio_bandwidth_args_list[id]) == RADIOLIB_ERR_INVALID_BANDWIDTH) {
         Serial.println(F("Selected bandwidth is invalid for this module!"));
     }
+#endif
 
     if (transmitFlag) {
         radio.startTransmit("");
@@ -2413,6 +2498,38 @@ void settingRadio()
     if (radio.setFrequency(RADIO_DEFAULT_FREQ) == RADIOLIB_ERR_INVALID_FREQUENCY) {
         Serial.println(F("Selected frequency is invalid for this module!"));
     }
+
+#ifdef USE_RADIO_CC1101
+
+    // set bit rate
+    state = radio.setBitRate(RADIO_DEFAULT_BIT_RATE);
+    if (state == RADIOLIB_ERR_INVALID_BIT_RATE) {
+        Serial.println(F("[CC1101] Selected bit rate is invalid for this module!"));
+        while (true) {
+            delay(10);
+        }
+    } else if (state == RADIOLIB_ERR_INVALID_BIT_RATE_BW_RATIO) {
+        Serial.println(F("[CC1101] Selected bit rate to bandwidth ratio is invalid!"));
+        Serial.println(F("[CC1101] Increase receiver bandwidth to set this bit rate."));
+    }
+
+    // set rx bandwidth
+    if (radio.setRxBandwidth(RADIO_DEFAULT_BW) == RADIOLIB_ERR_INVALID_BANDWIDTH) {
+        Serial.println(F("[CC1101] Selected bandwidth is invalid for this module!"));
+    }
+
+    // 2 bytes can be set as sync word
+    if (radio.setSyncWord(0x01, 0x23) == RADIOLIB_ERR_INVALID_SYNC_WORD) {
+        Serial.println(F("[CC1101] Selected sync word is invalid for this module!"));
+    }
+
+    // set allowed frequency deviation to 10.0 kHz
+    if (radio.setFrequencyDeviation(10.0) == RADIOLIB_ERR_INVALID_FREQUENCY_DEVIATION) {
+        Serial.println(F("[CC1101] Selected frequency deviation is invalid for this module!"));
+    }
+
+    radio.setPacketSentAction(setRadioFlag);
+#else
     // set bandwidth
     if (radio.setBandwidth(RADIO_DEFAULT_BW) == RADIOLIB_ERR_INVALID_BANDWIDTH) {
         Serial.println(F("Selected bandwidth is invalid for this module!"));
@@ -2433,19 +2550,6 @@ void settingRadio()
         Serial.println(F("Unable to set sync word!"));
     }
 
-    // set output power
-    if (radio.setOutputPower(RADIO_DEFAULT_POWER_LEVEL) == RADIOLIB_ERR_INVALID_OUTPUT_POWER) {
-        Serial.println(F("Selected output power is invalid for this module!"));
-    }
-
-#ifdef RADIO_DEFAULT_CUR_LIMIT
-    // set over current protection limit to 140 mA (accepted range is 45 - 140 mA)
-    // NOTE: set value to 0 to disable overcurrent protection
-    if (radio.setCurrentLimit(RADIO_DEFAULT_CUR_LIMIT) == RADIOLIB_ERR_INVALID_CURRENT_LIMIT) {
-        Serial.println(F("Selected current limit is invalid for this module!"));
-    }
-#endif
-
     // set LoRa preamble length to 15 symbols (accepted range is 0 - 65535)
     if (radio.setPreambleLength(15) == RADIOLIB_ERR_INVALID_PREAMBLE_LENGTH) {
         Serial.println(F("Selected preamble length is invalid for this module!"));
@@ -2459,6 +2563,22 @@ void settingRadio()
     // set the function that will be called
     // when new packet is received
     radio.setDio1Action(setRadioFlag);
+
+#ifdef RADIO_DEFAULT_CUR_LIMIT
+    // set over current protection limit to 140 mA (accepted range is 45 - 140 mA)
+    // NOTE: set value to 0 to disable overcurrent protection
+    if (radio.setCurrentLimit(RADIO_DEFAULT_CUR_LIMIT) == RADIOLIB_ERR_INVALID_CURRENT_LIMIT) {
+        Serial.println(F("Selected current limit is invalid for this module!"));
+    }
+#endif
+
+#endif
+
+    // set output power
+    if (radio.setOutputPower(RADIO_DEFAULT_POWER_LEVEL) == RADIOLIB_ERR_INVALID_OUTPUT_POWER) {
+        Serial.println(F("Selected output power is invalid for this module!"));
+    }
+
 #endif
 
 }
