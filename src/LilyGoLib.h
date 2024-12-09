@@ -117,6 +117,16 @@ typedef enum {
 extern SPIClass radioBus;
 #define newModule()   new Module(BOARD_RADIO_SS,BOARD_RADIO_DI01,BOARD_RADIO_RST,BOARD_RADIO_BUSY,radioBus)
 
+/*
+*   schematic pin map
+*   SX12XX    CC1101
+*   NRSET --> GDO0
+*   BUSY  --> GDO1
+* */
+#define CC1101_GDO0     8
+#define CC1101_GDO2     7
+#define newCC1101()   new Module(BOARD_RADIO_SS,CC1101_GDO0,-1,CC1101_GDO2,radioBus)
+
 enum PowerCtrlChannel {
     WATCH_POWER_DISPLAY_BL,
     WATCH_POWER_TOUCH_DISP,
