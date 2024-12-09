@@ -43,7 +43,7 @@ SX1262 radio = newModule();
 #elif  defined(USE_RADIO_SX1280)
 SX1280 radio = newModule();
 #elif  defined(USE_RADIO_CC1101)
-CC1101 radio = newModule();
+CC1101 radio = newCC1101();
 #endif
 
 #include <WiFi.h>
@@ -241,7 +241,7 @@ void radioTask(lv_timer_t *parent);
 static void PDM_Record(const char *song_name, uint32_t duration);
 static bool CreateWAV(const char *song_name, uint32_t duration, uint16_t num_channels, const uint32_t sampling_rate, uint16_t bits_per_sample);
 
-#ifdef USE_RADIO_SX1262
+#if  defined(USE_RADIO_SX1262)
 const char *radio_freq_list =
     "433MHz\n"
     "470MHz\n"
@@ -273,6 +273,10 @@ const float radio_power_args_list[] = {2, 5, 10, 12, 17, 20, 22};
 #define RADIO_DEFAULT_CUR_LIMIT     140
 #define RADIO_DEFAULT_POWER_LEVEL   22
 
+#define RADIO_FREQ_DROP_INDEX       2
+#define RADIO_BW_DROP_INDEX         1
+#define RADIO_TX_POWER_DROP_INDEX   6
+
 #elif  defined(USE_RADIO_SX1280)
 
 #define RADIO_DEFAULT_FREQ          2492.0
@@ -280,6 +284,10 @@ const float radio_power_args_list[] = {2, 5, 10, 12, 17, 20, 22};
 #define RADIO_DEFAULT_SF            10
 #define RADIO_DEFAULT_CR            6
 #define RADIO_DEFAULT_POWER_LEVEL   13
+
+#define RADIO_FREQ_DROP_INDEX       9
+#define RADIO_BW_DROP_INDEX         0
+#define RADIO_TX_POWER_DROP_INDEX   13
 
 const char *radio_freq_list =
     "2400MHz\n"
@@ -356,6 +364,9 @@ const float radio_power_args_list[] = {
 #define RADIO_DEFAULT_POWER_LEVEL   10  //dBm
 #define RADIO_DEFAULT_BIT_RATE      30  //kbps
 
+#define RADIO_FREQ_DROP_INDEX       4
+#define RADIO_BW_DROP_INDEX         0
+#define RADIO_TX_POWER_DROP_INDEX   7
 
 const char *radio_freq_list =
     "387MHz\n"
@@ -1786,7 +1797,7 @@ void radioPingPong(lv_obj_t *parent)
     dd = lv_dropdown_create(cont1);
     lv_dropdown_set_options(dd, radio_freq_list);
 
-    lv_dropdown_set_selected(dd, 2);
+    lv_dropdown_set_selected(dd, RADIO_FREQ_DROP_INDEX);
     lv_obj_add_flag(dd, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_set_size(dd, 170, 50);
     lv_obj_add_event_cb(dd, radio_freq_cb,
@@ -1798,7 +1809,7 @@ void radioPingPong(lv_obj_t *parent)
     lv_dropdown_set_options(dd, radio_bandwidth_list);
     lv_obj_add_flag(dd, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_set_size(dd, 170, 50);
-    lv_dropdown_set_selected(dd, 1);
+    lv_dropdown_set_selected(dd, RADIO_BW_DROP_INDEX);
     lv_obj_add_event_cb(dd, radio_bandwidth_cb,
                         LV_EVENT_VALUE_CHANGED
                         , NULL);
@@ -1808,7 +1819,7 @@ void radioPingPong(lv_obj_t *parent)
     lv_dropdown_set_options(dd, radio_power_level_list);
     lv_obj_add_flag(dd, LV_OBJ_FLAG_EVENT_BUBBLE);
     lv_obj_set_size(dd, 170, 50);
-    lv_dropdown_set_selected(dd, 6);
+    lv_dropdown_set_selected(dd, RADIO_TX_POWER_DROP_INDEX);
     lv_obj_add_event_cb(dd, radio_power_cb,
                         LV_EVENT_VALUE_CHANGED
                         , NULL);
