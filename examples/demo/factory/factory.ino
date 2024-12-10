@@ -245,10 +245,11 @@ static bool CreateWAV(const char *song_name, uint32_t duration, uint16_t num_cha
 const char *radio_freq_list =
     "433MHz\n"
     "470MHz\n"
+    "850MHZ\n"
     "868MHz\n"
     "915MHz\n"
     "923MHz";
-const float radio_freq_args_list[] = {433.0, 470.0, 868.0, 915.0, 923.0};
+const float radio_freq_args_list[] = {433.0, 470.0, 850.0, 868.0, 915.0, 923.0};
 
 const char *radio_bandwidth_list =
     "125KHz\n"
@@ -266,15 +267,15 @@ const char *radio_power_level_list =
     "22dBm";
 const float radio_power_args_list[] = {2, 5, 10, 12, 17, 20, 22};
 
-#define RADIO_DEFAULT_FREQ          868.0
-#define RADIO_DEFAULT_BW            250.0
+#define RADIO_DEFAULT_FREQ          850.0
+#define RADIO_DEFAULT_BW            125.0
 #define RADIO_DEFAULT_SF            10
 #define RADIO_DEFAULT_CR            6
 #define RADIO_DEFAULT_CUR_LIMIT     140
 #define RADIO_DEFAULT_POWER_LEVEL   22
 
 #define RADIO_FREQ_DROP_INDEX       2
-#define RADIO_BW_DROP_INDEX         1
+#define RADIO_BW_DROP_INDEX         0
 #define RADIO_TX_POWER_DROP_INDEX   6
 
 #elif  defined(USE_RADIO_SX1280)
