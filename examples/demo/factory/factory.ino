@@ -29,8 +29,8 @@
 
 //! Two transceivers, SX1262 and SX1280, are defined based on the actual model
 // #define USE_RADIO_SX1280
-// #define USE_RADIO_SX1262
-#define USE_RADIO_CC1101
+#define USE_RADIO_SX1262
+// #define USE_RADIO_CC1101
 
 #define ENABLE_PLAYER
 #define ENABLE_IR_SENDER
@@ -361,12 +361,13 @@ const float radio_power_args_list[] = {
 #elif  defined(USE_RADIO_CC1101)
 
 #define RADIO_DEFAULT_FREQ          433.0   //Freq
-#define RADIO_DEFAULT_BW            58  //Rx bandwidth
-#define RADIO_DEFAULT_POWER_LEVEL   10  //dBm
-#define RADIO_DEFAULT_BIT_RATE      30  //kbps
+#define RADIO_DEFAULT_BW            102.0   //Rx bandwidth
+#define RADIO_DEFAULT_POWER_LEVEL   10      //dBm
+#define RADIO_DEFAULT_BIT_RATE      38.4    //kbps
+#define RADIO_DEFAULT_DEV_FREQ      20.0
 
 #define RADIO_FREQ_DROP_INDEX       4
-#define RADIO_BW_DROP_INDEX         0
+#define RADIO_BW_DROP_INDEX         3
 #define RADIO_TX_POWER_DROP_INDEX   7
 
 const char *radio_freq_list =
@@ -744,8 +745,9 @@ void lowPowerEnergyHandler()
         esp_light_sleep_start();
     } else {
 
-        setCpuFrequencyMhz(10);
-        // setCpuFrequencyMhz(80);
+        // Too low a frequency may cause a restart
+        // setCpuFrequencyMhz(10);
+        setCpuFrequencyMhz(80);
         while (!pmuIrq && !sportsIrq && !watch.getTouched()) {
             delay(300);
             // gpio_wakeup_enable ((gpio_num_t)BOARD_TOUCH_INT, GPIO_INTR_LOW_LEVEL);
@@ -2525,7 +2527,7 @@ void settingRadio()
         Serial.println(F("[CC1101] Increase receiver bandwidth to set this bit rate."));
     }
 
-    // set rx bandwidth
+    // set rx bandwidth 58Khz
     if (radio.setRxBandwidth(RADIO_DEFAULT_BW) == RADIOLIB_ERR_INVALID_BANDWIDTH) {
         Serial.println(F("[CC1101] Selected bandwidth is invalid for this module!"));
     }
@@ -2535,8 +2537,8 @@ void settingRadio()
         Serial.println(F("[CC1101] Selected sync word is invalid for this module!"));
     }
 
-    // set allowed frequency deviation to 10.0 kHz
-    if (radio.setFrequencyDeviation(10.0) == RADIOLIB_ERR_INVALID_FREQUENCY_DEVIATION) {
+    // set allowed frequency deviation
+    if (radio.setFrequencyDeviation(RADIO_DEFAULT_DEV_FREQ) == RADIOLIB_ERR_INVALID_FREQUENCY_DEVIATION) {
         Serial.println(F("[CC1101] Selected frequency deviation is invalid for this module!"));
     }
 
