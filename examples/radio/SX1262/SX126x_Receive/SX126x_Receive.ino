@@ -45,8 +45,8 @@ void setup()
         while (true);
     }
 
-    // set carrier frequency to 433.5 MHz
-    if (radio.setFrequency(433.5) == RADIOLIB_ERR_INVALID_FREQUENCY) {
+    // set carrier frequency to 868.0 MHz
+    if (radio.setFrequency(868.0) == RADIOLIB_ERR_INVALID_FREQUENCY) {
         Serial.println(F("Selected frequency is invalid for this module!"));
         while (true);
     }
@@ -102,6 +102,7 @@ void loop()
         Serial.print(radio.getFrequencyError());
         Serial.println(F(" Hz"));
 
+        lv_label_set_text_fmt(label1, "Recv :%s\nRSSI:%.2fdBm\nSNR:%.2f", str.c_str(), radio.getRSSI(), radio.getSNR());
 
     } else if (state == RADIOLIB_ERR_RX_TIMEOUT) {
         // timeout occurred while waiting for a packet

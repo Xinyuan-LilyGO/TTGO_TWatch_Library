@@ -30,12 +30,6 @@ void setup()
 
     watch.begin();
 
-    // set carrier frequency to 433.5 MHz
-    if (radio.setFrequency(433.5) == RADIOLIB_ERR_INVALID_FREQUENCY) {
-        Serial.println(F("Selected frequency is invalid for this module!"));
-        while (true);
-    }
-
     beginLvglHelper();
 
     // initialize SX1262 with default settings
@@ -46,6 +40,12 @@ void setup()
     } else {
         Serial.print(F("failed, code "));
         Serial.println(state);
+        while (true);
+    }
+
+    // set carrier frequency to 868.0 MHz
+    if (radio.setFrequency(868.0) == RADIOLIB_ERR_INVALID_FREQUENCY) {
+        Serial.println(F("Selected frequency is invalid for this module!"));
         while (true);
     }
 
