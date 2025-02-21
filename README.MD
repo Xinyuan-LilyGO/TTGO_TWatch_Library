@@ -107,3 +107,10 @@ Please follow the steps below
 7. **esp_vad.h: No such file or directory**
    * **Please use 2.0.9. The new version has changed too much and has not yet been adapted.**
 
+
+## 3️⃣Use reference
+
+|   Product   |                             Youtube  link                             |                  explanation                    | Status | 
+| :---------: | :-------------------------------------------------------------------: |:-----------------------------------------------:| :----: |
+| T -WATCH-S3 | [Youtube link](https://www.youtube.com/watch?v=RCYUN5yAnUk) |    How to get started with LILYGO T-Watch-S3 easily     |   ✅    |
+| LilyGo device | [Youtube link](https://www.youtube.com/watch?v=f3BybP3L7ls) |    How to enter boot mode to download the firmware     |   ✅    |

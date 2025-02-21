@@ -103,3 +103,9 @@
    | DC1          | ESP32 3V3                     |
    | VRTC         | Nothing                       |
 
+## 3️⃣用户参考
+
+|   Product   |                             Youtube  link                             |                  explanation                    | Status | 
+| :---------: | :-------------------------------------------------------------------: |:-----------------------------------------------:| :----: |
+| T -WATCH-S3 | [Youtube link](https://www.youtube.com/watch?v=RCYUN5yAnUk) |    How to get started with LILYGO T-Watch-S3 easily     |   ✅    |
+| LilyGo device | [Youtube link](https://www.youtube.com/watch?v=f3BybP3L7ls) |    How to enter boot mode to download the firmware     |   ✅    |
