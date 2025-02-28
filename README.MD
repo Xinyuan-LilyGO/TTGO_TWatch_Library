@@ -63,6 +63,8 @@
     + [Instructions for Debian/Ubuntu Linux](docs/arduino-ide/debian_ubuntu.md)
     + [Instructions for Fedora](docs/arduino-ide/fedora.md)
     + [Instructions for openSUSE](docs/arduino-ide/opensuse.md)
+- Please note that this library currently only supports **esp core 3.0** and below. It is recommended to use **esp core 2.0.14**
+  ![](./images/arduino.jpg)
 
 
 <h2 align = "left">🔷 FAQ</h2>
