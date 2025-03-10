@@ -376,8 +376,8 @@ void loop()
         if (ttgo->power->isVbusRemoveIRQ()) {
             ttgo->setBrightness(80);
         }
-        if (ttgo->power->isPEKLongtPressIRQ()) {
-            SerialMon.println("isPEKLongtPressIRQ");
+        if (ttgo->power->isPEKLongPressIRQ()) {
+            SerialMon.println("isPEKLongPressIRQ");
         }
         if (ttgo->power->isPEKShortPressIRQ()) {
 
